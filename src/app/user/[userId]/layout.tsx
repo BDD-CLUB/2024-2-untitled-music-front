@@ -1,0 +1,24 @@
+import { Sidebar } from "@/components/bar/sidebar";
+import { Topbar } from "@/components/bar/topbar";
+
+interface MainLayoutProps {
+    children: React.ReactNode;
+};
+
+const UserLayout = ({
+    children
+}: MainLayoutProps) => {
+    return (
+        <div className="flex h-full">
+          <Sidebar />
+          <div className="flex flex-col flex-1">
+            <Topbar />
+            <div className="flex-1">
+              {children}
+            </div>
+          </div>
+        </div>
+    );
+};
+
+export default UserLayout;
