@@ -1,3 +1,4 @@
+import { Bottombar } from "@/components/bar/bottombar";
 import { Sidebar } from "@/components/bar/sidebar";
 import { Topbar } from "@/components/bar/topbar";
 
@@ -16,6 +17,7 @@ const MainLayout = ({
             <div className="flex-1">
               {children}
             </div>
+            <Bottombar />
           </div>
         </div>
     );

@@ -5,7 +5,7 @@ import { SettingButton } from "./setting-button";
 
 export const Sidebar = () => {
   return (
-    <aside className="h-full w-20 border-r border-purple-300 bg-black flex flex-col gap-y-4 items-center py-4 text-white">
+    <aside className="hidden h-full w-20 border-r border-purple-300 bg-black md:flex flex-col gap-y-4 items-center py-4 text-white">
       <Link href={"/"} className="text-2xl mb-6">
         🦋
       </Link>
