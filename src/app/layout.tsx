@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 
 import { Toaster } from "sonner";
+import ModalProvider from "@/components/modal/modal-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,6 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Toaster />
+        <ModalProvider />
         {children}
       </body>
     </html>

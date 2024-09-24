@@ -2,13 +2,13 @@ import { Bottombar } from "@/components/bar/bottombar";
 import { Sidebar } from "@/components/bar/sidebar";
 import { Topbar } from "@/components/bar/topbar";
 
-interface UserLayoutProps {
+interface AlbumLayoutProps {
     children: React.ReactNode;
 };
 
-const UserLayout = ({
+const AlbumLayout = ({
     children
-}: UserLayoutProps) => {
+}: AlbumLayoutProps) => {
     return (
         <div className="flex h-full">
           <Sidebar />
@@ -23,4 +23,4 @@ const UserLayout = ({
     );
 };
 
-export default UserLayout;
+export default AlbumLayout;
