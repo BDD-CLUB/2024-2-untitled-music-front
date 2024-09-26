@@ -9,7 +9,7 @@ export const Topbar = () => {
       <div className="hidden md:flex min-w-[200px] max-w-[450px] shrink grow-[2]">
         <Button
           size="sm"
-          className="bg-black border border-purple-300 w-full flex justify-start items-center h-10 px-2"
+          className="bg-black border border-white w-full flex justify-start items-center h-10 px-2"
         >
           <Search className="size-5 text-accent/50 mr-3" />
           <span className="text-accent/50 text-sm">Search something...</span>

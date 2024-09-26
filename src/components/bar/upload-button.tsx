@@ -47,7 +47,7 @@ export const UploadButton = () => {
           variant="transparent"
           className="p-2 group-hover:animate-spinOnce group-hover:bg-black"
         >
-          <CirclePlus className="size-7 text-purple-300 group-hover:scale-110 transition-all" />
+          <CirclePlus className="size-7 text-white group-hover:scale-110 transition-all" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center" side="right" className="w-40 ml-2">
