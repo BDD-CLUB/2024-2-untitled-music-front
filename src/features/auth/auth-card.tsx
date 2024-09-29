@@ -32,7 +32,7 @@ export const AuthCard = () => {
                 onClick={() => {}}
                 variant="outline"
                 size="lg"
-                className="w-full relative bg-transparent flex items-center justify-start gap-x-14 hover:text-white hover:bg-black/20"
+                className="w-full relative bg-transparent flex items-center justify-start gap-x-14 hover:text-white hover:bg-white/10 md:hover:bg-black/20"
             >
                 <FcGoogle className="size-5" />
                 <span className="text-white font-bold text-sm">
