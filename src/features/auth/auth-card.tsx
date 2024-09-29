@@ -1,4 +1,5 @@
-import { FcGoogle } from "react-icons/fc"
+import Image from "next/image";
+import { FcGoogle } from "react-icons/fc";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -7,7 +8,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import Image from "next/image";
 
 export const AuthCard = () => {
   return (
@@ -39,8 +39,8 @@ export const AuthCard = () => {
                 Continue with Google
                 </span>
             </Button>
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        </CardContent>
+      </Card>
   );
 };

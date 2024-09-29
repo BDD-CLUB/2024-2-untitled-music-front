@@ -14,6 +14,7 @@ export const Sidebar = () => {
           width={30}
           height={30}
         />  
+
       </Link>
 
       <div className="flex flex-col items-center justify-center my-auto">
