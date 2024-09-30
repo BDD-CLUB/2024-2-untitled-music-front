@@ -51,7 +51,7 @@ const TrackModal = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<FieldValues> = async (values) => {
+  const onSubmit: SubmitHandler<FieldValues> = async () => {
     // 이후 수정
     try {
       setIsloading(true);

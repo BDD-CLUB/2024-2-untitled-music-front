@@ -54,7 +54,7 @@ const AlbumModal = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<FieldValues> = async (values) => {
+  const onSubmit: SubmitHandler<FieldValues> = async () => {
     // 이후 수정
     try {
       setIsloading(true);
@@ -79,6 +79,7 @@ const AlbumModal = () => {
               setFileEnter(true);
             }}
             onDragLeave={(e) => {
+              e.preventDefault();
               setFileEnter(false);
             }}
             onDragEnd={(e) => {
@@ -93,7 +94,7 @@ const AlbumModal = () => {
                 if (item && item.kind === "file") {
                   const file = item.getAsFile();
                   if (file && file.type.startsWith("image/")) {
-                    let blobUrl = URL.createObjectURL(file);
+                    const blobUrl = URL.createObjectURL(file);
                     setFile(blobUrl);
                   } else {
                     alert("이미지 파일만 업로드할 수 있습니다.");
@@ -102,7 +103,7 @@ const AlbumModal = () => {
               } else if (e.dataTransfer.files.length > 0) {
                 const file = e.dataTransfer.files[0];
                 if (file.type.startsWith("image/")) {
-                  let blobUrl = URL.createObjectURL(file);
+                  const blobUrl = URL.createObjectURL(file);
                   setFile(blobUrl);
                 } else {
                   alert("이미지 파일만 업로드할 수 있습니다.");
@@ -137,9 +138,9 @@ const AlbumModal = () => {
               className="hidden"
               onChange={(e) => {
                 console.log(e.target.files);
-                let file = e.target.files;
+                const file = e.target.files;
                 if (file) {
-                  let blobUrl = URL.createObjectURL(file[0]);
+                  const blobUrl = URL.createObjectURL(file[0]);
                   setFile(blobUrl);
                 }
               }}
