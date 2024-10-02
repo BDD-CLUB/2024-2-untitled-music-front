@@ -4,7 +4,6 @@ import { z } from "zod";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 import { Input } from "../ui/input";
@@ -21,7 +20,6 @@ const AlbumModal = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isLoading, setIsloading] = useState(false);
 
-  const router = useRouter();
   const albumModal = useAlbumModal();
 
   const handleFileUpload = (files: File[]) => {
@@ -69,7 +67,7 @@ const AlbumModal = () => {
     try {
       setIsloading(true);
     } catch (error) {
-      toast("문제가 발생하였습니다");
+      toast(`문제가 발생하였습니다 ${error}`);
     } finally {
       setIsloading(false);
 

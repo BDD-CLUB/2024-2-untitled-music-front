@@ -9,18 +9,6 @@ export function UploadMenu() {
   const albumModal = useAlbumModal();
   const trackModal = useTrackModal();
 
-  const albumClick = () => {
-    // 유저인지 체크
-
-    return albumModal.onOpen();
-  };
-
-  const trackClick = () => {
-    // 유저인지 체크
-
-    return trackModal.onOpen();
-  };
-
   const links = [
     {
       title: "트랙",

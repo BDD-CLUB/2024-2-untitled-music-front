@@ -57,7 +57,7 @@ const TrackModal = () => {
     try {
       setIsloading(true);
     } catch (error) {
-      toast("문제가 발생하였습니다");
+      toast(`문제가 발생하였습니다 ${error}`);
     } finally {
       setIsloading(false);
 
