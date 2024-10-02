@@ -57,12 +57,12 @@ const TrackModal = () => {
     try {
       setIsloading(true);
     } catch (error) {
-      toast(`문제가 발생하였습니다 ${error}`);
+      toast.error(`문제가 발생하였습니다 ${error}`);
     } finally {
       setIsloading(false);
 
       trackModal.onClose();
-      toast("트랙이 추가되었습니다!");
+      toast.success("트랙이 추가되었습니다!");
     }
   };
 

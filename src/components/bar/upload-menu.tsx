@@ -4,10 +4,12 @@ import useAlbumModal from "@/hooks/modal/use-album-modal";
 import useTrackModal from "@/hooks/modal/use-track-modal";
 import { FloatingDock } from "@/components/ui/floating-dock";
 import { IconDisc, IconMusic, IconPlaylist } from "@tabler/icons-react";
+import usePlaylistModal from "@/hooks/modal/use-playlist-modal";
 
 export function UploadMenu() {
   const albumModal = useAlbumModal();
   const trackModal = useTrackModal();
+  const playlistModal = usePlaylistModal();
 
   const links = [
     {
@@ -29,7 +31,7 @@ export function UploadMenu() {
       icon: (
         <IconPlaylist className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      onClick: () => {},
+      onClick: () => {playlistModal.onOpen()},
     },
   ];
   return (

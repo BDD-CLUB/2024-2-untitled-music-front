@@ -67,12 +67,12 @@ const AlbumModal = () => {
     try {
       setIsloading(true);
     } catch (error) {
-      toast(`문제가 발생하였습니다 ${error}`);
+      toast.error(`문제가 발생하였습니다 ${error}`);
     } finally {
       setIsloading(false);
 
       albumModal.onClose();
-      toast("앨범이 생성되었습니다!");
+      toast.success("앨범이 생성되었습니다!");
     }
   };
 
