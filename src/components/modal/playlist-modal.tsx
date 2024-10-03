@@ -66,7 +66,7 @@ const PlaylistModal = () => {
       description="플레이리스트에 대한 정보를 입력해주세요"
       isOpen={playlistModal.isOpen}
       onChange={onChange}
-      className="p-4 flex flex-col items-center justify-center md:max-h-[50%]"
+      className="p-4 flex flex-col items-center justify-center max-h-[50%]"
     >
       <form
         className="flex flex-col h-full w-full items-center justify-center"
@@ -80,7 +80,9 @@ const PlaylistModal = () => {
             placeholder="플레이리스트 이름 (필수)"
             className="w-full h-14 border border-muted-foreground"
           />
-          <p className={errors.playlistName ? "text-red-500 text-xs" : "hidden"}>
+          <p
+            className={errors.playlistName ? "text-red-500 text-xs" : "hidden"}
+          >
             {errors.playlistName ? String(errors.playlistName.message) : null}
           </p>
           <Textarea
@@ -93,7 +95,7 @@ const PlaylistModal = () => {
         </div>
         <button className="p-[3px] relative mt-8" type="submit">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-300 to-purple-300 rounded-xl" />
-          <div className="px-8 py-2  bg-white rounded-xl relative group transition duration-200 text-black hover:bg-transparent hover:text-white text-sm">
+          <div className="px-8 py-2  bg-white dark:bg-black/95 rounded-xl relative group transition duration-200 text-black dark:text-white hover:bg-transparent hover:text-white dark:hover:bg-transparent dark:hover:text-black text-sm">
             확인
           </div>
         </button>

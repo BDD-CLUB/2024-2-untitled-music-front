@@ -186,13 +186,13 @@ const TrackModal = () => {
                 className="p-[3px] relative"
                 onClick={() => setSelectedAlbum("")}
               >
-                <div className="px-8 py-2  bg-white rounded-xl relative group  text-black hover:bg-gray-100 text-sm border-gray-300 border-2">
+               <div className="px-8 py-2 bg-white rounded-xl relative group text-black hover:bg-gray-100 text-sm border-gray-300 border-2 dark:bg-black/95 dark:text-white dark:hover:bg-neutral-800">
                   이전
                 </div>
               </button>
               <button className="p-[3px] relative" type="submit">
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-300 to-purple-300 rounded-xl" />
-                <div className="px-8 py-2  bg-white rounded-xl relative group transition duration-200 text-black hover:bg-transparent hover:text-white text-sm">
+                <div className="px-8 py-2  bg-white dark:bg-black/95 rounded-xl relative group transition duration-200 text-black dark:text-white hover:bg-transparent hover:text-white dark:hover:bg-transparent dark:hover:text-black text-sm">
                   확인
                 </div>
               </button>

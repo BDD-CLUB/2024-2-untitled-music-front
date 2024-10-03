@@ -1,5 +1,10 @@
 "use client";
 
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { FcGoogle } from "react-icons/fc";
+import { useRouter } from "next/navigation";
+
 import {
   Modal,
   ModalBody,
@@ -7,12 +12,17 @@ import {
   ModalFooter,
   ModalTrigger,
 } from "../../components/ui/animated-modal";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { FcGoogle } from "react-icons/fc";
 import { IconLogin } from "@tabler/icons-react";
 
 export function SigninButton() {
+  const router = useRouter();
+  
+  const googleOAuthUrl = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL;
+
+  const handleGoogleLogin = async () => {
+    router.push(`${googleOAuthUrl}`)
+  }
+
   const images = [
     "/images/auth-background.svg",
     "/images/music1.png",
@@ -23,11 +33,11 @@ export function SigninButton() {
   return (
     <div className="flex items-center justify-center">
       <Modal>
-        <ModalTrigger className="bg-transparent dark:bg-white dark:text-black text-neutral-700 flex justify-center group/modal-btn">
+        <ModalTrigger className="bg-transparent dark:text-neutral-300 text-neutral-700 flex justify-center group/modal-btn">
           <span className="group-hover/modal-btn:translate-x-40 text-center transition duration-500 text-base font-bold tracking-wide">
             START!
           </span>
-          <div className="-translate-x-40 group-hover/modal-btn:translate-x-0 flex items-center justify-center absolute inset-0 transition duration-500 text-neutral-700 z-20">
+          <div className="-translate-x-40 group-hover/modal-btn:translate-x-0 flex items-center justify-center absolute inset-0 transition duration-500 text-neutral-700 dark:text-neutral-300 z-20">
             <IconLogin />
           </div>
         </ModalTrigger>
@@ -73,8 +83,8 @@ export function SigninButton() {
             </div>
             <div className="mt-20 flex items-center justify-center">
               <button
-                onClick={() => {}}
-                className="md:w-[300px] w-full relative flex items-center justify-start gap-x-10 border py-2.5 rounded-xl bg-gray-100 border-gray-200 hover:bg-gray-200 hover:border-gray-300"
+                onClick={handleGoogleLogin}
+                className="md:w-[300px] w-full relative flex items-center justify-start gap-x-10 border py-2.5 rounded-xl bg-gray-100 border-gray-200 hover:bg-gray-200 hover:border-gray-300 dark:bg-gray-300 dark:hover:opacity-75"
               >
                 <FcGoogle className="size-5 ml-6" />
                 <span className="text-neutral-700 font-bold text-sm">

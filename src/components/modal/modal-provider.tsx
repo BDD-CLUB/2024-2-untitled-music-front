@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import AlbumModal from "./album-modal";
 import TrackModal from "./track-modal";
 import PlaylistModal from "./playlist-modal";
+import { SearchInput } from "../bar/search-input";
 
 const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -22,6 +23,7 @@ const ModalProvider = () => {
       <AlbumModal />
       <TrackModal />
       <PlaylistModal />
+      <SearchInput />
     </>
   );
 };

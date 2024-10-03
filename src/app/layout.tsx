@@ -6,6 +6,7 @@ import { Bar } from "@/features/main/bar";
 import { Toaster } from "@/components/ui/sonner";
 import { SigninButton } from "@/features/main/signin-button";
 import ModalProvider from "@/components/modal/modal-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 export const metadata: Metadata = {
   title: "Untitled",
@@ -20,26 +21,32 @@ export default function RootLayout({
   return (
     <html>
       <body>
-        <ModalProvider />
-        <Toaster />
-        
-        <div className="relative flex h-full flex-col overflow-hidden">
-          <Hero />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ModalProvider />
+          <Toaster />
 
-          <div className="md:hidden fixed bottom-0 inset-x-0 flex mb-1">
-            <Bar />
+          <div className="relative flex h-full flex-col overflow-hidden">
+            <Hero />
+
+            <div className="md:hidden fixed bottom-0 inset-x-0 flex mb-1">
+              <Bar />
+            </div>
+            <div className="hidden md:flex fixed left-0 top-1/2 transform -translate-y-1/2 ml-4">
+              <Bar />
+            </div>
+
+            <div className="fixed top-0 right-0 m-4">
+              <SigninButton />
+            </div>
+
+            {children}
           </div>
-          <div className="hidden md:flex fixed left-0 top-1/2 transform -translate-y-1/2 ml-4">
-            <Bar />
-          </div>
-
-          <div className="fixed top-0 right-0 m-4">
-            <SigninButton />
-          </div>
-
-          {children}
-        </div>
-
+        </ThemeProvider>
       </body>
     </html>
   );
