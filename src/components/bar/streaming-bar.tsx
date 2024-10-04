@@ -16,7 +16,7 @@ import { Slider } from "@/components/ui/slider";
 
 const StreamingBar = () => {
   return (
-    <div className="hidden md:flex items-center justify-between flex-1 border border-gray-300 dark:border-gray-500">
+    <div className="hidden md:flex items-center justify-between flex-1 bg-gradient-to-r from-indigo-100 to-pink-100 rounded-xl dark:from-indigo-900 dark:to-pink-900">
       <div className="flex items-center space-x-4 flex-1 overflow-hidden">
         <Image src="/images/music1.png" alt="cover" height={50} width={50} />
         <div>
