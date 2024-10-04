@@ -86,7 +86,7 @@ const AlbumModal = () => {
           onChange={onChange}
           className="flex flex-col p-4 items-center justify-center"
         >
-          <div className="w-full max-w-4xl mx-auto min-h-96 mt-8 border border-dashed bg-white dark:bg-black border-neutral-500 dark:border-neutral-800 rounded-lg">
+          <div className="w-full max-w-4xl mx-auto min-h-96 mt-8 border border-dashed bg-white dark:bg-neutral-800 border-neutral-500 dark:border-black rounded-lg">
             <FileUpload onChange={handleFileUpload} />
           </div>
           <div className="flex items-center justify-center pt-16">

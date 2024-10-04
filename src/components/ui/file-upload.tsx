@@ -71,7 +71,7 @@ export const FileUpload = ({
           onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
           className="hidden"
         />
-        <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]">
+        <div className="absolute dark:hidden inset-0 h-full [mask-image:radial-gradient(ellipse_at_center,white,transparent)]">
           <GridPattern />
         </div>
         <div className="flex flex-col items-center justify-center">
@@ -178,7 +178,7 @@ export function GridPattern() {
   const columns = 41;
   const rows = 11;
   return (
-    <div className="flex bg-gray-100 dark:bg-neutral-900 flex-shrink-0 flex-wrap justify-center items-center gap-x-px gap-y-px  scale-105">
+    <div className="flex bg-gray-100 dark:bg-neutral-900 flex-shrink-0 flex-wrap justify-center items-center h-full gap-x-px gap-y-px  scale-105">
       {Array.from({ length: rows }).map((_, row) =>
         Array.from({ length: columns }).map((_, col) => {
           const index = row * columns + col;

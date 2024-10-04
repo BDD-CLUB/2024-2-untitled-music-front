@@ -15,7 +15,6 @@ import { toast } from "sonner";
 
 const TrackModal = () => {
   const [selectedAlbum, setSelectedAlbum] = useState<string>();
-  const [selectedAlbumName, setSelectedAlbumName] = useState<string>();
 
   const [isLoading, setIsloading] = useState(false);
 
@@ -106,7 +105,6 @@ const TrackModal = () => {
                 className="flex flex-col items-center justify-center h-full w-full aspect-square"
                 onClick={() => {
                   setSelectedAlbum(item.src);
-                  setSelectedAlbumName(item.name);
                 }}
               >
                 <div className="flex flex-col items-center justify-center h-full w-full relative drop-shadow-md">
@@ -148,9 +146,6 @@ const TrackModal = () => {
                 />
               </div>
               <div className="flex flex-col gap-y-4 items-center justify-center h-full w-full rounded-md overflow-y-auto">
-                <span className="text-base w-full text-center tracking font-bold">
-                  {selectedAlbumName}
-                </span>
                 <Input
                   id="trackName"
                   disabled={isLoading}
@@ -175,6 +170,7 @@ const TrackModal = () => {
                 <Input
                   id="trackFile"
                   type="file"
+                  accept="audio/*" 
                   disabled={isLoading}
                   {...register("trackFile", { required: true })}
                   className="w-full h-14 border-transparent"
