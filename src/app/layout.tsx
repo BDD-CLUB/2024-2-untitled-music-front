@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
 import "./globals.css";
+import type { Metadata } from "next";
 
 import Hero from "@/features/main/hero";
+import Topbar from "@/features/main/topbar";
+import ModalProvider from "@/components/modal/modal-provider";
+
 import { Bar } from "@/features/main/bar";
 import { Toaster } from "@/components/ui/sonner";
-import { SigninButton } from "@/features/main/signin-button";
-import ModalProvider from "@/components/modal/modal-provider";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 
 export const metadata: Metadata = {
@@ -40,8 +41,8 @@ export default function RootLayout({
               <Bar />
             </div>
 
-            <div className="fixed top-0 right-0 m-4">
-              <SigninButton />
+            <div className="fixed top-0 left-0 right-0">
+              <Topbar />
             </div>
 
             {children}

@@ -11,7 +11,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalTrigger,
-} from "../../components/ui/animated-modal";
+} from "../ui/animated-modal";
 import { IconLogin } from "@tabler/icons-react";
 
 export function SigninButton() {
@@ -33,7 +33,7 @@ export function SigninButton() {
   return (
     <div className="flex items-center justify-center">
       <Modal>
-        <ModalTrigger className="bg-transparent dark:text-neutral-300 text-neutral-700 flex justify-center group/modal-btn">
+        <ModalTrigger className="bg-transparent dark:text-neutral-300 text-neutral-700 flex justify-center group/modal-btn rounded-xl">
           <span className="group-hover/modal-btn:translate-x-40 text-center transition duration-500 text-base font-bold tracking-wide">
             START!
           </span>
