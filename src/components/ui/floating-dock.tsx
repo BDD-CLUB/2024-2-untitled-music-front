@@ -39,7 +39,7 @@ const FloatingDockMobile = ({
   return (
     <motion.div
       className={cn(
-        "mx-auto md:hidden flex h-16 gap-4 items-end rounded-2xl bg-gray-50 dark:bg-neutral-900 px-4 pb-3",
+        "mx-auto md:hidden flex h-16 gap-4 items-end rounded-2xl bg-transparent px-4 pb-3",
         className
       )}
     >

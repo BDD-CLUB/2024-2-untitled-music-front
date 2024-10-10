@@ -33,7 +33,7 @@ export function SigninButton() {
   return (
     <div className="flex items-center justify-center">
       <Modal>
-        <ModalTrigger className="bg-transparent dark:text-neutral-300 text-neutral-700 flex justify-center group/modal-btn rounded-xl">
+        <ModalTrigger className="bg-transparent dark:text-neutral-300 text-neutral-700 flex justify-center group/modal-btn rounded-full border border-[#FD6997] dark:border-none dark:bg-white/10 ml-8 md:mr-4">
           <span className="group-hover/modal-btn:translate-x-40 text-center transition duration-500 text-base font-bold tracking-wide">
             START!
           </span>
