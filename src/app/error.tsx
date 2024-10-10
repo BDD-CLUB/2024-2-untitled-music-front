@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Error () {
   return (
-    <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-y-2">
+    <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-y-2 bg-transparent h-full">
       <Image
         src={'/images/logo.svg'}
         alt="logo"

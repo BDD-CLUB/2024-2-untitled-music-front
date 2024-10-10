@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Loading() {
   return (
-    <div className="max-w-4xl h-full w-full mx-auto flex flex-col items-center justify-center gap-y-2">
+    <div className="max-w-4xl h-full w-full mx-auto flex flex-col items-center justify-center gap-y-2 bg-transparent">
       <Image
         src={'/images/logo.svg'}
         alt="logo"

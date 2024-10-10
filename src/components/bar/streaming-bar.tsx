@@ -14,9 +14,12 @@ import {
 
 import { Slider } from "@/components/ui/slider";
 
+// 그라데이션 색상 
+// bg-gradient-to-r from-indigo-100 to-pink-100 rounded-xl dark:from-indigo-900 dark:to-pink-900
+
 const StreamingBar = () => {
   return (
-    <div className="hidden md:flex items-center justify-between flex-1 bg-gradient-to-r from-indigo-100 to-pink-100 rounded-xl dark:from-indigo-900 dark:to-pink-900">
+    <div className="hidden md:flex items-center justify-between flex-1 bg-transparent">
       <div className="flex items-center space-x-4 flex-1 overflow-hidden">
         <Image src="/images/music1.png" alt="cover" height={50} width={50} />
         <div>

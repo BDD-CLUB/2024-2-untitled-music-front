@@ -1,7 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
 
-import Hero from "@/features/main/hero";
 import Topbar from "@/features/main/topbar";
 import ModalProvider from "@/components/modal/modal-provider";
 
@@ -31,9 +30,7 @@ export default function RootLayout({
           <ModalProvider />
           <Toaster />
 
-          <div className="relative flex h-full flex-col overflow-hidden">
-            <Hero />
-
+          <div className="relative flex h-full flex-col overflow-hidden bg-[url('/images/background-color.svg')] bg-cover bg-center dark:bg-[url('/images/background-color-dark.svg')]">
             <div className="md:hidden fixed bottom-0 inset-x-0 flex mb-1">
               <Bar />
             </div>
