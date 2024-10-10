@@ -63,9 +63,9 @@ export default function UserPage() {
           </div>
         </div>
         <div className="flex h-full w-full lg:w-1/3 font-medium text-sm items-center">
-          Hello! My name is Raro, and I'm passionate about exploring new ideas
+          Hello! My name is Raro, and im passionate about exploring new ideas
           and cultures. I enjoy reading, traveling, and meeting new people.
-          Currently, I'm pursuing my interests in technology and innovation,
+          Currently, im pursuing my interests in technology and innovation,
           aiming to make a positive impact in the world. I believe in lifelong
           learning and always seek to grow personally and professionally
         </div>

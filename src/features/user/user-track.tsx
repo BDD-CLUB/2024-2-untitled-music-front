@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import {
   Table,
   TableBody,
@@ -81,10 +83,12 @@ const UserTrack = () => {
               </TableCell>
               <TableCell>
                 <div className="flex items-center space-x-2">
-                  <img
+                  <Image
                     src={song.cover}
                     alt={song.title}
-                    className="w-10 h-10 rounded-md"
+                    className="rounded-md"
+                    width={40}
+                    height={40}
                   />
                   <span>{song.title}</span>
                 </div>
