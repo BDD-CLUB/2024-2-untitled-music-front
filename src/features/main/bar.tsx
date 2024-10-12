@@ -1,8 +1,12 @@
 "use client";
 
-import { UploadMenu } from "@/components/bar/upload-menu";
+import useNotiModal from "@/hooks/modal/use-noti-modal";
 import useSearchInput from "@/hooks/modal/use-search-input";
+
+import { UploadMenu } from "@/components/bar/upload-menu";
+import { SettingMenu } from "@/components/bar/setting-menu";
 import { FloatingDock } from "@/components/ui/floating-dock";
+
 import {
   IconCirclePlus,
   IconHeart,
@@ -14,12 +18,12 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { SettingMenu } from "@/components/bar/setting-menu";
 
 export function Bar() {
   const router = useRouter();
 
   const searchInput = useSearchInput();
+  const notiModal = useNotiModal();
 
   const [uploadOpen, setUploadOpen] = useState(false);
   const [settingOpen, setSettingOpen] = useState(false);
@@ -58,7 +62,9 @@ export function Bar() {
       icon: (
         <IconHeart className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      onClick: () => {},
+      onClick: () => {
+        notiModal.onOpen();
+      },
     },
     {
       title: "프로필",

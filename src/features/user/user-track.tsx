@@ -63,7 +63,7 @@ const UserTrack = () => {
     <div className="h-full">
       <Table>
         <TableHeader className="bg-white/40 dark:bg-white/5">
-          <TableRow>
+          <TableRow className="hidden md:table-row">
             <TableHead>#</TableHead>
             <TableHead>제목</TableHead>
             <TableHead>아티스트</TableHead>
@@ -76,7 +76,7 @@ const UserTrack = () => {
         </TableHeader>
         <TableBody>
           {dummy.map((song) => (
-            <TableRow key={song.id} className="group">
+            <TableRow key={song.id} className="group hover:bg-white/40 dark:hover:bg-white/10">
               <TableCell className="w-[50px]">
                 <div className="flex group-hover:hidden">{song.id}</div>
                 <div className="hidden group-hover:flex text-[#FF239C]"><IconPlayerPlayFilled /></div>
@@ -90,12 +90,12 @@ const UserTrack = () => {
                     width={40}
                     height={40}
                   />
-                  <span>{song.title}</span>
+                  <span className="overflow-hidden shrink-0">{song.title}</span>
                 </div>
               </TableCell>
-              <TableCell>{song.artist}</TableCell>
-              <TableCell>{song.album}</TableCell>
-              <TableCell>{song.releaseDate}</TableCell>
+              <TableCell className="overflow-hidden">{song.artist}</TableCell>
+              <TableCell className="overflow-hidden">{song.album}</TableCell>
+              <TableCell className="overflow-hidden hidden md:table-cell">{song.releaseDate}</TableCell>
               <TableCell>{song.duration}</TableCell>
             </TableRow>
           ))}

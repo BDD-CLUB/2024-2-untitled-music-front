@@ -98,7 +98,7 @@ const TrackModal = () => {
           onChange={onChange}
           className="flex flex-col p-4 items-center justify-center"
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 w-full h-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 md:gap-x-4 gap-y-4 w-full">
             {example.map((item) => (
               <div
                 key={item.key}
@@ -116,7 +116,7 @@ const TrackModal = () => {
                     className="rounded-xl"
                   />
                 </div>
-                <span className="text-sm w-full tracking-wide text-center py-2">
+                <span className="text-sm font-medium w-full tracking-wide text-center pt-2">
                   {item.name}
                 </span>
               </div>

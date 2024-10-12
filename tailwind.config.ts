@@ -8,26 +8,6 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
-      animation: {
-        spotlight: "spotlight 2s ease .75s 1 forwards",
-        spinOnce: "spinOnce 0.5s ease-in-out forwards",
-      },
-      keyframes: {
-        spinOnce: {
-          "0%": { transform: "rotate(0deg)" },
-          "100%": { transform: "rotate(180deg)" },
-        },
-        spotlight: {
-          "0%": {
-            opacity: "0",
-            transform: "translate(-72%, -62%) scale(0.5)",
-          },
-          "100%": {
-            opacity: "1",
-            transform: "translate(-50%,-40%) scale(1)",
-          },
-        },
-      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
