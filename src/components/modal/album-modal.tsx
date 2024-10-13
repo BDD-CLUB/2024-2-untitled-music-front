@@ -7,10 +7,12 @@ import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 import { Input } from "../ui/input";
+import ModalTitle from "./modal-title";
 import { Textarea } from "../ui/textarea";
 import { CustomModal } from "./custom-modal";
 import { FileUpload } from "../ui/file-upload";
 
+import { IconDisc } from "@tabler/icons-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useAlbumModal from "@/hooks/modal/use-album-modal";
 
@@ -80,20 +82,24 @@ const AlbumModal = () => {
     <div>
       {stage === 1 && (
         <CustomModal
-          title="앨범 업로드"
+          title={
+            <ModalTitle
+              icon={<IconDisc className="size-10 p-1" />}
+              title="앨범 업로드"
+            />
+          }
           description="앨범 커버를 업로드하세요"
           isOpen={albumModal.isOpen}
           onChange={onChange}
           className="flex flex-col p-4 items-center justify-center"
         >
-          <div className="w-full max-w-4xl mx-auto min-h-96 mt-8 border border-dashed bg-white dark:bg-neutral-800 border-neutral-500 dark:border-black rounded-lg">
+          <div className="w-full max-w-4xl mx-auto min-h-96 mt-8 border border-dashed bg-white dark:bg-neutral-800 border-[#FF3F8F] rounded-lg">
             <FileUpload onChange={handleFileUpload} />
           </div>
           <div className="flex items-center justify-center pt-16">
             {files.length > 0 && (
               <button className="p-[3px] relative" onClick={() => setStage(2)}>
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-300 to-purple-300 rounded-xl" />
-                <div className="px-8 py-2  bg-white dark:bg-black/95 rounded-xl relative group transition duration-200 text-black dark:text-white hover:bg-transparent hover:text-white dark:hover:bg-transparent dark:hover:text-black text-sm">
+                <div className="px-8 py-2  bg-neutral-400 dark:bg-neutral-600 rounded-xl relative group transition duration-200 text-white hover:bg-neutral-500 dark:hover:bg-neutral-700 text-sm">
                   확인
                 </div>
               </button>
@@ -103,7 +109,12 @@ const AlbumModal = () => {
       )}
       {stage === 2 && previewImage && (
         <CustomModal
-          title="앨범 업로드"
+          title={
+            <ModalTitle
+              icon={<IconDisc className="size-10 p-1" />}
+              title="앨범 업로드"
+            />
+          }
           description="앨범에 대한 정보를 입력해주세요"
           isOpen={albumModal.isOpen}
           onChange={onChange}
@@ -147,15 +158,14 @@ const AlbumModal = () => {
                 />
               </div>
             </div>
-            <div className="flex items-center justify-around w-full pt-8">
+            <div className="flex items-center justify-around w-full pt-10">
               <button className="p-[3px] relative" onClick={() => setStage(1)}>
-                <div className="px-8 py-2 bg-white rounded-xl relative group text-black hover:bg-gray-100 text-sm border-gray-300 border-2 dark:bg-black/95 dark:text-white dark:hover:bg-neutral-800">
+                <div className="px-8 py-2 bg-white rounded-xl relative group text-black hover:bg-neutral-100 text-sm dark:bg-black/95 dark:text-white dark:hover:bg-neutral-800">
                   이전
                 </div>
               </button>
               <button className="p-[3px] relative" type="submit">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-300 to-purple-300 rounded-xl" />
-                <div className="px-8 py-2  bg-white dark:bg-black/95 rounded-xl relative group transition duration-200 text-black dark:text-white hover:bg-transparent hover:text-white dark:hover:bg-transparent dark:hover:text-black text-sm">
+                <div className="px-8 py-2  bg-[#FF3F8F] rounded-xl relative group transition duration-200 text-white hover:bg-opacity-75 text-sm">
                   확인
                 </div>
               </button>

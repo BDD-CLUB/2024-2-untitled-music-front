@@ -1,42 +1,53 @@
+'use client'
+
 import SquareContainer from "@/components/container/square-container";
+import { useRouter } from "next/navigation";
 
 const UserAlbum = () => {
+  const router = useRouter();
+
   const dummy = [
     {
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "2024 · IPCGRDN",
+      onClickName: () => router.push("/album/123"),
     },
     {
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "2024 · IPCGRDN",
+      onClickName: () => router.push("/album/123"),
     },
     {
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "2024 · IPCGRDN",
+      onClickName: () => router.push("/album/123"),
     },
     {
       src: "/images/music1.png",
       name: "BREAK",
       description: "2018 · PALM",
+      onClickName: () => router.push("/album/123"),
     },
     {
       src: "/images/music1.png",
       name: "Thirsty",
       description: "1988 · RARO",
+      onClickName: () => router.push("/album/123"),
     },
     {
       src: "/images/music1.png",
       name: "산책",
       description: "EP · BDD",
+      onClickName: () => router.push("/album/123"),
     },
   ];
 
   return (
-    <div className="h-full">
-      <div className="w-full gap-x-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 items-center">
+    <div className="h-full w-full">
+      <div className="w-full gap-x-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {dummy.map((item) => (
           <SquareContainer
             key={item.name}
@@ -44,6 +55,7 @@ const UserAlbum = () => {
             name={item.name}
             description={item.description}
             design="rounded-xl"
+            onClickName={item.onClickName}
           />
         ))}
       </div>

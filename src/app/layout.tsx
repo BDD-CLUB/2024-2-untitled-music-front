@@ -11,6 +11,9 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 export const metadata: Metadata = {
   title: "Untitled",
   description: "untitled demo app",
+  icons: {
+    icon: "/images/logo.svg",
+  },
 };
 
 export default function RootLayout({

@@ -6,9 +6,11 @@ import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 import { Input } from "../ui/input";
+import ModalTitle from "./modal-title";
 import { Textarea } from "../ui/textarea";
 import { CustomModal } from "./custom-modal";
 
+import { IconPlaylist } from "@tabler/icons-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import usePlaylistModal from "@/hooks/modal/use-playlist-modal";
 
@@ -62,11 +64,16 @@ const PlaylistModal = () => {
 
   return (
     <CustomModal
-      title="플레이리스트 생성"
+    title={
+      <ModalTitle
+        icon={<IconPlaylist className="size-10 p-1" />}
+        title="플레이리스트 생성"
+      />
+    }
       description="플레이리스트에 대한 정보를 입력해주세요"
       isOpen={playlistModal.isOpen}
       onChange={onChange}
-      className="p-4 flex flex-col items-center justify-center max-h-[50%]"
+      className="p-4 flex flex-col items-center justify-center h-[50%]"
     >
       <form
         className="flex flex-col h-full w-full items-center justify-center"
@@ -78,7 +85,7 @@ const PlaylistModal = () => {
             disabled={isLoading}
             {...register("playlistName", { required: true })}
             placeholder="플레이리스트 이름 (필수)"
-            className="w-full h-14 border border-muted-foreground"
+            className="w-full h-14"
           />
           <p
             className={errors.playlistName ? "text-red-500 text-xs" : "hidden"}
@@ -90,12 +97,11 @@ const PlaylistModal = () => {
             disabled={isLoading}
             {...register("playlistDescription", { required: false })}
             placeholder="플레이리스트 설명 (선택)"
-            className="w-full h-full resize-none border-muted-foreground border"
+            className="w-full h-full resize-none"
           />
         </div>
-        <button className="p-[3px] relative mt-8" type="submit">
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-300 to-purple-300 rounded-xl" />
-          <div className="px-8 py-2  bg-white dark:bg-black/95 rounded-xl relative group transition duration-200 text-black dark:text-white hover:bg-transparent hover:text-white dark:hover:bg-transparent dark:hover:text-black text-sm">
+        <button className="p-[3px] relative mt-10" type="submit">
+          <div className="px-8 py-2  bg-[#FF3F8F] rounded-xl relative group transition duration-200 text-white hover:bg-opacity-75 text-sm">
             확인
           </div>
         </button>

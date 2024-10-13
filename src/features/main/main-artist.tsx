@@ -1,30 +1,41 @@
+'use client'
+
 import SquareContainer from "@/components/container/square-container";
+import { useRouter } from "next/navigation";
 
 const MainArtist = () => {
+    const router = useRouter();
+
     const dummy = [
         {
             src: "/images/music1.png",
             name: "IPCGRDN",
+            onClickName: () => router.push("/user/123"),
         },
         {
             src: "/images/music1.png",
             name: "IPCGRDN",
+            onClickName: () => router.push("/user/123"),
         },
         {
             src: "/images/music1.png",
             name: "IPCGRDN",
+            onClickName: () => router.push("/user/123"),
         },
         {
             src: "/images/music2.jpg",
             name: "RARO",
+            onClickName: () => router.push("/user/123"),
         },
         {
             src: "/images/music3.jpg",
             name: "PALM",
+            onClickName: () => router.push("/user/123"),
         },
         {
             src: "/images/music4.jpg",
             name: "BDD",
+            onClickName: () => router.push("/user/123"),
         },
     ]
 
@@ -46,6 +57,7 @@ const MainArtist = () => {
                         name={item.name}
                         description="아티스트"
                         design="rounded-full"
+                        onClickName={item.onClickName}
                     />
                 ))}
             </div>

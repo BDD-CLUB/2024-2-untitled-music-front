@@ -1,17 +1,19 @@
 "use client";
 
 import { z } from "zod";
+import { toast } from "sonner";
 import Image from "next/image";
 import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 import { Input } from "../ui/input";
+import ModalTitle from "./modal-title";
 import { Textarea } from "../ui/textarea";
 import { CustomModal } from "./custom-modal";
-
-import { zodResolver } from "@hookform/resolvers/zod";
 import useTrackModal from "../../hooks/modal/use-track-modal";
-import { toast } from "sonner";
+
+import { IconMusic } from "@tabler/icons-react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const TrackModal = () => {
   const [selectedAlbum, setSelectedAlbum] = useState<string>();
@@ -92,7 +94,12 @@ const TrackModal = () => {
     <>
       {!selectedAlbum ? (
         <CustomModal
-          title="트랙 업로드"
+          title={
+            <ModalTitle
+              icon={<IconMusic className="size-10 p-1" />}
+              title="트랙 업로드"
+            />
+          }
           description="트랙을 업로드 할 앨범을 선택해주세요"
           isOpen={trackModal.isOpen}
           onChange={onChange}
@@ -125,7 +132,12 @@ const TrackModal = () => {
         </CustomModal>
       ) : (
         <CustomModal
-          title="트랙 업로드"
+          title={
+            <ModalTitle
+              icon={<IconMusic className="size-10 p-1" />}
+              title="트랙 업로드"
+            />
+          }
           description="트랙에 대한 정보를 입력해주세요"
           isOpen={trackModal.isOpen}
           onChange={onChange}
@@ -170,25 +182,24 @@ const TrackModal = () => {
                 <Input
                   id="trackFile"
                   type="file"
-                  accept="audio/*" 
+                  accept="audio/*"
                   disabled={isLoading}
                   {...register("trackFile", { required: true })}
                   className="w-full h-14 border-transparent"
                 />
               </div>
             </div>
-            <div className="flex items-center justify-around w-full pt-8">
+            <div className="flex items-center justify-around w-full pt-10">
               <button
                 className="p-[3px] relative"
                 onClick={() => setSelectedAlbum("")}
               >
-               <div className="px-8 py-2 bg-white rounded-xl relative group text-black hover:bg-gray-100 text-sm border-gray-300 border-2 dark:bg-black/95 dark:text-white dark:hover:bg-neutral-800">
+                <div className="px-8 py-2 bg-white rounded-xl relative group text-black hover:bg-neutral-100 text-sm dark:bg-black/95 dark:text-white dark:hover:bg-neutral-800">
                   이전
                 </div>
               </button>
               <button className="p-[3px] relative" type="submit">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-300 to-purple-300 rounded-xl" />
-                <div className="px-8 py-2  bg-white dark:bg-black/95 rounded-xl relative group transition duration-200 text-black dark:text-white hover:bg-transparent hover:text-white dark:hover:bg-transparent dark:hover:text-black text-sm">
+                <div className="px-8 py-2  bg-[#FF3F8F] rounded-xl relative group transition duration-200 text-white hover:bg-opacity-75 text-sm">
                   확인
                 </div>
               </button>
