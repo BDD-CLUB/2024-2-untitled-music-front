@@ -39,7 +39,7 @@ export default function UserPage() {
   ];
 
   return (
-    <main className="bg-transparent h-full mb-20 pl-4 mt-16 pt-2 pr-4 md:pl-0 md:mb-0 md:ml-48 md:mr-28 overflow-y-auto flex flex-col">
+    <main className="bg-transparent h-full mb-20 pl-4 mt-16 pt-2 pr-4 md:pl-0 md:mb-0 md:ml-48 md:pr-28 overflow-y-auto flex flex-col">
       <div className="h-auto flex flex-col lg:flex-row gap-y-4 gap-x-8 items-start">
         <div className="flex h-full w-full lg:w-2/3 gap-x-8 items-center">
           <div className="flex flex-col">
@@ -52,7 +52,7 @@ export default function UserPage() {
             <div className="md:text-3xl font-bold text-xl">YANG RARO</div>
             <div className="flex gap-x-4">
               <button className="bg-white text-black hover:bg-black/10 dark:hover:bg-white/75 shadow-lg w-auto font-medium text-sm p-2 rounded-lg">
-                1.5M followers
+                1.5M
               </button>
               <button className="bg-[#FF3F8F] text-black hover:bg-opacity-75 hover:text-black/75 shadow-lg w-auto font-medium text-sm py-2 px-8 rounded-lg">
                 팔로우
@@ -125,7 +125,7 @@ export default function UserPage() {
         </div>
       </div>
 
-      <div className="h-full flex flex-col pt-2">
+      <div className="h-full w-full flex flex-col pt-2">
         {activeTab === "track" ? (
           <UserTrack />
         ) : activeTab === "album" ? (

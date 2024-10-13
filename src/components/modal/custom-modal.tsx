@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
 import { cn } from "../../lib/utils";
 import {
@@ -14,7 +14,7 @@ import {
 interface ModalProps {
   isOpen: boolean;
   onChange: (open: boolean) => void;
-  title: string;
+  title: string | ReactNode;
   description?: string;
   children: React.ReactNode;
   className?: string;
@@ -34,11 +34,11 @@ export const CustomModal: React.FC<ModalProps> = ({
         <DialogOverlay className="bg-black dark:bg-opacity-75 bg-opacity-50 fixed inset-0" />
         <DialogContent
           className={cn(
-            "fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] border border-transparent h-full md:max-h-[90%] md:min-h-[50%] md:rounded-2xl bg-white dark:bg-neutral-800 p-0 w-full md:w-[90vw] md:max-w-[600px]",
+            "fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] border border-transparent h-full md:max-h-[90%] md:min-h-[50%] md:rounded-2xl bg-neutral-200 dark:bg-neutral-800 p-0 w-full md:w-[90vw] md:max-w-[600px]",
             className
           )}
         >
-          <DialogTitle className="mt-4 mb-2 text-lg text-center tracking-wide font-bold">
+          <DialogTitle className="mt-4 text-lg text-center tracking-wide font-bold">
             {title}
           </DialogTitle>
           <DialogDescription>

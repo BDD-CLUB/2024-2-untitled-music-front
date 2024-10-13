@@ -8,6 +8,7 @@ import PlaylistModal from "./playlist-modal";
 
 import { NotiModal } from "../bar/noti-modal";
 import { SearchInput } from "../bar/search-input";
+import { SigninModal } from "./signin-modal";
 
 const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -27,6 +28,7 @@ const ModalProvider = () => {
       <PlaylistModal />
       <SearchInput />
       <NotiModal />
+      <SigninModal />
     </>
   );
 };

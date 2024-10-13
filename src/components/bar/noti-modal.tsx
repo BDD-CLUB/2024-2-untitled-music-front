@@ -28,7 +28,6 @@ export const NotiModal = () => {
             className="rounded-full"
           />
         </div>
-
         <div className="absolute bottom-0 right-0 w-8 h-8">
           <Image
             src={first}

@@ -36,7 +36,7 @@ const UserPlaylist = () => {
 
   return (
     <div className="h-full">
-      <div className="w-full gap-x-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 items-center">
+      <div className="w-full gap-x-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {dummy.map((item) => (
           <SquareContainer
             key={item.name}
