@@ -67,7 +67,7 @@ export const NotiModal = () => {
       time: "2일",
       notiType: "like",
       profileImage: "/images/music1.png",
-      anotherProfileImage: "/images/background-color-second.svg",
+      anotherProfileImage: "/images/background-color-dark.svg",
     },
     {
       id: "4",
