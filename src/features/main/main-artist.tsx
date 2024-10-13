@@ -55,7 +55,7 @@ const MainArtist = () => {
                         key={item.name}
                         src={item.src}
                         name={item.name}
-                        description="아티스트"
+                        
                         design="rounded-full"
                         onClickName={item.onClickName}
                     />

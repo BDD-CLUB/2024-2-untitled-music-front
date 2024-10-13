@@ -7,7 +7,7 @@ import Image from "next/image";
 interface SquareContainerProps {
   src: string;
   name: string;
-  description: string;
+  description?: string;
   design: string;
   onClickName?: () => void;
   onClickDescription?: () => void;

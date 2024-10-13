@@ -1,3 +1,5 @@
+'use client'
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   IconDotsVertical,
@@ -17,8 +19,11 @@ import {
 } from "@/components/ui/table";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function AlbumPage() {
+  const router = useRouter();
+
   const dummy = [
     {
       id: 1,
@@ -56,12 +61,15 @@ export default function AlbumPage() {
             />
           </div>
           <div className="flex flex-col w-full h-full items-start justify-between py-2 gap-y-4">
-            <div className="flex gap-x-2 items-center">
+            <div 
+              onClick={() => router.push("/user/123")}
+              className="flex gap-x-2 items-center"
+            >
               <Avatar className="w-6 h-6 lg:w-10 lg:h-10">
                 <AvatarImage src="/images/music1.png" alt="profile" />
                 <AvatarFallback>U</AvatarFallback>
               </Avatar>
-              <span className="text-sm">RARO YANG</span>
+              <span className="text-sm hover:underline">RARO YANG</span>
             </div>
             <div className="tracking-wide text-3xl md:text-4xl lg:text-5xl font-extrabold">
               THIRSTY
