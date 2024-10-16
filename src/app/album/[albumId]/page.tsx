@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -21,8 +21,11 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+import useStreamingBar from "@/hooks/modal/use-streaming-bar";
+
 export default function AlbumPage() {
   const router = useRouter();
+  const streamingBar = useStreamingBar();
 
   const dummy = [
     {
@@ -51,17 +54,23 @@ export default function AlbumPage() {
     <main className="bg-transparent h-full mb-20 pl-4 mt-16 pt-2 pr-4 md:pl-0 md:mb-10 md:ml-48 md:pr-28 flex gap-x-12">
       <div className="h-full lg:w-1/2 w-full flex flex-col gap-y-12">
         <div className="flex w-full md:h-[250px] gap-x-8 pr-2">
-          <div className="h-full w-full flex flex-col items-center justify-center">
+          <div className="relative h-full w-full flex flex-col items-center justify-center group">
             <Image
               src="/images/music1.png"
               alt="albumCover"
               width={250}
               height={250}
-              className="rounded-xl"
+              className="rounded-xl group-hover:opacity-75"
             />
+            <div
+              onClick={() => streamingBar.onOpen()}
+              className="absolute bottom-6 left-4 flex items-center justify-center opacity-0 group-hover:opacity-100 rounded-full bg-[#FF00B1] w-14 h-14 transform hover:scale-125 transition-transform duration-300"
+            >
+              <IconPlayerPlayFilled className="w-8 h-8 text-black" />
+            </div>
           </div>
           <div className="flex flex-col w-full h-full items-start justify-between py-2 gap-y-4">
-            <div 
+            <div
               onClick={() => router.push("/user/123")}
               className="flex gap-x-2 items-center"
             >
