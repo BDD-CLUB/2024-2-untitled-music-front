@@ -119,7 +119,10 @@ export default function AlbumPage() {
               >
                 <TableCell className="w-[50px] pr-4">
                   <div className="flex group-hover:hidden pr-4">{song.id}</div>
-                  <div className="hidden group-hover:flex text-[#FF239C]">
+                  <div 
+                    onClick={() => streamingBar.onOpen()}
+                    className="hidden group-hover:flex text-[#FF239C]"
+                  >
                     <IconPlayerPlayFilled className="size-6" />
                   </div>
                 </TableCell>
