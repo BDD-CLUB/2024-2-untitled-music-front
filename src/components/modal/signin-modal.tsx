@@ -19,7 +19,7 @@ export function SigninModal() {
     }
   };
 
-  const googleOAuthUrl = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL;
+  const googleOAuthUrl ="https://soundforest.kro.kr/v1/oauth2/authorization/google";
 
   const handleGoogleLogin = async () => {
     router.push(`${googleOAuthUrl}`);
