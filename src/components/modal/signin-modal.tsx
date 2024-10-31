@@ -11,7 +11,6 @@ import ModalTitle from "./modal-title";
 import { CustomModal } from "./custom-modal";
 
 export function SigninModal() {
-  const router = useRouter();
   const signinModal = useSigninModal();
 
   const onChange = (open: boolean) => {
