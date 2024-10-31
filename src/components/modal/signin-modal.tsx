@@ -3,7 +3,6 @@
 import axios from "axios";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
-import { useRouter } from "next/navigation";
 
 import useSigninModal from "@/hooks/modal/use-signin-modal";
 
@@ -22,13 +21,9 @@ export function SigninModal() {
   const googleOAuthUrl = `${process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL}`;
 
   const handleGoogleLogin = async () => {
-    try {
-      await axios.get(googleOAuthUrl, {
-        withCredentials: true,
-      });
-    } catch (error) {
-      console.log(error)
-    }
+    await axios.get(googleOAuthUrl, {
+      withCredentials: true,
+    });
   };
 
   return (
