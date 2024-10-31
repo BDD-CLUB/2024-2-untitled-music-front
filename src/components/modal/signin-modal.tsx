@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
@@ -19,10 +20,16 @@ export function SigninModal() {
     }
   };
 
-  const googleOAuthUrl ="https://soundforest.kro.kr/v1/oauth2/authorization/google";
+  const googleOAuthUrl = `${process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL}`;
 
   const handleGoogleLogin = async () => {
-    router.push(`${googleOAuthUrl}`);
+    try {
+      await axios.get(googleOAuthUrl, {
+        withCredentials: true,
+      });
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   return (
