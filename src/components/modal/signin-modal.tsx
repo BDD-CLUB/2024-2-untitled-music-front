@@ -1,8 +1,8 @@
 "use client";
 
+import axios from "axios"
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
-import { useRouter } from "next/navigation";
 
 import useSigninModal from "@/hooks/modal/use-signin-modal";
 
@@ -11,7 +11,6 @@ import { CustomModal } from "./custom-modal";
 
 export function SigninModal() {
   const signinModal = useSigninModal();
-  const router = useRouter();
 
   const onChange = (open: boolean) => {
     if (!open) {
@@ -22,8 +21,15 @@ export function SigninModal() {
   const googleOAuthUrl = `${process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL}`;
 
   const handleGoogleLogin = async () => {
-   router.push(`${googleOAuthUrl}`)
+    try {
+      await axios.get(googleOAuthUrl, {
+        withCredentials: true,
+      });
+    } catch (error) {
+      console.error("Google 로그인 실패:", error);
+    }
   };
+
 
   return (
     <CustomModal
