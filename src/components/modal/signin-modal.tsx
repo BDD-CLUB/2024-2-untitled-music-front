@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
