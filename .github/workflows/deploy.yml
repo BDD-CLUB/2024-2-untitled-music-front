@@ -1,4 +1,4 @@
-name: s3-develop-deploy
+name: deploy
 
 on:
   push:
