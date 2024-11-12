@@ -26,8 +26,10 @@ const ModalProvider = () => {
       <AlbumModal />
       <TrackModal />
       <PlaylistModal />
+
       <SearchInput />
       <NotiModal />
+      
       <SigninModal />
     </>
   );

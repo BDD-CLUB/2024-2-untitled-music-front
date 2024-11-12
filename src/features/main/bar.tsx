@@ -18,12 +18,17 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/provider/authProvider";
+import useSigninModal from "@/hooks/modal/use-signin-modal";
 
 export function Bar() {
   const router = useRouter();
 
   const searchInput = useSearchInput();
   const notiModal = useNotiModal();
+  const signinModal = useSigninModal();
+
+  const { isLoggedIn } = useAuth();
 
   const [uploadOpen, setUploadOpen] = useState(false);
   const [settingOpen, setSettingOpen] = useState(false);
@@ -54,6 +59,9 @@ export function Bar() {
       title: "업로드",
       icon: <IconCirclePlus className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
       onClick: () => {
+        if (!isLoggedIn) {
+          signinModal.onOpen();
+        }
         setUploadOpen(!uploadOpen);
       },
     },
@@ -63,6 +71,9 @@ export function Bar() {
         <IconHeart className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
       onClick: () => {
+        if (!isLoggedIn) {
+          signinModal.onOpen();
+        }
         notiModal.onOpen();
       },
     },
@@ -71,7 +82,12 @@ export function Bar() {
       icon: (
         <IconUserCircle className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      onClick: () => router.push("/user/123"),
+      onClick: () => {
+        if (!isLoggedIn) {
+          signinModal.onOpen();
+        }
+        router.push("/user/123")
+      },
     },
 
     {

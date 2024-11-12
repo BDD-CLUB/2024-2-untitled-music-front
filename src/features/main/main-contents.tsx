@@ -1,6 +1,7 @@
 import MainTrack from "./main-track";
 import MainAlbum from "./main-album";
 import MainArtist from "./main-artist";
+import MainPlaylist from "./main-playlist";
 
 const MainContents = () => {
   return (
@@ -8,6 +9,7 @@ const MainContents = () => {
       <MainArtist />
       <MainAlbum />
       <MainTrack />
+      <MainPlaylist />
     </div>
   );
 };
