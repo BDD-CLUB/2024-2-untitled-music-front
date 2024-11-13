@@ -1,6 +1,7 @@
 "use client";
 
 import { z } from "zod";
+import axios from "axios";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useState } from "react";
@@ -57,24 +58,44 @@ const AlbumModal = () => {
   } = useForm<FieldValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      // 이후 수정
       albumName: "",
       albumDescription: "",
       albumCover: null,
     },
   });
 
-  const onSubmit: SubmitHandler<FieldValues> = async () => {
-    // 이후 수정
+  const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     try {
       setIsloading(true);
+
+      const albumCover = files[0];
+
+      if (!albumCover) {
+        toast.error("앨범 커버가 필요합니다.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("albumArt", albumCover);
+      formData.append("title", values.albumName);
+      formData.append("description", values.albumDescription || "");
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/album`,
+        formData
+      );
+
+      if (response.status !== 201) {
+        throw new Error("앨범 생성에 실패했습니다.");
+      }
+
+      toast.success("앨범이 생성되었습니다!");
+      reset(); 
+      albumModal.onClose();
     } catch (error) {
-      toast.error(`문제가 발생하였습니다 ${error}`);
+      toast.error(`문제가 발생하였습니다: ${error}`);
     } finally {
       setIsloading(false);
-
-      albumModal.onClose();
-      toast.success("앨범이 생성되었습니다!");
     }
   };
 
