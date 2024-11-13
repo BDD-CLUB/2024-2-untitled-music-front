@@ -61,8 +61,9 @@ export function Bar() {
       onClick: () => {
         if (!isLoggedIn) {
           signinModal.onOpen();
+        } else {
+          setUploadOpen(!uploadOpen);
         }
-        setUploadOpen(!uploadOpen);
       },
     },
     {
@@ -73,8 +74,9 @@ export function Bar() {
       onClick: () => {
         if (!isLoggedIn) {
           signinModal.onOpen();
+        } else {
+          notiModal.onOpen();
         }
-        notiModal.onOpen();
       },
     },
     {
@@ -85,8 +87,9 @@ export function Bar() {
       onClick: () => {
         if (!isLoggedIn) {
           signinModal.onOpen();
+        } else {
+          router.push("/user/123")
         }
-        router.push("/user/123")
       },
     },
 
