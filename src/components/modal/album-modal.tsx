@@ -27,7 +27,6 @@ const AlbumModal = () => {
 
   const handleFileUpload = (files: File[]) => {
     setFiles(files);
-    console.log(files);
 
     if (files.length > 0 && files[0].type.startsWith("image/")) {
       const imageUrl = URL.createObjectURL(files[0]);
@@ -55,7 +54,7 @@ const AlbumModal = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FieldValues>({
+  } = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       albumName: "",
@@ -64,36 +63,69 @@ const AlbumModal = () => {
     },
   });
 
+  const uploadToS3 = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/upload/images`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("이미지 업로드에 실패했습니다.");
+    }
+  };
+
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     try {
       setIsloading(true);
 
       const albumCover = files[0];
-
       if (!albumCover) {
         toast.error("앨범 커버가 필요합니다.");
         return;
       }
 
-      const formData = new FormData();
-      formData.append("albumArt", albumCover);
-      formData.append("title", values.albumName);
-      formData.append("description", values.albumDescription || "");
+      const albumArtUrl = await uploadToS3(albumCover);
+
+      const requestData = {
+        albumArt: albumArtUrl,
+        title: values.albumName,
+        description: values.albumDescription || "",
+      };
 
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/album`,
-        formData
+        requestData
       );
 
-      if (response.status !== 201) {
+      if (response.status !== 200) {
         throw new Error("앨범 생성에 실패했습니다.");
       }
 
       toast.success("앨범이 생성되었습니다!");
-      reset(); 
+      reset();
       albumModal.onClose();
     } catch (error) {
-      toast.error(`문제가 발생하였습니다: ${error}`);
+      if (error instanceof Error) {
+        toast.error(`문제가 발생하였습니다: ${error.message}`);
+      } else if (axios.isAxiosError(error) && error.response) {
+        toast.error(
+          `문제가 발생하였습니다: ${
+            error.response.data?.message || "알 수 없는 오류"
+          }`
+        );
+      } else {
+        toast.error("알 수 없는 오류가 발생했습니다.");
+      }
     } finally {
       setIsloading(false);
     }

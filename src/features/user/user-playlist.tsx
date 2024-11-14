@@ -1,36 +1,47 @@
+"use client";
+
 import SquareContainer from "@/components/container/square-container";
+import { useRouter } from "next/navigation";
 
 const UserPlaylist = () => {
+  const router = useRouter();
+
   const dummy = [
     {
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "플레이리스트",
+      onClickName: () => router.push("/playlist/123"),
     },
     {
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "플레이리스트",
+      onClickName: () => router.push("/playlist/123"),
     },
     {
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "플레이리스트",
+      onClickName: () => router.push("/playlist/123"),
     },
     {
       src: "/images/music1.png",
       name: "BREAK",
       description: "플레이리스트",
+      onClickName: () => router.push("/playlist/123"),
     },
     {
       src: "/images/music1.png",
       name: "Thirsty",
       description: "플레이리스트",
+      onClickName: () => router.push("/playlist/123"),
     },
     {
       src: "/images/music1.png",
       name: "산책",
       description: "플레이리스트",
+      onClickName: () => router.push("/playlist/123"),
     },
   ];
 
@@ -44,6 +55,7 @@ const UserPlaylist = () => {
             name={item.name}
             description={item.description}
             design="rounded-xl"
+            onClickName={item.onClickName}
           />
         ))}
       </div>

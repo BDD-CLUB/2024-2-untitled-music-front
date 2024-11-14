@@ -51,7 +51,7 @@ export default function AlbumPage() {
   ];
 
   return (
-    <main className="bg-transparent h-full mb-20 pl-4 mt-24 pt-2 pr-4 md:pl-0 md:mb-10 md:ml-48 md:pr-28 flex gap-x-12">
+    <main className="flex gap-x-12 bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar">
       <div className="h-full lg:w-1/2 w-full flex flex-col gap-y-12">
         <div className="flex w-full md:h-[250px] gap-x-8 pr-2">
           <div className="relative h-full w-full flex flex-col items-center justify-center group">
@@ -119,7 +119,7 @@ export default function AlbumPage() {
               >
                 <TableCell className="w-[50px] pr-4">
                   <div className="flex group-hover:hidden pr-4">{song.id}</div>
-                  <div 
+                  <div
                     onClick={() => streamingBar.onOpen()}
                     className="hidden group-hover:flex text-[#FF239C]"
                   >
