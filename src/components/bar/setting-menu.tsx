@@ -1,17 +1,29 @@
 "use client";
 
-import { IconBrightness, IconLogout, IconSettings } from "@tabler/icons-react";
-import { FloatingDock } from "../ui/floating-dock";
+import { useCallback } from "react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
+
+import { FloatingDock } from "../ui/floating-dock";
+
 import { useAuth } from "@/provider/authProvider";
-import { useCallback } from "react";
-import { cn } from "@/lib/utils";
+import useSigninModal from "@/hooks/modal/use-signin-modal";
+import {
+  IconBrightness,
+  IconLogin,
+  IconLogout,
+  IconSettings,
+} from "@tabler/icons-react";
 
 export function SettingMenu() {
   const { setTheme, theme, systemTheme } = useTheme();
   const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const signInModal = useSigninModal();
   const router = useRouter();
+
+  const handleLogin = () => {
+    signInModal.onOpen();
+  };
 
   const handleLogout = useCallback(async () => {
     try {
@@ -43,18 +55,21 @@ export function SettingMenu() {
       ),
       onClick: toggleTheme,
     },
-    {
-      title: "로그아웃",
-      icon: (
-        <IconLogout
-          className={cn(
-            "h-full w-full text-neutral-500 dark:text-neutral-300",
-            { "opacity-50 cursor-not-allowed": !isLoggedIn }
-          )}
-        />
-      ),
-      onClick: handleLogout,
-    },
+    isLoggedIn
+      ? {
+          title: "로그아웃",
+          icon: (
+            <IconLogout className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+          ),
+          onClick: handleLogout,
+        }
+      : {
+          title: "로그인",
+          icon: (
+            <IconLogin className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+          ),
+          onClick: handleLogin,
+        },
   ];
 
   return (

@@ -83,7 +83,7 @@ export const NotiModal = () => {
   return (
     <Dialog open={notiModal.isOpen} onOpenChange={onChange}>
       <DialogPortal>
-        <DialogContent className="fixed top-[50%] left-0 md:left-[7%] flex flex-col translate-x-0 translate-y-[-50%] border border-transparent h-full md:h-[95%] rounded-2xl bg-neutral-200 backdrop-blur-xl bg-opacity-75 dark:bg-neutral-800 w-full md:w-[450px] drop-shadow-2xl p-0">
+        <DialogContent className="fixed top-[50%] left-0 md:left-[10%] flex flex-col translate-x-0 translate-y-[-50%] border border-transparent h-full md:h-[95%] rounded-2xl bg-neutral-200 backdrop-blur-xl bg-opacity-75 dark:bg-neutral-800 w-full md:w-[450px] drop-shadow-2xl p-0">
           <DialogTitle className="text-2xl tracking-wide text-left font-bold w-full mt-4 ml-6">
             알림
           </DialogTitle>

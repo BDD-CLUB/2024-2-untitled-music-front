@@ -8,7 +8,11 @@ import PlaylistModal from "./playlist-modal";
 
 import { NotiModal } from "../bar/noti-modal";
 import { SearchInput } from "../bar/search-input";
+
 import { SigninModal } from "./signin-modal";
+
+import { MobileUploadMenu } from "../bar/mobile-upload-menu";
+import { MobileSettingMenu } from "../bar/mobile-setting-menu";
 
 const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -31,6 +35,9 @@ const ModalProvider = () => {
       <NotiModal />
       
       <SigninModal />
+
+      <MobileUploadMenu />
+      <MobileSettingMenu />
     </>
   );
 };

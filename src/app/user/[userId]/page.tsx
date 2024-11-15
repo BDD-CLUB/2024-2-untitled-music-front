@@ -41,15 +41,16 @@ export default function UserPage() {
   return (
     <main className="flex flex-col bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar">
       <div className="h-auto flex flex-col lg:flex-row gap-y-4 gap-x-8 items-start">
-        <div className="flex h-full w-full lg:w-2/3 gap-x-8 items-center">
+        
+        <div className="flex h-full w-full gap-x-8 items-center">
           <div className="flex flex-col">
             <Avatar className="md:w-48 md:h-48 min-w-32 max-w-48 min-h-32 max-h-48">
               <AvatarImage src="/images/music1.png" alt="profile" />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
           </div>
-          <div className="flex flex-col items-start justify-between gap-y-2 md:gap-y-4 md:py-6">
-            <div className="md:text-3xl font-bold text-xl">YANG RARO</div>
+          <div className="flex flex-col items-center justify-between gap-y-2 md:gap-y-4 md:py-6">
+            <div className="md:text-3xl font-bold text-2xl">YANG RARO</div>
             <div className="flex gap-x-4">
               <button className="bg-white text-black hover:bg-black/10 dark:hover:bg-white/75 shadow-lg w-auto font-medium text-sm p-2 rounded-lg">
                 1.5M
@@ -71,7 +72,8 @@ export default function UserPage() {
             </div>
           </div>
         </div>
-        <div className="flex h-full w-full lg:w-1/3 font-medium text-sm items-center">
+
+        <div className="flex h-full w-full font-medium text-sm items-center">
           Hello! My name is Raro, and im passionate about exploring new ideas
           and cultures. I enjoy reading, traveling, and meeting new people.
           Currently, im pursuing my interests in technology and innovation,

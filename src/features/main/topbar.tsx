@@ -14,7 +14,7 @@ export default function Topbar() {
   const { isLoggedIn } = useAuth();
 
   return (
-    <div className="h-20 bg-transparent flex items-center justify-end md:justify-between">
+    <div className="h-20 bg-transparent hidden md:flex items-center justify-end md:justify-between">
       {streamingBar.isOpen ? <StreamingBar /> : <div className="flex-1" />}
       <button
         onClick={() => signinModal.onOpen()}

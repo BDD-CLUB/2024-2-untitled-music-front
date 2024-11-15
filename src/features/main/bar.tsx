@@ -3,6 +3,9 @@
 import useNotiModal from "@/hooks/modal/use-noti-modal";
 import useSearchInput from "@/hooks/modal/use-search-input";
 
+import useUploadMenu from "@/hooks/modal/use-upload-menu";
+import useSettingMenu from "@/hooks/modal/use-setting-menu";
+
 import { UploadMenu } from "@/components/bar/upload-menu";
 import { SettingMenu } from "@/components/bar/setting-menu";
 import { FloatingDock } from "@/components/ui/floating-dock";
@@ -17,16 +20,21 @@ import {
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useMediaQuery } from "react-responsive";
 import { useEffect, useRef, useState } from "react";
+
 import { useAuth } from "@/provider/authProvider";
 import useSigninModal from "@/hooks/modal/use-signin-modal";
 
 export function Bar() {
   const router = useRouter();
+  const isLargeScreen = useMediaQuery({ query: "(min-width: 768px)" });
 
   const searchInput = useSearchInput();
   const notiModal = useNotiModal();
   const signinModal = useSigninModal();
+  const mobileUploadMenu = useUploadMenu();
+  const mobileSettingMenu = useSettingMenu();
 
   const { isLoggedIn } = useAuth();
 
@@ -61,8 +69,10 @@ export function Bar() {
       onClick: () => {
         if (!isLoggedIn) {
           signinModal.onOpen();
-        } else {
+        } else if (isLargeScreen){
           setUploadOpen(!uploadOpen);
+        } else {
+          mobileUploadMenu.onOpen();
         }
       },
     },
@@ -99,7 +109,11 @@ export function Bar() {
         <IconMenu2 className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
       onClick: () => {
-        setSettingOpen(!settingOpen);
+        if (isLargeScreen) {
+          setSettingOpen(!settingOpen);
+        } else {
+          mobileSettingMenu.onOpen();
+        }
       },
     },
   ];
