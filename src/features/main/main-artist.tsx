@@ -8,33 +8,27 @@ const MainArtist = () => {
 
   const dummy = [
     {
+      id: 1,
       src: "/images/music1.png",
       name: "IPCGRDN",
       onClickName: () => router.push("/user/123"),
     },
     {
+      id: 2,
       src: "/images/music1.png",
       name: "IPCGRDN",
       onClickName: () => router.push("/user/123"),
     },
     {
-      src: "/images/music1.png",
-      name: "IPCGRDN",
+      id: 3,
+      src: "/images/albumcover.png",
+      name: "AESPA",
       onClickName: () => router.push("/user/123"),
     },
     {
-      src: "/images/music2.jpg",
+      id: 4,
+      src: "/images/music1.png",
       name: "RARO",
-      onClickName: () => router.push("/user/123"),
-    },
-    {
-      src: "/images/music3.jpg",
-      name: "PALM",
-      onClickName: () => router.push("/user/123"),
-    },
-    {
-      src: "/images/music4.jpg",
-      name: "BDD",
       onClickName: () => router.push("/user/123"),
     },
   ];
@@ -48,7 +42,7 @@ const MainArtist = () => {
       <div className="w-full overflow-x-auto flex gap-x-4">
         {dummy.map((item) => (
           <SquareContainer
-            key={item.name}
+            key={item.id}
             src={item.src}
             name={item.name}
             design="rounded-full"

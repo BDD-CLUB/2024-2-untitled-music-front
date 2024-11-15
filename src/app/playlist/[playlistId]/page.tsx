@@ -65,7 +65,7 @@ export default function PlaylistPage() {
 
   const GridImage = () => {
     return (
-      <div className="grid grid-cols-2 grid-rows-2 w-[250px] h-[250px] rounded-xl overflow-hidden group-hover:opacity-75">
+      <div className="grid grid-cols-2 grid-rows-2 max-w-[250px] max-h-[250px] rounded-xl overflow-hidden group-hover:opacity-75">
         <Image
           src="/images/music1.png"
           alt="albumCover1"
@@ -99,9 +99,9 @@ export default function PlaylistPage() {
   };
 
   return (
-    <main className="flex gap-x-12 bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar">
+    <main className="flex gap-x-12 bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar">
       <div className="h-full lg:w-1/2 w-full flex flex-col gap-y-12">
-        <div className="flex w-full md:h-[250px] gap-x-8 pr-2">
+        <div className="flex w-full flex-col md:flex-row md:h-[250px] gap-x-8 pr-2">
           <div className="relative h-full w-full flex flex-col items-center justify-center group">
             <GridImage />
             <div
@@ -111,7 +111,7 @@ export default function PlaylistPage() {
               <IconPlayerPlayFilled className="w-8 h-8 text-black" />
             </div>
           </div>
-          <div className="flex flex-col w-full h-full items-start justify-between py-2 gap-y-4">
+          <div className="flex flex-col w-full h-full items-start justify-center md:justify-between pt-6 mt:pt-0 md:py-2 gap-y-4">
             <div
               onClick={() => router.push("/user/123")}
               className="flex gap-x-2 items-center"

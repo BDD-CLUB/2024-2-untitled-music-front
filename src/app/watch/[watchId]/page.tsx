@@ -7,6 +7,7 @@ import {
   IconAlignBoxCenterMiddle,
   IconArrowsShuffle,
   IconDotsVertical,
+  IconMaximize,
   IconPlayerPlayFilled,
   IconPlayerSkipBackFilled,
   IconPlayerSkipForwardFilled,
@@ -43,7 +44,10 @@ export default function WatchPage() {
         onClick={handleClick}
         className="relative flex w-full items-center justify-between"
       >
-        <div className="flex flex-1">
+        <div className="flex flex-1 gap-x-4">
+          <button onClick={handleClick}>
+            <IconMaximize className="size-8 text-white" />
+          </button>
           <button onClick={(e) => toggleView(e)}>
             {view === "nowPlaying" ? (
               <IconAlignBoxCenterMiddle className="size-8 text-white" />
@@ -96,7 +100,7 @@ export default function WatchPage() {
         <div className="text-sm pb-2 font-bold">03:10</div>
       </div>
 
-      <div className="relative flex flex-col md:flex-row items-center justify-between md:justify-center w-full h-full my-8 md:gap-x-10 overflow-y-auto">
+      <div className="relative flex flex-col md:flex-row items-center justify-between md:justify-center w-full h-full md:my-8 md:gap-x-10 gap-y-8 md:gap-y-0 overflow-y-auto">
         <div className="flex flex-col items-center justify-center gap-y-4 w-full md:w-1/4">
           <div className="bg-gradient-to-br from-[#FFFFFFA0] to-[#999999A0] aspect-square rounded-lg mb-4">
             <div className="p-6 flex items-center justify-center">

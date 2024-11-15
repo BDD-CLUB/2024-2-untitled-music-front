@@ -8,6 +8,7 @@ const MainAlbum = () => {
 
   const dummy = [
     {
+      id: 1,
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "2024 · IPCGRDN",
@@ -15,6 +16,7 @@ const MainAlbum = () => {
       onClickDescription: () => router.push("/user/123"),
     },
     {
+      id: 2,
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "2024 · IPCGRDN",
@@ -22,6 +24,7 @@ const MainAlbum = () => {
       onClickDescription: () => router.push("/user/123"),
     },
     {
+      id: 3,
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "2024 · IPCGRDN",
@@ -29,6 +32,7 @@ const MainAlbum = () => {
       onClickDescription: () => router.push("/user/123"),
     },
     {
+      id: 4,
       src: "/images/music1.png",
       name: "BREAK",
       description: "2018 · PALM",
@@ -36,6 +40,7 @@ const MainAlbum = () => {
       onClickDescription: () => router.push("/user/123"),
     },
     {
+      id: 5,
       src: "/images/music1.png",
       name: "Thirsty",
       description: "1988 · RARO",
@@ -43,6 +48,23 @@ const MainAlbum = () => {
       onClickDescription: () => router.push("/user/123"),
     },
     {
+      id: 6,
+      src: "/images/music1.png",
+      name: "산책",
+      description: "EP · BDD",
+      onClickName: () => router.push("/album/123"),
+      onClickDescription: () => router.push("/user/123"),
+    },
+    {
+      id: 7,
+      src: "/images/music1.png",
+      name: "산책",
+      description: "EP · BDD",
+      onClickName: () => router.push("/album/123"),
+      onClickDescription: () => router.push("/user/123"),
+    },
+    {
+      id: 8,
       src: "/images/music1.png",
       name: "산책",
       description: "EP · BDD",
@@ -60,7 +82,7 @@ const MainAlbum = () => {
       <div className="w-full overflow-x-auto flex gap-x-4">
         {dummy.map((item) => (
           <SquareContainer
-            key={item.name}
+            key={item.id}
             src={item.src}
             name={item.name}
             description={item.description}

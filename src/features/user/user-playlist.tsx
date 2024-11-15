@@ -8,36 +8,42 @@ const UserPlaylist = () => {
 
   const dummy = [
     {
+      id: 1,
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "플레이리스트",
       onClickName: () => router.push("/playlist/123"),
     },
     {
+      id: 2,
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "플레이리스트",
       onClickName: () => router.push("/playlist/123"),
     },
     {
+      id: 3,
       src: "/images/music1.png",
       name: "ROCK-STAR",
       description: "플레이리스트",
       onClickName: () => router.push("/playlist/123"),
     },
     {
+      id: 4,
       src: "/images/music1.png",
       name: "BREAK",
       description: "플레이리스트",
       onClickName: () => router.push("/playlist/123"),
     },
     {
+      id: 5,
       src: "/images/music1.png",
       name: "Thirsty",
       description: "플레이리스트",
       onClickName: () => router.push("/playlist/123"),
     },
     {
+      id: 6,
       src: "/images/music1.png",
       name: "산책",
       description: "플레이리스트",
@@ -50,7 +56,7 @@ const UserPlaylist = () => {
       <div className="w-full gap-x-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {dummy.map((item) => (
           <SquareContainer
-            key={item.name}
+            key={item.id}
             src={item.src}
             name={item.name}
             description={item.description}

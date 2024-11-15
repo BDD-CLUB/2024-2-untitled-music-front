@@ -77,7 +77,7 @@ const AlbumModal = () => {
       }
     );
 
-    if (response.status === 200) {
+    if (response.status === 201) {
       return response.data;
     } else {
       throw new Error("이미지 업로드에 실패했습니다.");
@@ -104,10 +104,13 @@ const AlbumModal = () => {
 
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/album`,
-        requestData
+        requestData,
+        {
+          withCredentials: true,
+        }
       );
 
-      if (response.status !== 200) {
+      if (response.status !== 201) {
         throw new Error("앨범 생성에 실패했습니다.");
       }
 

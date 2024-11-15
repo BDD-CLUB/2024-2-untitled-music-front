@@ -39,7 +39,7 @@ export default function UserPage() {
   ];
 
   return (
-    <main className="flex flex-col bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar">
+    <main className="flex flex-col bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar">
       <div className="h-auto flex flex-col lg:flex-row gap-y-4 gap-x-8 items-start">
         <div className="flex h-full w-full lg:w-2/3 gap-x-8 items-center">
           <div className="flex flex-col">

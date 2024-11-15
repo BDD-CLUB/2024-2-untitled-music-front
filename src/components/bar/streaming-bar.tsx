@@ -24,7 +24,7 @@ const StreamingBar = () => {
   return (
     <div className="hidden md:flex flex-col w-full h-full">
       <div
-        className="flex items-center justify-center pl-2 py-2 bg-gradient-to-r from-[#FFFFFFB2] to-[#D4C4C2B2] backdrop-blur-lg dark:bg-gradient-to-r dark:from-[#FFFFFF08] dark:to-[#D4C4C208]"
+        className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-[#FFFFFFB2] to-[#D4C4C2B2] backdrop-blur-lg dark:bg-gradient-to-r dark:from-[#FFFFFF08] dark:to-[#D4C4C208]"
         onClick={handleNowPlaying}
       >
         <div className="flex items-center space-x-4 flex-1 overflow-hidden">

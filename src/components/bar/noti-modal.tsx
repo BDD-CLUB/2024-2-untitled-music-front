@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Dialog, DialogContent, DialogPortal, DialogTitle } from "../ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogPortal, DialogTitle } from "../ui/dialog";
 
 import useNotiModal from "@/hooks/modal/use-noti-modal";
 
@@ -87,6 +87,7 @@ export const NotiModal = () => {
           <DialogTitle className="text-2xl tracking-wide text-left font-bold w-full mt-4 ml-6">
             알림
           </DialogTitle>
+          <DialogDescription className="hidden">알림</DialogDescription>
           <div className="flex flex-col gap-y-6 mt-1 mb-6 mx-6">
             <div className="h-full flex flex-col gap-y-4">
               <h2 className="text-left font-bold text-base">이번주</h2>

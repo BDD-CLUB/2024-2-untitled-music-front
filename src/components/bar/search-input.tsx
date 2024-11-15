@@ -3,7 +3,9 @@ import React from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogOverlay,
+  DialogTitle,
 } from "../ui/dialog";
 import { PlaceholdersAndVanishInput } from "../ui/placeholders-and-vanish-input";
 
@@ -35,6 +37,8 @@ export const SearchInput = () => {
 
   return (
     <Dialog open={searchinput.isOpen} onOpenChange={onChange}>
+      <DialogTitle className="hidden">검색</DialogTitle>
+      <DialogDescription className="hidden">검색어를 입력하세요</DialogDescription>
       <DialogOverlay className="bg-black bg-opacity-10 fixed inset-0" />
       <DialogContent className="fixed top-[30%] left-[50%] translate-x-[-50%] translate-y-[-30%] border-none bg-transparent shadow-none w-full p-0">
         <div className="flex flex-col items-center justify-center">
