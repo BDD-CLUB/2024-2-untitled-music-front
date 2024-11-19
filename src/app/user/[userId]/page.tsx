@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 import {
   IconLink,
@@ -21,11 +22,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import UserTrack from "@/features/user/user-track";
 import UserAlbum from "@/features/user/user-album";
 import UserPlaylist from "@/features/user/user-playlist";
-import { ChevronDown } from "lucide-react";
+
+import { useUser } from "@/provider/userProvider";
 
 export default function UserPage() {
   const [activeTab, setActiveTab] = useState("track");
   const [array, setArray] = useState("new");
+
+  const { user } = useUser();
 
   const tabs = [
     { id: "track", label: "트랙", icon: IconMusic, onClick: () => {} },
@@ -45,12 +49,12 @@ export default function UserPage() {
         <div className="flex h-full w-full gap-x-8 items-center">
           <div className="flex flex-col">
             <Avatar className="md:w-48 md:h-48 min-w-32 max-w-48 min-h-32 max-h-48">
-              <AvatarImage src="/images/music1.png" alt="profile" />
+              <AvatarImage src={user?.artistImage} alt={user?.name} />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
           </div>
           <div className="flex flex-col items-center justify-between gap-y-2 md:gap-y-4 md:py-6">
-            <div className="md:text-3xl font-bold text-2xl">YANG RARO</div>
+            <div className="md:text-3xl font-bold text-2xl">{user?.name || "U"}</div>
             <div className="flex gap-x-4">
               <button className="bg-white text-black hover:bg-black/10 dark:hover:bg-white/75 shadow-lg w-auto font-medium text-sm p-2 rounded-lg">
                 1.5M

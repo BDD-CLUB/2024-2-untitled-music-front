@@ -27,7 +27,7 @@ export default function Topbar() {
         )}
       >
         <span className="text-center text-base font-bold tracking-wide">
-          START!
+          로그인
         </span>
       </button>
     </div>

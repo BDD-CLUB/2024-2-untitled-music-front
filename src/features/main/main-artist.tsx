@@ -1,10 +1,12 @@
 "use client";
 
 import SquareContainer from "@/components/container/square-container";
+import { useUser } from "@/provider/userProvider";
 import { useRouter } from "next/navigation";
 
 const MainArtist = () => {
   const router = useRouter();
+  const { user } = useUser();
 
   const dummy = [
     {
@@ -36,7 +38,9 @@ const MainArtist = () => {
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex justify-start">
-        <p className="text-[#FF4D74] font-bold text-xl">RARO</p>
+        <p className="text-[#FF4D74] font-bold text-xl">
+          {user?.name || "U"}
+        </p>
         <p className="font-bold text-xl">님을 위한 아티스트</p>
       </div>
       <div className="w-full overflow-x-auto flex gap-x-4">

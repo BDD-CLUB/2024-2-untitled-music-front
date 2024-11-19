@@ -2,6 +2,7 @@
 
 import useNotiModal from "@/hooks/modal/use-noti-modal";
 import useSearchInput from "@/hooks/modal/use-search-input";
+import useSigninModal from "@/hooks/modal/use-signin-modal";
 
 import useUploadMenu from "@/hooks/modal/use-upload-menu";
 import useSettingMenu from "@/hooks/modal/use-setting-menu";
@@ -15,8 +16,9 @@ import {
   IconHeart,
   IconMenu2,
   IconSearch,
-  IconUserCircle,
 } from "@tabler/icons-react";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -24,19 +26,20 @@ import { useMediaQuery } from "react-responsive";
 import { useEffect, useRef, useState } from "react";
 
 import { useAuth } from "@/provider/authProvider";
-import useSigninModal from "@/hooks/modal/use-signin-modal";
+import { useUser } from "@/provider/userProvider";
 
 export function Bar() {
   const router = useRouter();
   const isLargeScreen = useMediaQuery({ query: "(min-width: 768px)" });
+
+  const { isLoggedIn } = useAuth();
+  const { user } = useUser();
 
   const searchInput = useSearchInput();
   const notiModal = useNotiModal();
   const signinModal = useSigninModal();
   const mobileUploadMenu = useUploadMenu();
   const mobileSettingMenu = useSettingMenu();
-
-  const { isLoggedIn } = useAuth();
 
   const [uploadOpen, setUploadOpen] = useState(false);
   const [settingOpen, setSettingOpen] = useState(false);
@@ -65,11 +68,13 @@ export function Bar() {
     },
     {
       title: "업로드",
-      icon: <IconCirclePlus className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+      icon: (
+        <IconCirclePlus className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
       onClick: () => {
         if (!isLoggedIn) {
           signinModal.onOpen();
-        } else if (isLargeScreen){
+        } else if (isLargeScreen) {
           setUploadOpen(!uploadOpen);
         } else {
           mobileUploadMenu.onOpen();
@@ -92,13 +97,18 @@ export function Bar() {
     {
       title: "프로필",
       icon: (
-        <IconUserCircle className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <Avatar>
+          <AvatarImage src={user?.artistImage} alt={user?.name} />
+          <AvatarFallback>
+            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+          </AvatarFallback>
+        </Avatar>
       ),
       onClick: () => {
         if (!isLoggedIn) {
           signinModal.onOpen();
         } else {
-          router.push("/user/123")
+          router.push("/user/123");
         }
       },
     },
