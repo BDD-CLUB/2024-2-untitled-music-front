@@ -27,31 +27,42 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<Artist | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const { setIsLoggedIn } = useAuth();
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const { data } = await api.get<Artist>("/artist");
-        setUser(data);
-      } catch (err) {
-        if (err instanceof AxiosError) {
-          setError(
-            new Error(
-              err.response?.data?.message || "Failed to fetch user data"
-            )
-          );
-        } else {
-          setError(new Error("An unexpected error occurred"));
+  const fetchUser = async () => {
+    try {
+      const { data } = await api.get<Artist>("/artist");
+      setUser(data);
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        if (err.response?.status === 401) {
+          setIsLoggedIn(false);
+          setUser(null);
         }
-      } finally {
-        setIsLoading(false);
+        setError(
+          new Error(
+            err.response?.data?.message || "Failed to fetch user data"
+          )
+        );
+      } else {
+        setError(new Error("An unexpected error occurred"));
       }
-    };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
 
     fetchUser();
-  }, []);
+  }, [isLoggedIn]); 
 
   const logout = useCallback(async () => {
     try {
@@ -73,7 +84,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     }
   }, [router, setIsLoggedIn]);
-
 
   return (
     <UserContext.Provider value={{ user, isLoading, error, logout }}>

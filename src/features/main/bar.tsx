@@ -16,6 +16,7 @@ import {
   IconHeart,
   IconMenu2,
   IconSearch,
+  IconUserCircle,
 } from "@tabler/icons-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -100,7 +101,11 @@ export function Bar() {
         <Avatar>
           <AvatarImage src={user?.artistImage} alt={user?.name} />
           <AvatarFallback>
-            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+            {user?.name ? (
+              user.name.charAt(0).toUpperCase()
+            ) : (
+              <IconUserCircle className="h-2/3 w-2/3 text-neutral-500 dark:text-neutral-300" />
+            )}
           </AvatarFallback>
         </Avatar>
       ),
