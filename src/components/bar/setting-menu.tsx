@@ -2,11 +2,12 @@
 
 import { useCallback } from "react";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
 
 import { FloatingDock } from "../ui/floating-dock";
 
 import { useAuth } from "@/provider/authProvider";
+import { useUser } from "@/provider/userProvider";
+
 import useSigninModal from "@/hooks/modal/use-signin-modal";
 import {
   IconBrightness,
@@ -16,24 +17,18 @@ import {
 } from "@tabler/icons-react";
 
 export function SettingMenu() {
-  const { setTheme, theme, systemTheme } = useTheme();
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const { logout } = useUser();
+  const { isLoggedIn } = useAuth();
   const signInModal = useSigninModal();
-  const router = useRouter();
+  const { setTheme, theme, systemTheme } = useTheme();
 
   const handleLogin = () => {
     signInModal.onOpen();
   };
 
-  const handleLogout = useCallback(async () => {
-    try {
-      await fetch("/api/logout", { method: "POST" });
-      setIsLoggedIn(false);
-      router.push("/");
-    } catch (error) {
-      console.error("Failed to log out:", error);
-    }
-  }, [router, setIsLoggedIn]);
+  const handleLogout = async () => {
+    logout();
+  }
 
   const toggleTheme = useCallback(() => {
     const isDark = (theme === "system" ? systemTheme : theme) === "dark";

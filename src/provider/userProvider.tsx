@@ -1,9 +1,11 @@
 "use client";
 
-import { AxiosError } from "axios";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import axios, { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 import { api } from "../lib/axios";
+import { useAuth } from "./authProvider";
 
 export interface Artist {
   uuid: string;
@@ -16,6 +18,7 @@ interface UserContextType {
   user: Artist | null;
   isLoading: boolean;
   error: Error | null;
+  logout: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -24,6 +27,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<Artist | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const { setIsLoggedIn } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -48,8 +53,30 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     fetchUser();
   }, []);
 
+  const logout = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      await axios.post("/api/logout");
+      
+      setUser(null);
+      setError(null);
+      setIsLoggedIn(false);
+
+      router.push('/');
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        setError(new Error(err.response?.data?.message || 'Failed to logout'));
+      } else {
+        setError(new Error('An unexpected error occurred during logout'));
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [router, setIsLoggedIn]);
+
+
   return (
-    <UserContext.Provider value={{ user, isLoading, error }}>
+    <UserContext.Provider value={{ user, isLoading, error, logout }}>
       {children}
     </UserContext.Provider>
   );
