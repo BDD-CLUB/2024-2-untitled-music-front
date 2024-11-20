@@ -10,6 +10,7 @@ import { useAuth } from "./authProvider";
 export interface Artist {
   uuid: string;
   name: string;
+  role: 'ROLE_USER';
   email: string;
   artistImage: string;
 }

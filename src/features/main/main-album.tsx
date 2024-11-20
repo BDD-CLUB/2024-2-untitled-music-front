@@ -1,79 +1,33 @@
 "use client";
 
-import SquareContainer from "@/components/container/square-container";
-import { useUser } from "@/provider/userProvider";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
+import { useUser } from "@/provider/userProvider";
+import { Album, getAllAlbums } from "@/services/albumService";
+import SquareContainer from "@/components/container/square-container";
 
 const MainAlbum = () => {
   const router = useRouter();
   const { user } = useUser();
+  const [albums, setAlbums] = useState<Album[]>([]);
 
-  const dummy = [
-    {
-      id: 1,
-      src: "/images/music1.png",
-      name: "ROCK-STAR",
-      description: "2024 · IPCGRDN",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 2,
-      src: "/images/music1.png",
-      name: "ROCK-STAR",
-      description: "2024 · IPCGRDN",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 3,
-      src: "/images/music1.png",
-      name: "ROCK-STAR",
-      description: "2024 · IPCGRDN",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 4,
-      src: "/images/music1.png",
-      name: "BREAK",
-      description: "2018 · PALM",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 5,
-      src: "/images/music1.png",
-      name: "Thirsty",
-      description: "1988 · RARO",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 6,
-      src: "/images/music1.png",
-      name: "산책",
-      description: "EP · BDD",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 7,
-      src: "/images/music1.png",
-      name: "산책",
-      description: "EP · BDD",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 8,
-      src: "/images/music1.png",
-      name: "산책",
-      description: "EP · BDD",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-  ];
+  useEffect(() => {
+    const getAlbums = async () => {
+      try {
+        const data = await getAllAlbums();
+        setAlbums(data);
+      } catch (error) {
+        console.error('앨범 로딩 실패:', error);
+      }
+    };
+
+    getAlbums();
+  }, []);
+
+  if (!albums.length) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-y-2">
@@ -84,15 +38,15 @@ const MainAlbum = () => {
         <p className="font-bold text-xl">님을 위한 앨범</p>
       </div>
       <div className="w-full overflow-x-auto flex gap-x-4">
-        {dummy.map((item) => (
+        {albums.map((album) => (
           <SquareContainer
-            key={item.id}
-            src={item.src}
-            name={item.name}
-            description={item.description}
+            key={album.uuid}
+            src={album.artImage}
+            name={album.title}
+            description={`${album.releaseDate} · ${album.description}`}
             design="rounded-xl"
-            onClickName={item.onClickName}
-            onClickDescription={item.onClickDescription}
+            onClickName={() => router.push(`/album/${album.uuid}`)}
+            onClickDescription={() => router.push(`/user/${album.uuid}`)}
           />
         ))}
       </div>

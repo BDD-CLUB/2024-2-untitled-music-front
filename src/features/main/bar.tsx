@@ -113,7 +113,7 @@ export function Bar() {
         if (!isLoggedIn) {
           signinModal.onOpen();
         } else {
-          router.push("/user/123");
+          router.push(`/user/${user?.uuid}`);
         }
       },
     },

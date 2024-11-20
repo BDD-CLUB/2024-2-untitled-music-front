@@ -26,9 +26,14 @@ const AlbumModal = () => {
   const albumModal = useAlbumModal();
 
   const handleFileUpload = (files: File[]) => {
+    if (files.length > 0 && !files[0].type.startsWith("image/")) {
+      toast.error("이미지 파일만 업로드 가능합니다.");
+      return;
+    }
+
     setFiles(files);
 
-    if (files.length > 0 && files[0].type.startsWith("image/")) {
+    if (files.length > 0) {
       const imageUrl = URL.createObjectURL(files[0]);
       setPreviewImage(imageUrl);
     }
@@ -118,14 +123,11 @@ const AlbumModal = () => {
       reset();
       albumModal.onClose();
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(`문제가 발생하였습니다: ${error.message}`);
-      } else if (axios.isAxiosError(error) && error.response) {
-        toast.error(
-          `문제가 발생하였습니다: ${
-            error.response.data?.message || "알 수 없는 오류"
-          }`
-        );
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const errorData = error.response.data;
+        toast.error(errorData.detail || "앨범 생성에 실패했습니다.");
+      } else if (error instanceof Error) {
+        toast.error(error.message);
       } else {
         toast.error("알 수 없는 오류가 발생했습니다.");
       }
