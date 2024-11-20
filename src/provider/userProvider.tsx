@@ -35,20 +35,34 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const fetchUser = async () => {
     try {
       const { data } = await api.get<Artist>("/artist");
+      
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid response data');
+      }
+      
+      const requiredFields: (keyof Artist)[] = ['uuid', 'name', 'role', 'email', 'artistImage'];
+      const missingFields = requiredFields.filter(field => !(field in data));
+      
+      if (missingFields.length > 0) {
+        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+      }
+      
       setUser(data);
     } catch (err) {
-      if (err instanceof AxiosError) {
+      if (axios.isAxiosError(err)) {
         if (err.response?.status === 401) {
           setIsLoggedIn(false);
           setUser(null);
+        } else {
+          setError(
+            new Error(
+              err.response?.data?.message || 
+              `Failed to fetch user data: ${err.response?.status}`
+            )
+          );
         }
-        setError(
-          new Error(
-            err.response?.data?.message || "Failed to fetch user data"
-          )
-        );
       } else {
-        setError(new Error("An unexpected error occurred"));
+        setError(new Error("An unexpected error occurred while fetching user data"));
       }
     } finally {
       setIsLoading(false);
