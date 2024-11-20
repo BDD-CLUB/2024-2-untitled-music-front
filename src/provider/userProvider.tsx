@@ -34,12 +34,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUser = async () => {
     try {
+      setIsLoading(true);
       const { data } = await api.get<Artist>("/artist");
       setUser(data);
     } catch (err) {
       if (err instanceof AxiosError) {
         if (err.response?.status === 401) {
-          // 인증 에러일 경우 로그아웃 상태로 처리
           setIsLoggedIn(false);
           setUser(null);
         }
