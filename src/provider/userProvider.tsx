@@ -10,7 +10,7 @@ import { useAuth } from "./authProvider";
 export interface Artist {
   uuid: string;
   name: string;
-  role: 'ROLE_USER';
+  role: string;
   email: string;
   artistImage: string;
 }
@@ -33,6 +33,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const fetchUser = async () => {
+    if (!isLoggedIn) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { data } = await api.get<Artist>("/artist");
       
@@ -70,12 +76,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      setUser(null);
-      setIsLoading(false);
-      return;
-    }
-
     fetchUser();
   }, [isLoggedIn]); 
 
