@@ -64,6 +64,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
 
     fetchUser();
+
+    const interval = setInterval(() => {
+      fetchUser();
+    }, 60 * 60 * 1000);
+
+    return () => clearInterval(interval);
   }, [isLoggedIn]);
 
   const logout = useCallback(async () => {

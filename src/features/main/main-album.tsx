@@ -4,18 +4,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useUser } from "@/provider/userProvider";
-import { Album, getAllAlbums } from "@/services/albumService";
+import { AlbumResponse, getAllAlbums } from "@/services/albumService";
 import SquareContainer from "@/components/container/square-container";
 
 const MainAlbum = () => {
   const router = useRouter();
   const { user } = useUser();
-  const [albums, setAlbums] = useState<Album[]>([]);
+  const [albums, setAlbums] = useState<AlbumResponse[]>([]);
 
   useEffect(() => {
     const getAlbums = async () => {
       try {
-        const data = await getAllAlbums();
+        const data = await getAllAlbums(0, 10);
         setAlbums(data);
       } catch (error) {
         console.error('앨범 로딩 실패:', error);
@@ -38,15 +38,15 @@ const MainAlbum = () => {
         <p className="font-bold text-xl">님을 위한 앨범</p>
       </div>
       <div className="w-full overflow-x-auto flex gap-x-4">
-        {albums.map((album) => (
+        {albums.map(({ albumResponseDto: album, profileResponseDto: profile }) => (
           <SquareContainer
             key={album.uuid}
             src={album.artImage}
             name={album.title}
-            description={`${album.releaseDate} · ${album.description}`}
+            description={`${album.releaseDate} · ${profile.name}`}
             design="rounded-xl"
             onClickName={() => router.push(`/album/${album.uuid}`)}
-            onClickDescription={() => router.push(`/user/${album.uuid}`)}
+            onClickDescription={() => router.push(`/user/${profile.name}`)}
           />
         ))}
       </div>
