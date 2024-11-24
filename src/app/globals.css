@@ -25,6 +25,36 @@ body,
   display: none;
 }
 
+/* 가로 스크롤바 스타일링 */
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 라이트 모드 스크롤바 */
+::-webkit-scrollbar-thumb {
+  background: #FF9DE1; 
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF40C4;  
+}
+
+/* 다크 모드 스크롤바 */
+.dark ::-webkit-scrollbar-thumb {
+  background: #FFFFFF80; 
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #FFFFFF;  
+}
+
 @layer base {
   :root {
     --background:0 0% 100%;
