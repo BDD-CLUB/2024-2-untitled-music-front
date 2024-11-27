@@ -28,4 +28,4 @@ const createAxiosInstance = (): AxiosInstance => {
   return instance;
 };
 
-export default createAxiosInstance;
+export const api = createAxiosInstance();
