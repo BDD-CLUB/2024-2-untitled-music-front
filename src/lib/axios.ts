@@ -1,26 +1,23 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance } from "axios";
+import Cookies from "js-cookie"; // 쿠키 처리를 위해 js-cookie 라이브러리 추천
 
 const createAxiosInstance = (): AxiosInstance => {
   const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '',
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
+    withCredentials: true,
   });
 
   instance.interceptors.request.use(
     (config) => {
-      const cookies = document.cookie;
-      const access_token = cookies
-        .split(';')
-        .map(cookie => cookie.trim())
-        .find(cookie => cookie.startsWith('access_token='))
-        ?.split('=')[1];
-      
-      if (access_token) {
-        config.headers.Authorization = `Bearer ${access_token}`;
+      const accessToken = Cookies.get("access_token");
+
+      if (accessToken) {
+        config.headers["Authorization"] = `Bearer ${accessToken}`;
       }
-      
+
       return config;
     },
     (error) => {
@@ -31,4 +28,4 @@ const createAxiosInstance = (): AxiosInstance => {
   return instance;
 };
 
-export const api = createAxiosInstance();
+export default createAxiosInstance;

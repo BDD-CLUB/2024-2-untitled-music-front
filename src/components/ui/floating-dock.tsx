@@ -135,10 +135,10 @@ function IconContainer({
         <AnimatePresence>
           {hovered && (
             <motion.div
-              initial={{ opacity: 0, x: 14, y: "-50%" }} 
-              animate={{ opacity: 1, x: 32, y: "-100%" }}
-              exit={{ opacity: 0, x: 10, y: "-50%" }}
-              className="px-0.5 py-0.5 hidden md:flex items-center justify-center whitespace-pre rounded-md bg-gray-100 border dark:bg-neutral-800 dark:border-neutral-900 dark:text-white border-gray-200 text-neutral-700 absolute left-1/2 -translate-x-1/2 -right-8 y-fit text-xs"
+              initial={{ opacity: 0, x: 40, y: -20 }}
+              animate={{ opacity: 1, x: 80, y: -50 }}
+              exit={{ opacity: 0, x: 40, y: -20 }}
+              className="px-0.5 py-0.5 hidden md:flex items-center justify-center whitespace-pre text-sm font-bold bg-transparent text-neutral-700 dark:text-white absolute right-[calc(100%+35px)] top-1/2 -translate-y-1/2"
             >
               {title}
             </motion.div>

@@ -19,7 +19,7 @@ export default function Topbar() {
       <button
         onClick={() => signinModal.onOpen()}
         className={cn(
-          "bg-transparent dark:text-neutral-300 text-neutral-700 justify-center rounded-full border border-[#FD6997] dark:border-none dark:bg-white/10 ml-8 md:mr-4 py-1 px-4",
+          "bg-transparent dark:text-neutral-300 text-neutral-700 justify-center rounded-full border border-[#FD6997] ml-8 md:mr-4 py-1 px-4",
           {
             hidden: isLoggedIn,
             flex: !isLoggedIn,
@@ -27,7 +27,7 @@ export default function Topbar() {
         )}
       >
         <span className="text-center text-base font-bold tracking-wide">
-          로그인
+          START
         </span>
       </button>
     </div>
