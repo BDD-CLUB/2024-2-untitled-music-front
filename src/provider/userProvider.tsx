@@ -52,7 +52,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoggedIn]);
+  }, []);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -60,7 +60,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
       return;
     }
-  }, [isLoggedIn]);
+    fetchUser();
+  }, [isLoggedIn, fetchUser]);
 
   const logout = useCallback(async () => {
     try {
