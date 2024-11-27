@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios";
-import Cookies from "js-cookie";
 
 const createAxiosInstance = (): AxiosInstance => {
   const instance = axios.create({
@@ -11,13 +10,18 @@ const createAxiosInstance = (): AxiosInstance => {
   });
 
   instance.interceptors.request.use(
-    (config) => {
-      const token = Cookies.get("access_token");
+    async (config) => {
+      try {
+        const response = await fetch('/api/token')
+        const data = await response.json()
 
-      console.log('Access Token:', token);
-
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        console.log('Token:', data.token);
+        
+        if (data.token) {
+          config.headers.Authorization = `Bearer ${data.token}`;
+        }
+      } catch (error) {
+        console.error('토큰 가져오기 실패:', error);
       }
 
       return config;
