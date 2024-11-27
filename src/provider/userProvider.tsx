@@ -32,7 +32,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   
   const router = useRouter();
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       setIsLoading(true);
       const { data } = await api.get<Artist>("/artist");
@@ -54,7 +54,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [setIsLoggedIn]);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -70,7 +70,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }, 60 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [isLoggedIn]);
+  }, [isLoggedIn, fetchUser]);
 
   const logout = useCallback(async () => {
     try {
