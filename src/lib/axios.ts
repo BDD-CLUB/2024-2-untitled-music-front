@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import Cookies from "js-cookie"; // 쿠키 처리를 위해 js-cookie 라이브러리 추천
+import Cookies from "js-cookie";
 
 const createAxiosInstance = (): AxiosInstance => {
   const instance = axios.create({
