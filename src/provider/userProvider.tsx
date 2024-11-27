@@ -2,7 +2,13 @@
 
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 
 import { api } from "../lib/axios";
 import { useAuth } from "./authProvider";
@@ -29,7 +35,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const { isLoggedIn, setIsLoggedIn } = useAuth();
-  
+
   const router = useRouter();
 
   const fetchUser = useCallback(async () => {
@@ -39,17 +45,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setUser(data);
     } catch (err) {
       if (err instanceof AxiosError) {
-        if (err.response?.status === 401) {
-          setIsLoggedIn(false);
-          setUser(null);
-        }
         setError(
-          new Error(
-            err.response?.data?.message || "Failed to fetch user data"
-          )
+          new Error(err.response?.data?.message || "Failed to fetch user data")
         );
-      } else {
-        setError(new Error("An unexpected error occurred"));
       }
     } finally {
       setIsLoading(false);
@@ -62,31 +60,23 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
       return;
     }
-
-    fetchUser();
-
-    const interval = setInterval(() => {
-      fetchUser();
-    }, 60 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, [isLoggedIn, fetchUser]);
+  }, [isLoggedIn]);
 
   const logout = useCallback(async () => {
     try {
       setIsLoading(true);
       await axios.post("/api/logout");
-      
+
       setUser(null);
       setError(null);
       setIsLoggedIn(false);
 
-      router.push('/');
+      router.push("/");
     } catch (err) {
       if (err instanceof AxiosError) {
-        setError(new Error(err.response?.data?.message || 'Failed to logout'));
+        setError(new Error(err.response?.data?.message || "Failed to logout"));
       } else {
-        setError(new Error('An unexpected error occurred during logout'));
+        setError(new Error("An unexpected error occurred during logout"));
       }
     } finally {
       setIsLoading(false);

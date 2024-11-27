@@ -71,7 +71,7 @@ const MainPlaylist = () => {
         <div className="flex justify-end rounded-full drop-shadow-lg bg-[#F1DCDC] hover:bg-pink-200 transition-colors duration-300 dark:bg-[#FFFFFF0D] dark:hover:bg-[#FFFFFF1A] px-4 py-1">
           <button
             className="text-base font-bold text-black dark:text-white"
-            onClick={() => router.push("/more/playist")}
+            onClick={() => router.push("/more/playlist")}
           >
             더보기
           </button>

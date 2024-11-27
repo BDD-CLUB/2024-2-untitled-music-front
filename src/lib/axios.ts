@@ -12,10 +12,12 @@ const createAxiosInstance = (): AxiosInstance => {
 
   instance.interceptors.request.use(
     (config) => {
-      const accessToken = Cookies.get("access_token");
+      const token = Cookies.get("access_token");
 
-      if (accessToken) {
-        config.headers["Authorization"] = `Bearer ${accessToken}`;
+      console.log('Access Token:', token);
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
 
       return config;
