@@ -42,13 +42,13 @@ const SquareContainer = ({
       </div>
       <div
         onClick={onClickName}
-        className="mt-2 font-bold text-lg text-black dark:text-white text-center tracking-wide hover:underline"
+        className="mt-2 font-bold text-lg text-black dark:text-white text-center tracking-wide hover:underline w-full px-8 truncate"
       >
         {name}
       </div>
       <span
         onClick={onClickDescription}
-        className="font-medium text-sm text-neutral-600 dark:text-neutral-400 text-center hover:underline"
+        className="font-medium text-sm text-neutral-600 dark:text-neutral-400 text-center hover:underline w-full px-2 truncate"
       >
         {description}
       </span>
