@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useMediaQuery } from "react-responsive";
 
 import {
   IconLink,
@@ -22,10 +23,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import UserTrack from "@/features/user/user-track";
 import UserAlbum from "@/features/user/user-album";
 import UserPlaylist from "@/features/user/user-playlist";
+import useStreamingBar from "@/hooks/modal/use-streaming-bar";
 
 import { useUser } from "@/provider/userProvider";
+import { cn } from "@/lib/utils";
 
 export default function UserPage() {
+  const streamingBar = useStreamingBar();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+
   const [activeTab, setActiveTab] = useState("track");
   const [array, setArray] = useState("new");
 
@@ -43,18 +49,24 @@ export default function UserPage() {
   ];
 
   return (
-    <main className="flex flex-col bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar">
+    <main
+      className={cn(
+        "flex flex-col bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar",
+        isMobile && streamingBar.isOpen && "mb-36"
+      )}
+    >
       <div className="h-auto flex flex-col lg:flex-row gap-y-4 gap-x-8 items-start">
-        
-        <div className="flex h-full w-full gap-x-8 items-center">
-          <div className="flex flex-col">
+        <div className="flex h-full w-full gap-x-8 items-center justify-start">
+          <div className="flex">
             <Avatar className="md:w-48 md:h-48 min-w-32 max-w-48 min-h-32 max-h-48">
               <AvatarImage src={user?.artistImage} alt={user?.name} />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
           </div>
-          <div className="flex flex-col items-center justify-between gap-y-2 md:gap-y-4 md:py-6">
-            <div className="md:text-3xl font-bold text-2xl">{user?.name || "U"}</div>
+          <div className="flex flex-col items-start justify-between gap-y-4 md:py-6">
+            <div className="md:text-3xl font-bold text-2xl pl-2">
+              {user?.name || "U"}
+            </div>
             <div className="flex gap-x-4">
               <button className="bg-white text-black hover:bg-black/10 dark:hover:bg-white/75 shadow-lg w-auto font-medium text-sm p-2 rounded-lg">
                 1.5M
@@ -77,7 +89,7 @@ export default function UserPage() {
           </div>
         </div>
 
-        <div className="flex h-full w-full font-medium text-sm items-center">
+        <div className="flex w-full h-20 md:h-full font-light text-sm items-start md:items-center whitespace-pre-line leading-normal overflow-auto">
           Hello! My name is Raro, and im passionate about exploring new ideas
           and cultures. I enjoy reading, traveling, and meeting new people.
           Currently, im pursuing my interests in technology and innovation,

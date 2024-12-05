@@ -14,22 +14,27 @@ export default function Topbar() {
   const { isLoggedIn } = useAuth();
 
   return (
-    <div className="h-20 bg-transparent hidden md:flex items-center justify-end md:justify-between">
-      {streamingBar.isOpen ? <StreamingBar /> : <div className="flex-1" />}
-      <button
-        onClick={() => signinModal.onOpen()}
-        className={cn(
-          "bg-transparent dark:text-neutral-300 text-neutral-700 justify-center rounded-full border border-[#FD6997] ml-8 md:mr-4 py-1 px-4",
-          {
-            hidden: isLoggedIn,
-            flex: !isLoggedIn,
-          }
-        )}
-      >
-        <span className="text-center text-base font-bold tracking-wide">
-          START
-        </span>
-      </button>
-    </div>
+    <>
+      <div className="h-20 bg-transparent hidden md:flex items-center justify-end md:justify-between">
+        {streamingBar.isOpen ? <StreamingBar /> : <div className="flex-1" />}
+        <button
+          onClick={() => signinModal.onOpen()}
+          className={cn(
+            "bg-transparent dark:text-neutral-300 text-neutral-700 justify-center rounded-full border border-[#FD6997] ml-8 md:mr-4 py-1 px-4",
+            {
+              hidden: isLoggedIn,
+              flex: !isLoggedIn,
+            }
+          )}
+        >
+          <span className="text-center text-base font-bold tracking-wide">
+            START
+          </span>
+        </button>
+      </div>
+      <div className="flex md:hidden">
+      {streamingBar.isOpen ? <StreamingBar /> : <div className="hidden" />}
+      </div>
+    </>
   );
 }

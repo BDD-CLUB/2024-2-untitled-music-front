@@ -33,7 +33,7 @@ const RectangleContainer = ({
           {artist} · {album}
         </p>
       </div>
-      <div className="flex items-center gap-x-2">
+      <div className="flex items-center gap-x-2 mx-auto">
         <span className="text-base whitespace-nowrap">{duration}</span>
         <button className="cursor-pointer">
           <IconDotsVertical className="size-5" />

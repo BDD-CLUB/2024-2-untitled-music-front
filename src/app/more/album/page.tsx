@@ -13,6 +13,8 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import useStreamingBar from "@/hooks/modal/use-streaming-bar";
+import { useMediaQuery } from "react-responsive";
+import { cn } from "@/lib/utils";
 
 interface Album {
   id: number;
@@ -26,6 +28,7 @@ interface Album {
 export default function MoreAlbumPage() {
   const router = useRouter();
   const streamingBar = useStreamingBar();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const albums: Album[] = [
     {
@@ -104,11 +107,16 @@ export default function MoreAlbumPage() {
   };
 
   return (
-    <main className="flex flex-col bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar">
-      <div className="h-auto flex flex-col gap-y-4 lg:flex-row gap-x-4 items-center justify-center">
+    <main
+      className={cn(
+        "flex flex-col bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto",
+        isMobile && streamingBar.isOpen && "mb-36"
+      )}
+    >
+      <div className="h-auto flex gap-x-4 items-center justify-center">
         {/* 왼쪽 프로필 섹션 */}
-        <div className="w-full lg:w-1/3 h-full bg-[#D7C5C526] dark:bg-gradient-to-t dark:from-[#00000033] dark:to-[#41414133] backdrop-blur-xl lg:p-8 rounded-lg relative">
-          <div className="flex flex-col items-center mx-8 mt-2">
+        <div className="w-1/3 hidden lg:flex h-full bg-[#D7C5C526] dark:bg-gradient-to-t dark:from-[#00000033] dark:to-[#41414133] backdrop-blur-xl lg:p-8 rounded-lg relative">
+          <div className="relative flex flex-col items-center mx-auto mt-2">
             <Image
               src={selectedAlbum.src}
               alt={selectedAlbum.name}
@@ -116,7 +124,7 @@ export default function MoreAlbumPage() {
               height={200}
               className="rounded-lg"
             />
-            <h1 className="text-3xl font-bold mt-8 text-center truncate tracking-wide">
+            <h1 className="text-2xl font-bold mt-8 text-center truncate tracking-wide">
               {selectedAlbum.name}
             </h1>
             <p
@@ -128,7 +136,7 @@ export default function MoreAlbumPage() {
             <div className="flex w-full items-center justify-between mt-6">
               <div className="flex gap-x-2 items-center justify-center mr-2 lg:mr-0">
                 <IconHeart className="size-6" />
-                <span className="text-base">13.1k</span>
+                <span className="text-base truncate">13.1k</span>
               </div>
               <div className="flex gap-x-3">
                 <IconShare className="size-6" />
@@ -173,8 +181,8 @@ export default function MoreAlbumPage() {
         </div>
 
         {/* 오른쪽 아티스트 그리드 섹션 */}
-        <div className="w-full lg:w-2/3 h-full bg-[#D7C5C526] dark:bg-gradient-to-t dark:from-[#00000033] dark:to-[#41414133] backdrop-blur-xl lg:p-8 rounded-lg overflow-y-auto hide-scrollbar">
-          <div className="grid grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="w-full lg:w-2/3 h-full bg-[#D7C5C526] dark:bg-gradient-to-t dark:from-[#00000033] dark:to-[#41414133] backdrop-blur-xl p-8 rounded-lg overflow-y-auto">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
             {albums.map((album) => (
               <div
                 className="flex flex-col items-center cursor-pointer"

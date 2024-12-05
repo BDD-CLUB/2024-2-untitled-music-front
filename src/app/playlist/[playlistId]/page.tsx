@@ -23,10 +23,13 @@ import { useRouter } from "next/navigation";
 
 import useStreamingBar from "@/hooks/modal/use-streaming-bar";
 import Link from "next/link";
+import { useMediaQuery } from "react-responsive";
+import { cn } from "@/lib/utils";
 
 export default function PlaylistPage() {
   const router = useRouter();
   const streamingBar = useStreamingBar();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const dummy = [
     {
@@ -99,19 +102,25 @@ export default function PlaylistPage() {
   };
 
   return (
-    <main className="flex gap-x-12 bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar">
+    <main
+      className={cn(
+        "flex gap-x-12 bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar",
+        isMobile && streamingBar.isOpen && "mb-36"
+      )}
+    >
       <div className="h-full lg:w-1/2 w-full flex flex-col gap-y-12 overflow-y-auto">
-        <div className="flex w-full flex-col md:flex-row md:h-[250px] gap-x-8 pr-2">
-          <div className="relative h-full w-full flex flex-col items-center justify-center group">
+        <div className="flex w-full flex-row max-h-[250px] gap-x-8 pr-2">
+          <div className="h-full w-full flex flex-col items-center justify-center group">
             <GridImage />
             <div
               onClick={() => streamingBar.onOpen()}
-              className="absolute bottom-6 left-4 flex items-center justify-center opacity-0 group-hover:opacity-100 rounded-full bg-[#FF00B1] w-14 h-14 transform hover:scale-125 transition-transform duration-300"
+              className="absolute flex items-center justify-center opacity-0 group-hover:opacity-100 rounded-full bg-[#FF00B1] w-14 h-14 transform hover:scale-125 transition-transform duration-300"
             >
               <IconPlayerPlayFilled className="w-8 h-8 text-black" />
             </div>
           </div>
-          <div className="flex flex-col w-full h-full items-start justify-center md:justify-between pt-6 mt:pt-0 md:py-2 gap-y-4">
+
+          <div className="flex flex-col w-full h-full items-start justify-between py-2 gap-y-4">
             <div
               onClick={() => router.push("/user/123")}
               className="flex gap-x-2 items-center"
@@ -120,9 +129,9 @@ export default function PlaylistPage() {
                 <AvatarImage src="/images/music1.png" alt="profile" />
                 <AvatarFallback>U</AvatarFallback>
               </Avatar>
-              <span className="text-sm hover:underline">RARO YANG</span>
+              <span className="text-sm hover:underline truncate">RARO YANG</span>
             </div>
-            <div className="tracking-wide text-3xl md:text-4xl lg:text-5xl font-extrabold">
+            <div className="tracking-wide text-3xl md:text-4xl lg:text-5xl font-extrabold truncate">
               THIRSTY
             </div>
             <div className="flex w-full items-center justify-between">
@@ -177,19 +186,19 @@ export default function PlaylistPage() {
                     className="rounded-md"
                   />
                   <div className="flex flex-col gap-y-1 items-start w-full">
-                    <p className="text-sm font-semibold overflow-x-hidden">
+                    <p className="text-sm font-semibold overflow-x-hidden truncate">
                       {song.title}
                     </p>
                     <div className="flex flex-row w-full overflow-x-hidden gap-x-2">
                       <Link
                         href={"/user/123"}
-                        className="text-xs text-neutral-500 overflow-x-hidden hover:underline"
+                        className="text-xs text-neutral-500 overflow-x-hidden hover:underline truncate"
                       >
                         {song.artist}
                       </Link>
                       <Link
                         href={"/album/123"}
-                        className="text-xs text-neutral-500 overflow-x-hidden hover:underline"
+                        className="text-xs text-neutral-500 overflow-x-hidden hover:underline truncate"
                       >
                         {song.album}
                       </Link>

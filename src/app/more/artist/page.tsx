@@ -1,10 +1,13 @@
-'use client'
+"use client";
 
 import { useState } from "react";
 import SquareContainer from "@/components/container/square-container";
 import { IconChevronRight } from "@tabler/icons-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import useStreamingBar from "@/hooks/modal/use-streaming-bar";
+import { useMediaQuery } from "react-responsive";
+import { cn } from "@/lib/utils";
 
 interface Artist {
   id: number;
@@ -17,6 +20,8 @@ interface Artist {
 
 export default function MoreArtistPage() {
   const router = useRouter();
+  const streamingBar = useStreamingBar();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const artists: Artist[] = [
     {
@@ -25,7 +30,8 @@ export default function MoreArtistPage() {
       src: "/images/albumcover.png",
       onClickName: () => router.push("/user/123"),
       followers: "1.5M",
-      description: "Hello! My name is NewJeans, and I'm passionate about exploring new ideas and cultures. I enjoy reading, traveling, and meeting new people...",
+      description:
+        "Hello! My name is NewJeans, and I'm passionate about exploring new ideas and cultures. I enjoy reading, traveling, and meeting new people...",
     },
     {
       id: 2,
@@ -33,7 +39,8 @@ export default function MoreArtistPage() {
       src: "/images/albumcover.png",
       onClickName: () => router.push("/user/123"),
       followers: "2.1M",
-      description: "We are AESPA! Known for our unique blend of K-pop and virtual reality concepts...",
+      description:
+        "We are AESPA! Known for our unique blend of K-pop and virtual reality concepts...",
     },
     {
       id: 3,
@@ -41,7 +48,8 @@ export default function MoreArtistPage() {
       src: "/images/albumcover.png",
       onClickName: () => router.push("/user/123"),
       followers: "3.2M",
-      description: "MAROON 5 is an American pop rock band that was formed in 1994 in Los Angeles, California...",
+      description:
+        "MAROON 5 is an American pop rock band that was formed in 1994 in Los Angeles, California...",
     },
     {
       id: 4,
@@ -49,7 +57,8 @@ export default function MoreArtistPage() {
       src: "/images/albumcover.png",
       onClickName: () => router.push("/user/123"),
       followers: "4.5M",
-      description: "AVRIL LAVIGNE is a Canadian singer, songwriter, and actress. She rose to fame with her debut album 'Let Go'...",
+      description:
+        "AVRIL LAVIGNE is a Canadian singer, songwriter, and actress. She rose to fame with her debut album 'Let Go'...",
     },
     {
       id: 5,
@@ -57,7 +66,8 @@ export default function MoreArtistPage() {
       src: "/images/albumcover.png",
       onClickName: () => router.push("/user/123"),
       followers: "5.2M",
-      description: "IU is a South Korean singer, songwriter, and actress. She gained popularity with her albums 'IU...' and 'Palette'...",
+      description:
+        "IU is a South Korean singer, songwriter, and actress. She gained popularity with her albums 'IU...' and 'Palette'...",
     },
     {
       id: 6,
@@ -65,7 +75,8 @@ export default function MoreArtistPage() {
       src: "/images/albumcover.png",
       onClickName: () => router.push("/user/123"),
       followers: "2.8M",
-      description: "DAY6 is a South Korean boy band that debuted in 2015. They gained popularity with their album 'The Day'...",
+      description:
+        "DAY6 is a South Korean boy band that debuted in 2015. They gained popularity with their album 'The Day'...",
     },
   ];
 
@@ -76,11 +87,16 @@ export default function MoreArtistPage() {
   };
 
   return (
-    <main className="flex flex-col bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar">
-      <div className="h-auto flex flex-col lg:flex-row gap-x-4 items-center justify-center">
+    <main
+      className={cn(
+        "flex flex-col bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto",
+        isMobile && streamingBar.isOpen && "mb-36"
+      )}
+    >
+      <div className="h-auto flex gap-x-4 items-center justify-center">
         {/* 왼쪽 프로필 섹션 */}
-        <div className="w-full lg:w-1/3 h-full bg-[#D7C5C526] dark:bg-gradient-to-t dark:from-[#00000033] dark:to-[#41414133] backdrop-blur-xl lg:p-8 rounded-lg">
-          <div className="flex flex-col items-center mx-8 mt-2">
+        <div className="w-1/3 hidden lg:flex h-full bg-[#D7C5C526] dark:bg-gradient-to-t dark:from-[#00000033] dark:to-[#41414133] backdrop-blur-xl lg:p-8 rounded-lg relative">
+          <div className="relative flex flex-col items-center mx-auto mt-2">
             <Image
               src={selectedArtist.src}
               alt={selectedArtist.name}
@@ -88,7 +104,9 @@ export default function MoreArtistPage() {
               height={200}
               className="rounded-full"
             />
-            <h1 className="text-3xl font-bold mt-8 text-center truncate tracking-wide">{selectedArtist.name}</h1>
+            <h1 className="text-2xl font-bold mt-8 text-center truncate tracking-wide">
+              {selectedArtist.name}
+            </h1>
             <div className="flex justify-center items-center gap-4 mt-6 gap-x-4 w-full">
               <button className="bg-[#FFFFFF] text-black font-bold text-sm w-1/2 rounded-lg py-2 drop-shadow-lg hover:opacity-75">
                 {selectedArtist.followers}
@@ -97,12 +115,12 @@ export default function MoreArtistPage() {
                 팔로우
               </button>
             </div>
-            <p className="mt-6 text-gray-700 dark:text-white">
+            <p className="mt-6 text-gray-700 dark:text-white h-52 overflow-y-auto">
               {selectedArtist.description}
               <button className="text-gray-500 dark:text-gray-400">more</button>
             </p>
             <div className="mt-8">
-              <button 
+              <button
                 className="bg-white dark:bg-black dark:backdrop-blur-xl hover:opacity-75 text-black dark:text-white rounded-full p-2"
                 onClick={selectedArtist.onClickName}
               >
@@ -113,11 +131,11 @@ export default function MoreArtistPage() {
         </div>
 
         {/* 오른쪽 아티스트 그리드 섹션 */}
-        <div className="w-full lg:w-2/3 h-full bg-[#D7C5C526] dark:bg-gradient-to-t dark:from-[#00000033] dark:to-[#41414133] backdrop-blur-xl lg:p-8 rounded-lg overflow-y-auto hide-scrollbar">
-          <div className="grid grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="w-full lg:w-2/3 h-full bg-[#D7C5C526] dark:bg-gradient-to-t dark:from-[#00000033] dark:to-[#41414133] backdrop-blur-xl p-8 rounded-lg overflow-y-auto">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
             {artists.map((artist) => (
-              <div 
-                className="flex flex-col items-center cursor-pointer" 
+              <div
+                className="flex flex-col items-center cursor-pointer"
                 key={artist.id}
                 onClick={() => handleArtistSelect(artist)}
               >

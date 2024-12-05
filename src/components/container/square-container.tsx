@@ -24,18 +24,18 @@ const SquareContainer = ({
   const streamingBar = useStreamingBar();
 
   return (
-    <div className="flex flex-col h-60 w-52 bg-transparent items-center justify-center hover:bg-[#7E47631F] dark:hover:bg-gradient-to-b dark:from-[#D8C2DC4D] dark:to-[#2D1E274D] rounded-lg pb-4 transition hover:cursor-pointer">
-      <div className="relative mt-4 flex items-center justify-center h-32 w-32 lg:h-40 lg:w-40 group">
+    <div className="flex flex-col h-60 w-52 bg-transparent items-center justify-center hover:bg-[#7E47631F] dark:hover:bg-gradient-to-b dark:from-[#D8C2DC4D] dark:to-[#2D1E274D] rounded-lg pb-4 transition hover:cursor-pointer group">
+      <div className="relative mt-4 flex items-center justify-center h-32 w-32 lg:h-40 lg:w-40">
         <Image
           src={src}
           alt="profile"
           width={150}
           height={150}
-          className={design}
+          className={`group-hover:opacity-75 ${design}`}
         />
         <div 
           onClick={() => streamingBar.onOpen()}
-          className="absolute bottom-1 right-1 flex items-center justify-center opacity-0 group-hover:opacity-100 rounded-full bg-[#FF00B1] w-10 h-10 transform hover:scale-125 transition-transform duration-300"
+          className="absolute mt-1 flex items-center justify-center opacity-0 group-hover:opacity-100 rounded-full bg-[#FF00B1] w-10 h-10 transform hover:scale-125 transition-transform duration-300"
         >
           <IconPlayerPlayFilled className="w-8 h-8 text-black" />
         </div>
