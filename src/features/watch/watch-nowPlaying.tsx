@@ -52,7 +52,7 @@ const WatchNowPlaying = () => {
         },
     ]
     return (
-        <div className="flex flex-col h-full w-full items-center justify-center truncate">
+        <div className="flex flex-col h-full w-full items-center justify-center">
             {dummy.map((item) => (
                 <RectangleContainer
                     key={item.id}

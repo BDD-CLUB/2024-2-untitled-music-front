@@ -40,19 +40,35 @@ export default function MobileWatchPage() {
       </div>
 
       <div className="relative flex flex-col items-center gap-y-2 w-full mt-16">
-        <div className="bg-gradient-to-br from-[#FFFFFF33] to-[#99999933] aspect-square rounded-3xl mb-4 w-full overflow-y-auto max-h-96">
-          {view === "main" && (
-            <div className="p-6 flex items-center justify-center">
-              <Image
-                src="/images/albumcover.png"
-                alt="albumcover"
-                width={300}
-                height={300}
-                className="rounded-full"
-              />
+        {view === "main" && (
+          <>
+            <div className="bg-gradient-to-br from-[#FFFFFF33] to-[#99999933] aspect-square rounded-3xl mb-4 w-full overflow-y-auto max-h-96">
+              <div className="p-6 flex items-center justify-center">
+                <Image
+                  src="/images/albumcover.png"
+                  alt="albumcover"
+                  width={300}
+                  height={300}
+                  className="rounded-full"
+                />
+              </div>
             </div>
-          )}
-          {view === "lyrics" && (
+            <div className="text-3xl font-bold text-white truncate">
+              WHIPLASH
+            </div>
+            <div className="text-2xl font-bold text-neutral-300 flex items-center gap-x-2">
+              <Link href="/user/123" className="hover:underline truncate">
+                에스파
+              </Link>
+              <span>·</span>
+              <Link href="/album/123" className="hover:underline truncate">
+                WHIPLASH
+              </Link>
+            </div>
+          </>
+        )}
+        {view === "lyrics" && (
+          <div className="bg-gradient-to-br from-[#FFFFFF33] to-[#99999933] aspect-square rounded-3xl mb-4 w-full overflow-y-auto h-[468px]">
             <div className="flex whitespace-pre-line p-4 items-center justify-center text-lg truncate leading-loose text-white">
               Fancy 이건 참 화려해
               <br />
@@ -84,23 +100,15 @@ export default function MobileWatchPage() {
               <br />
               외면해도 소용없지 don&apos;t you blow it?
             </div>
-          )}
-          {view === "nowPlaying" && (
+          </div>
+        )}
+        {view === "nowPlaying" && (
+          <div className="bg-gradient-to-br from-[#FFFFFF33] to-[#99999933] aspect-square rounded-3xl mb-4 w-full overflow-y-auto h-[468px]">
             <div className="p-4 w-full">
               <WatchNowPlaying />
             </div>
-          )}
-        </div>
-        <div className="text-3xl font-bold text-white truncate">WHIPLASH</div>
-        <div className="text-2xl font-bold text-neutral-300 flex items-center gap-x-2">
-          <Link href="/user/123" className="hover:underline truncate">
-            에스파
-          </Link>
-          <span>·</span>
-          <Link href="/album/123" className="hover:underline truncate">
-            WHIPLASH
-          </Link>
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="relative flex flex-col items-center justify-center w-full py-4 mt-12">

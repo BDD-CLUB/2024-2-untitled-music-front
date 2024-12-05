@@ -19,7 +19,8 @@ const RectangleContainer = ({
   duration,
 }: RectangleContainerProps) => {
   return (
-    <div className="flex text-black items-center gap-x-4 p-2 mb-2 rounded-lg hover:bg-white/30 transition-colors">
+    <div className="flex text-black w-full items-center gap-x-4 p-2 mb-2 rounded-lg hover:bg-white/30 transition-colors">
+      <div className="flex">
       <Image
         src={cover}
         alt="cover"
@@ -27,6 +28,7 @@ const RectangleContainer = ({
         height={44}
         className="rounded-lg"
       />
+      </div>
       <div className="flex-1 min-w-0">
         <h3 className="font-semibold text-lg truncate">{name}</h3>
         <p className="text-sm text-neutral-700 truncate">
