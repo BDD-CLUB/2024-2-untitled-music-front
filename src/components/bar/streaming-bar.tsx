@@ -25,7 +25,7 @@ const StreamingBar = () => {
     <>
       <div className="hidden md:flex flex-col w-full h-full">
         <div
-          className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-[#FFFFFFB2] to-[#D4C4C2B2] backdrop-blur-lg dark:bg-gradient-to-r dark:from-[#FFFFFF08] dark:to-[#D4C4C208]"
+          className="flex items-center justify-center rounded-2xl px-4 py-2 bg-gradient-to-r from-[#FFFFFFB2] to-[#D4C4C2B2] backdrop-blur-lg dark:bg-gradient-to-r dark:from-[#FFFFFF08] dark:to-[#D4C4C208]"
           onClick={handleNowPlaying}
         >
           <div className="flex items-center space-x-4 flex-1 overflow-hidden">
@@ -85,7 +85,7 @@ const StreamingBar = () => {
             </button>
           </div>
         </div>
-        <div className="w-full">
+        <div className="w-full px-4">
           <CustomSlider
             className="cursor-pointer"
             defaultValue={[50]}
@@ -95,8 +95,8 @@ const StreamingBar = () => {
         </div>
       </div>
 
-      <div className="flex flex-col md:hidden w-full h-[70px] bg-white dark:bg-black bg-opacity-75 backdrop-blur-3xl bottom-16 left-0 right-0 fixed">
-        <div className="w-full">
+      <div className="flex flex-col md:hidden w-[400px] h-[70px] bg-white dark:bg-neutral-800 rounded-2xl drop-shadow-lg border border-neutral-100 dark:border-neutral-900 bottom-16 left-1/2 -translate-x-1/2 fixed">
+        <div className="w-full px-1">
           <CustomSlider
             className="cursor-pointer"
             defaultValue={[50]}

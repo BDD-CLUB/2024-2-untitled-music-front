@@ -55,7 +55,7 @@ export default function UserPage() {
         isMobile && streamingBar.isOpen && "mb-36"
       )}
     >
-      <div className="h-auto flex flex-col lg:flex-row gap-y-4 gap-x-8 items-start">
+      <div className="h-auto flex flex-col lg:flex-row gap-y-2 gap-x-8 items-start px-4 md:px-0">
         <div className="flex h-full w-full gap-x-8 items-center justify-start">
           <div className="flex">
             <Avatar className="md:w-48 md:h-48 min-w-32 max-w-48 min-h-32 max-h-48">
@@ -89,7 +89,7 @@ export default function UserPage() {
           </div>
         </div>
 
-        <div className="flex w-full h-20 md:h-full font-light text-sm items-start md:items-center whitespace-pre-line leading-normal overflow-auto">
+        <div className="flex w-full h-28 md:h-full font-light text-sm items-start md:items-center whitespace-pre-line leading-normal overflow-auto">
           Hello! My name is Raro, and im passionate about exploring new ideas
           and cultures. I enjoy reading, traveling, and meeting new people.
           Currently, im pursuing my interests in technology and innovation,
@@ -106,18 +106,18 @@ export default function UserPage() {
             onValueChange={setActiveTab}
             className="w-full flex-1 flex justify-center items-center"
           >
-            <TabsList className="w-full flex justify-center items-center gap-x-10 bg-transparent">
+            <TabsList className="w-full ml-12 flex justify-center items-center gap-x-10 bg-transparent">
               {tabs.map((tab) => (
                 <TabsTrigger
                   key={tab.id}
                   value={tab.id}
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-none ${
                     activeTab === tab.id
-                      ? "text-gray-900 border-t-2 border-[#FF7672] py-[17px]"
+                      ? "text-gray-900 border-t-2 border-[#FF7672] py-[15px]"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
-                  <tab.icon className="w-4 h-4" />
+                  <tab.icon className="w-5 h-5" />
                   <span className="hidden md:flex">{tab.label}</span>
                 </TabsTrigger>
               ))}

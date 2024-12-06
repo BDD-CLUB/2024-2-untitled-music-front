@@ -36,12 +36,12 @@ export function SigninModal() {
     <Dialog open={signinModal.isOpen} onOpenChange={onChange}>
       <DialogPortal>
         <DialogOverlay className="bg-black dark:bg-opacity-50 bg-opacity-50 fixed inset-0" />
-        <DialogContent className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] border border-transparent h-[50%] w-full md:max-w-[800px] md:rounded-2xl bg-[url('/images/auth-background.svg')] bg-current bg-center bg-no-repeat p-0 flex">
+        <DialogContent className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] border border-transparent h-[50%] min-w-[450px] md:max-w-[800px] rounded-2xl bg-[url('/images/auth-background.svg')] bg-current bg-center bg-no-repeat p-0 flex">
           <DialogTitle className="hidden">로그인</DialogTitle>
           <DialogDescription className="hidden">로그인</DialogDescription>
           <div className="hidden md:flex w-1/4" />
 
-          <div className="w-full md:w-3/4 h-full flex flex-col gap-y-4 items-center bg-[#FFFFFF99] dark:bg-[#00000099] md:rounded-2xl pt-8">
+          <div className="w-full md:w-3/4 h-full flex flex-col gap-y-4 items-center bg-[#FFFFFF99] dark:bg-[#00000099] rounded-2xl pt-8">
             <Image src={"/images/logo.svg"} alt="logo" width={35} height={35} />
             <h1 className="text-2xl font-bold dark:text-white">Untitled</h1>
             <p className="text-sm text-[#222222] dark:text-white">

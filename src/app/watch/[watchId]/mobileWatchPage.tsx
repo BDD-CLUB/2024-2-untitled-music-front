@@ -39,7 +39,7 @@ export default function MobileWatchPage() {
         </button>
       </div>
 
-      <div className="relative flex flex-col items-center gap-y-2 w-full mt-16">
+      <div className="relative flex flex-col items-center w-full h-full mt-16">
         {view === "main" && (
           <>
             <div className="bg-gradient-to-br from-[#FFFFFF33] to-[#99999933] aspect-square rounded-3xl mb-4 w-full overflow-y-auto max-h-96">
@@ -68,7 +68,7 @@ export default function MobileWatchPage() {
           </>
         )}
         {view === "lyrics" && (
-          <div className="bg-gradient-to-br from-[#FFFFFF33] to-[#99999933] aspect-square rounded-3xl mb-4 w-full overflow-y-auto h-[468px]">
+          <div className="bg-gradient-to-br from-[#FFFFFF33] to-[#99999933] aspect-square rounded-3xl mb-64 w-full h-full overflow-y-auto">
             <div className="flex whitespace-pre-line p-4 items-center justify-center text-lg truncate leading-loose text-white">
               Fancy 이건 참 화려해
               <br />
@@ -103,7 +103,7 @@ export default function MobileWatchPage() {
           </div>
         )}
         {view === "nowPlaying" && (
-          <div className="bg-gradient-to-br from-[#FFFFFF33] to-[#99999933] aspect-square rounded-3xl mb-4 w-full overflow-y-auto h-[468px]">
+          <div className="bg-gradient-to-br from-[#FFFFFF33] to-[#99999933] aspect-square rounded-3xl h-full mb-64 w-full overflow-y-auto">
             <div className="p-4 w-full">
               <WatchNowPlaying />
             </div>
@@ -111,60 +111,65 @@ export default function MobileWatchPage() {
         )}
       </div>
 
-      <div className="relative flex flex-col items-center justify-center w-full py-4 mt-12">
-        <div className="w-full">
-          <CustomSlider
-            className="cursor-pointer"
-            defaultValue={[50]}
-            max={100}
-            step={1}
-          />
+      <div className="fixed bottom-0 w-full left-0 right-0 px-8 pb-16">
+        <div className="relative flex flex-col items-center justify-center w-full py-4 mt-12">
+          <div className="w-full">
+            <CustomSlider
+              className="cursor-pointer"
+              defaultValue={[50]}
+              max={100}
+              step={1}
+            />
+          </div>
+          <div className="w-full flex justify-between items-center text-white px-1">
+            <div className="text-sm font-bold">01:53</div>
+            <div className="text-sm font-bold">03:10</div>
+          </div>
         </div>
-        <div className="w-full flex justify-between items-center text-white px-1">
-          <div className="text-sm font-bold">01:53</div>
-          <div className="text-sm font-bold">03:10</div>
+
+        <div
+          className="relative flex w-full items-center justify-center mt-4 space-x-8 text-white"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button>
+            <IconArrowsShuffle className="size-6" />
+          </button>
+          <button>
+            <IconPlayerSkipBackFilled className="size-6" />
+          </button>
+          <button className="rounded-full bg-white drop-shadow-md p-3 text-black">
+            <IconPlayerPlayFilled className="size-8" />
+          </button>
+          <button>
+            <IconPlayerSkipForwardFilled className="size-6" />
+          </button>
+          <button>
+            <IconRepeat className="size-6" />
+          </button>
+        </div>
+
+        <div className="relative flex w-full items-center justify-between my-auto text-white">
+          <button
+            onClick={
+              view !== "lyrics"
+                ? () => setView("lyrics")
+                : () => setView("main")
+            }
+          >
+            <IconAlignBoxCenterMiddle className="size-8" />
+          </button>
+          <button
+            onClick={
+              view !== "nowPlaying"
+                ? () => setView("nowPlaying")
+                : () => setView("main")
+            }
+          >
+            <IconVinyl className="size-8" />
+          </button>
         </div>
       </div>
 
-      <div
-        className="relative flex w-full items-center justify-center mt-4 space-x-8 text-white"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button>
-          <IconArrowsShuffle className="size-6" />
-        </button>
-        <button>
-          <IconPlayerSkipBackFilled className="size-6" />
-        </button>
-        <button className="rounded-full bg-white drop-shadow-md p-3 text-black">
-          <IconPlayerPlayFilled className="size-8" />
-        </button>
-        <button>
-          <IconPlayerSkipForwardFilled className="size-6" />
-        </button>
-        <button>
-          <IconRepeat className="size-6" />
-        </button>
-      </div>
-
-      <div className="relative flex w-full items-center justify-between my-auto text-white">
-        <button
-          onClick={
-            view !== "lyrics" ? () => setView("lyrics") : () => setView("main")
-          }
-        >
-          <IconAlignBoxCenterMiddle className="size-8" />
-        </button>
-        <button
-          onClick={
-            view !== "nowPlaying"
-              ? () => setView("nowPlaying")
-              : () => setView("main")
-          }
-        >
-          <IconVinyl className="size-8" />
-        </button>
-      </div>
     </main>
   );
 }

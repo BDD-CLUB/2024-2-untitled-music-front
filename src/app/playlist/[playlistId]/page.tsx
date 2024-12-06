@@ -108,8 +108,8 @@ export default function PlaylistPage() {
         isMobile && streamingBar.isOpen && "mb-36"
       )}
     >
-      <div className="h-full lg:w-1/2 w-full flex flex-col gap-y-12 overflow-y-auto">
-        <div className="flex w-full flex-row max-h-[250px] gap-x-8 pr-2">
+      <div className="h-full lg:w-1/2 w-full flex flex-col gap-y-8 overflow-y-auto">
+        <div className="flex w-full flex-row max-h-[250px] gap-x-8 px-2">
           <div className="h-full w-full flex flex-col items-center justify-center group">
             <GridImage />
             <div

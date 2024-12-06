@@ -24,8 +24,8 @@ const SquareContainer = ({
   const streamingBar = useStreamingBar();
 
   return (
-    <div className="flex flex-col h-60 w-52 bg-transparent items-center justify-center hover:bg-[#7E47631F] dark:hover:bg-gradient-to-b dark:from-[#D8C2DC4D] dark:to-[#2D1E274D] rounded-lg pb-4 transition hover:cursor-pointer group">
-      <div className="relative mt-4 flex items-center justify-center h-32 w-32 lg:h-40 lg:w-40">
+    <div className="flex flex-col h-60 w-52 bg-transparent items-center justify-center hover:bg-[#7E47631F] dark:hover:bg-gradient-to-b dark:from-[#D8C2DC4D] dark:to-[#2D1E274D] rounded-lg transition hover:cursor-pointer group">
+      <div className="relative flex items-center justify-center h-40 w-40">
         <Image
           src={src}
           alt="profile"
