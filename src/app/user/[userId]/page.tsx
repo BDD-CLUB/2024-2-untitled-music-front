@@ -119,12 +119,7 @@ export default function UserPage() {
             </div>
 
             <div className="flex w-full h-28 md:h-full font-light text-sm items-start md:items-center whitespace-pre-line leading-normal overflow-auto">
-              Hello! My name is Raro, and im passionate about exploring new
-              ideas and cultures. I enjoy reading, traveling, and meeting new
-              people. Currently, im pursuing my interests in technology and
-              innovation, aiming to make a positive impact in the world. I
-              believe in lifelong learning and always seek to grow personally
-              and professionally
+              {profileData?.description}
             </div>
           </div>
 
