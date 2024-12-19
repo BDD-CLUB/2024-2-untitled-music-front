@@ -13,6 +13,7 @@ import { SigninModal } from "./signin-modal";
 
 import { MobileUploadMenu } from "../bar/mobile-upload-menu";
 import { MobileSettingMenu } from "../bar/mobile-setting-menu";
+import ProfileModal from "./profile-modal";
 
 const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -35,6 +36,7 @@ const ModalProvider = () => {
       <NotiModal />
       
       <SigninModal />
+      <ProfileModal />
 
       <MobileUploadMenu />
       <MobileSettingMenu />
