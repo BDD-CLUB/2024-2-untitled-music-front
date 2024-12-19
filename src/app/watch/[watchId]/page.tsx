@@ -40,7 +40,7 @@ export default function WatchPage() {
 
   useEffect(() => {
     checkResize();
-  }, [isMobile]);
+  }, []);
 
   const [view, setView] = useState<ViewState>("nowPlaying");
   const router = useRouter();

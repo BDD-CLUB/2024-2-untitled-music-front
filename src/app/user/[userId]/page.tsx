@@ -30,7 +30,7 @@ import { Profile, getProfile, isProfile } from "@/services/profileService";
 import useProfileModal from "@/hooks/modal/use-profile-modal";
 import { useUser } from "@/provider/userProvider";
 
-export default async function UserPage() {
+export default function UserPage() {
   const streamingBar = useStreamingBar();
   const profileModal = useProfileModal();
   const isMobile = useMediaQuery({ maxWidth: 768 });
