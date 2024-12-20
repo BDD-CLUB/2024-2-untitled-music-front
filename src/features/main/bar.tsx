@@ -45,7 +45,7 @@ export function Bar() {
 
   const [uploadOpen, setUploadOpen] = useState(false);
   const [settingOpen, setSettingOpen] = useState(false);
-  const [profileData, setProfileData] = useState<Profile>();
+  const [profileData, setProfileData] = useState<Profile | null>();
 
   const uploadRef = useRef(null);
   useOutsideClick(uploadRef, () => setUploadOpen(false));
@@ -55,16 +55,12 @@ export function Bar() {
 
   useEffect(() => {
     const getProfileData = async () => {
-      try {
-        const data = await getProfile();
-        setProfileData(data);
-      } catch (error) {
-        console.error("프로필 로딩 실패:", error);
-      }
+      const data = await getProfile();
+      setProfileData(data);
     };
 
     getProfileData();
-  }, [profileData])
+  }, []);
 
   const links = [
     {
@@ -114,7 +110,10 @@ export function Bar() {
       title: "프로필",
       icon: (
         <Avatar>
-          <AvatarImage src={profileData ? profileData.profileImage : user?.artistImage} alt={profileData ? profileData.name : user?.name} />
+          <AvatarImage
+            src={profileData?.profileImage || user?.artistImage}
+            alt={profileData?.name || user?.name}
+          />
           <AvatarFallback>
             {user?.name ? (
               user.name.charAt(0).toUpperCase()
