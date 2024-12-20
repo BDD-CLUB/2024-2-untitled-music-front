@@ -118,14 +118,14 @@ const ProfileEditModal = () => {
           const profileImageUrl = await uploadToS3(file);
           requestData.profileImage = profileImageUrl;
         } catch (error) {
-          toast.error("이미지 업로드에 실패했습니다.");
+          toast.error(`이미지 업로드에 실패했습니다. ${error}`);
           return;
         }
       }
 
       const filteredRequestData = Object.fromEntries(
         Object.entries(requestData).filter(
-          ([_, value]) => value !== null && value !== "" && value !== undefined
+          ([, value]) => value !== null && value !== "" && value !== undefined
         )
       );
 
