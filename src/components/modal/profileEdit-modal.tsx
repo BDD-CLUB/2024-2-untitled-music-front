@@ -15,11 +15,13 @@ import ModalTitle from "./modal-title";
 import { Textarea } from "../ui/textarea";
 import { CustomModal } from "./custom-modal";
 import { api } from "@/lib/axios";
+import { getProfileUUID } from "@/services/profileService";
 
 const ProfileEditModal = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsloading] = useState(false);
   const profileEditModal = useProfileEditModal();
+  const uuid = getProfileUUID();
 
   const onChange = (open: boolean) => {
     if (!open) {
@@ -45,15 +47,11 @@ const ProfileEditModal = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await api.post(
-      `/upload/images`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    const response = await api.post(`/upload/images`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     if (response.status === 201) {
       return response.data;
@@ -63,17 +61,24 @@ const ProfileEditModal = () => {
   };
 
   const FormSchema = z.object({
-  name: z.string().min(1, "이름은 필수입니다.").max(20, "20자 이하로 입력하세요"),
-  description: z.string().max(500, "소개는 500자 이내로 작성하세요").optional(),
-  link1: z
-    .string()
-    .regex(/^https?:\/\//, "http:// 또는 https:// 형식의 URL을 입력하세요")
-    .optional(),
-  link2: z
-    .string()
-    .regex(/^https?:\/\//, "http:// 또는 https:// 형식의 URL을 입력하세요")
-    .optional(),
-});
+    name: z
+      .string()
+      .min(1, "1자 이상으로 작성하세요.")
+      .max(20, "20자 이하로 입력하세요")
+      .optional(),
+    description: z
+      .string()
+      .max(500, "소개는 500자 이내로 작성하세요")
+      .optional(),
+    link1: z
+      .string()
+      .regex(/^https?:\/\//, "http:// 또는 https:// 형식의 URL을 입력하세요")
+      .optional(),
+    link2: z
+      .string()
+      .regex(/^https?:\/\//, "http:// 또는 https:// 형식의 URL을 입력하세요")
+      .optional(),
+  });
 
   const {
     register,
@@ -94,44 +99,57 @@ const ProfileEditModal = () => {
 
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     try {
-      setIsloading(true);
+      const hasChanges =
+        Object.values(values).some(
+          (value) => value !== null && value !== "" && value !== undefined
+        ) || file !== null;
 
-      const profileImage = file;
-      if (!profileImage) {
-        toast.error("프로필 사진이 필요합니다.");
+      if (!hasChanges) {
+        toast.error("변경된 내용이 없습니다.");
         return;
       }
 
-      const profileImageUrl = await uploadToS3(profileImage);
+      setIsloading(true);
 
-      const requestData = {
-        ...values,
-        profileImage: profileImageUrl,
-      };
+      let requestData = { ...values };
 
-      const response = await api.patch(
-        `/profile`,
-        requestData,
-        {
-          withCredentials: true,
+      if (file) {
+        try {
+          const profileImageUrl = await uploadToS3(file);
+          requestData.profileImage = profileImageUrl;
+        } catch (error) {
+          toast.error("이미지 업로드에 실패했습니다.");
+          return;
         }
+      }
+
+      const filteredRequestData = Object.fromEntries(
+        Object.entries(requestData).filter(
+          ([_, value]) => value !== null && value !== "" && value !== undefined
+        )
       );
 
-      if (response.status !== 200) {
-        throw new Error("프로필 수정에 실패했습니다.");
+      if (!uuid) {
+        toast.error("프로필 정보를 찾을 수 없습니다.");
+        return;
       }
+
+      const response = await api.patch(
+        `/profile/${uuid}`,
+        filteredRequestData,
+        { withCredentials: true }
+      );
 
       toast.success("프로필이 수정되었습니다.");
       reset();
       profileEditModal.onClose();
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.data) {
-        const errorData = error.response.data;
-        toast.error(
-          errorData.detail || "프로필 수정 중 오류가 발생했습니다."
-        );
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.detail || "프로필 수정 중 오류가 발생했습니다.";
+        toast.error(errorMessage);
       } else {
-        toast.error("프로필 수정 과정에서 오류가 발생했습니다.");
+        toast.error("프로필 수정 중 오류가 발생했습니다.");
       }
     } finally {
       setIsloading(false);
@@ -179,8 +197,8 @@ const ProfileEditModal = () => {
           <Input
             id="name"
             disabled={isLoading}
-            {...register("name", { required: true })}
-            placeholder="🚨 이름 *"
+            {...register("name", { required: false })}
+            placeholder="🚨 이름"
             className="w-full h-14"
           />
           <p className={errors.name ? "text-red-500 text-xs" : "hidden"}>
@@ -218,7 +236,11 @@ const ProfileEditModal = () => {
               취소
             </div>
           </button>
-          <button className="p-[3px] relative" type="submit" disabled={isLoading}>
+          <button
+            className="p-[3px] relative"
+            type="submit"
+            disabled={isLoading}
+          >
             <div className="px-8 py-2  bg-[#FF3F8F] rounded-xl relative group transition duration-200 text-white hover:bg-opacity-75 text-sm">
               확인
             </div>

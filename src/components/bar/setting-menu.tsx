@@ -15,8 +15,10 @@ import {
   IconLogout,
   IconSettings,
 } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
 export function SettingMenu() {
+  const router = useRouter();
   const { logout } = useUser();
   const { isLoggedIn } = useAuth();
   const signInModal = useSigninModal();
@@ -28,6 +30,7 @@ export function SettingMenu() {
 
   const handleLogout = async () => {
     logout();
+    router.refresh();
   }
 
   const toggleTheme = useCallback(() => {
