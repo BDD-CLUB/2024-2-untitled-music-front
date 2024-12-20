@@ -8,7 +8,7 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 import { IconUserCircle } from "@tabler/icons-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import useProfileModal from "@/hooks/modal/use-profile-modal";
+import useProfileEditModal from "@/hooks/modal/use-profileEdit-modal";
 
 import { Input } from "../ui/input";
 import ModalTitle from "./modal-title";
@@ -16,15 +16,15 @@ import { Textarea } from "../ui/textarea";
 import { CustomModal } from "./custom-modal";
 import { api } from "@/lib/axios";
 
-const ProfileModal = () => {
+const ProfileEditModal = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsloading] = useState(false);
-  const profileModal = useProfileModal();
+  const profileEditModal = useProfileEditModal();
 
   const onChange = (open: boolean) => {
     if (!open) {
       reset();
-      profileModal.onClose();
+      profileEditModal.onClose();
     }
   };
 
@@ -109,7 +109,7 @@ const ProfileModal = () => {
         profileImage: profileImageUrl,
       };
 
-      const response = await api.post(
+      const response = await api.patch(
         `/profile`,
         requestData,
         {
@@ -117,21 +117,21 @@ const ProfileModal = () => {
         }
       );
 
-      if (response.status !== 201) {
-        throw new Error("프로필 업로드에 실패했습니다.");
+      if (response.status !== 200) {
+        throw new Error("프로필 수정에 실패했습니다.");
       }
 
-      toast.success("프로필이 업로드되었습니다.");
+      toast.success("프로필이 수정되었습니다.");
       reset();
-      profileModal.onClose();
+      profileEditModal.onClose();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data) {
         const errorData = error.response.data;
         toast.error(
-          errorData.detail || "프로필 업로드 중 오류가 발생했습니다."
+          errorData.detail || "프로필 수정 중 오류가 발생했습니다."
         );
       } else {
-        toast.error("프로필 업로드 과정에서 오류가 발생했습니다.");
+        toast.error("프로필 수정 과정에서 오류가 발생했습니다.");
       }
     } finally {
       setIsloading(false);
@@ -143,11 +143,11 @@ const ProfileModal = () => {
       title={
         <ModalTitle
           icon={<IconUserCircle className="size-10 p-1" />}
-          title="프로필 생성"
+          title="프로필 편집"
         />
       }
       description="당신을 소개해주세요"
-      isOpen={profileModal.isOpen}
+      isOpen={profileEditModal.isOpen}
       onChange={onChange}
       className="p-4 flex flex-col items-center justify-center"
     >
@@ -211,7 +211,7 @@ const ProfileModal = () => {
         <div className="flex items-center justify-around w-full pt-10">
           <button
             className="p-[3px] relative"
-            onClick={() => profileModal.onClose()}
+            onClick={() => profileEditModal.onClose()}
             disabled={isLoading}
           >
             <div className="px-8 py-2 bg-white rounded-xl relative group text-black hover:bg-neutral-100 text-sm dark:bg-black/95 dark:text-white dark:hover:bg-neutral-800">
@@ -229,4 +229,4 @@ const ProfileModal = () => {
   );
 };
 
-export default ProfileModal;
+export default ProfileEditModal;

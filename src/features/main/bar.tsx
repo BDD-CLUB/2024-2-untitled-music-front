@@ -28,6 +28,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useAuth } from "@/provider/authProvider";
 import { useUser } from "@/provider/userProvider";
+import { Profile, getProfile } from "@/services/profileService";
 
 export function Bar() {
   const router = useRouter();
@@ -44,12 +45,26 @@ export function Bar() {
 
   const [uploadOpen, setUploadOpen] = useState(false);
   const [settingOpen, setSettingOpen] = useState(false);
+  const [profileData, setProfileData] = useState<Profile>();
 
   const uploadRef = useRef(null);
   useOutsideClick(uploadRef, () => setUploadOpen(false));
 
   const settingRef = useRef(null);
   useOutsideClick(settingRef, () => setSettingOpen(false));
+
+  useEffect(() => {
+    const getProfileData = async () => {
+      try {
+        const data = await getProfile();
+        setProfileData(data);
+      } catch (error) {
+        console.error("프로필 로딩 실패:", error);
+      }
+    };
+
+    getProfileData();
+  }, [profileData])
 
   const links = [
     {
@@ -99,7 +114,7 @@ export function Bar() {
       title: "프로필",
       icon: (
         <Avatar>
-          <AvatarImage src={user?.artistImage} alt={user?.name} />
+          <AvatarImage src={profileData ? profileData.profileImage : user?.artistImage} alt={profileData ? profileData.name : user?.name} />
           <AvatarFallback>
             {user?.name ? (
               user.name.charAt(0).toUpperCase()

@@ -14,6 +14,7 @@ import { SigninModal } from "./signin-modal";
 import { MobileUploadMenu } from "../bar/mobile-upload-menu";
 import { MobileSettingMenu } from "../bar/mobile-setting-menu";
 import ProfileModal from "./profile-modal";
+import ProfileEditModal from "./profileEdit-modal";
 
 const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -37,6 +38,7 @@ const ModalProvider = () => {
       
       <SigninModal />
       <ProfileModal />
+      <ProfileEditModal />
 
       <MobileUploadMenu />
       <MobileSettingMenu />

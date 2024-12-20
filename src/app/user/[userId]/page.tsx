@@ -9,6 +9,7 @@ import {
   IconDisc,
   IconMusic,
   IconPlaylist,
+  IconDotsVertical,
 } from "@tabler/icons-react";
 import {
   DropdownMenu,
@@ -26,43 +27,36 @@ import UserPlaylist from "@/features/user/user-playlist";
 import useStreamingBar from "@/hooks/modal/use-streaming-bar";
 
 import { cn } from "@/lib/utils";
-import { Profile, getProfile, isProfile } from "@/services/profileService";
+import { Profile, getProfile } from "@/services/profileService";
 import useProfileModal from "@/hooks/modal/use-profile-modal";
 import { useUser } from "@/provider/userProvider";
+import useProfileEditModal from "@/hooks/modal/use-profileEdit-modal";
 
 export default function UserPage() {
   const streamingBar = useStreamingBar();
   const profileModal = useProfileModal();
+  const profileEditModal = useProfileEditModal();
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const { user } = useUser();
 
   const [activeTab, setActiveTab] = useState("track");
   const [array, setArray] = useState("new");
-  const [profile, setProfile] = useState(false);
-  const [profileData, setProfileData] = useState<Profile>();
-
-  const checkProfile = async () => {
-    const isProfileData = await isProfile();
-    setProfile(isProfileData);
-  };
+  const [profileData, setProfileData] = useState<Profile | null>(null);
 
   useEffect(() => {
-    checkProfile();
-  }, [profile]);
-
-  useEffect(() => {
-    const getProfileData = async () => {
+    const fetchProfile = async () => {
       try {
         const data = await getProfile();
         setProfileData(data);
       } catch (error) {
         console.error("프로필 로딩 실패:", error);
+        setProfileData(null);
       }
     };
 
-    getProfileData();
-  }, [profile])
+    fetchProfile();
+  }, []);
 
   const tabs = [
     { id: "track", label: "트랙", icon: IconMusic, onClick: () => {} },
@@ -77,7 +71,7 @@ export default function UserPage() {
 
   return (
     <>
-      {profile ? (
+      {profileData ? (
         <main
           className={cn(
             "flex flex-col bg-transparent h-full mb-20 md:mb-10 pl-4 md:pl-0 md:ml-48 mt-8 md:mt-24 pt-2 pr-4 md:pr-0 md:mr-28 overflow-y-auto hide-scrollbar",
@@ -88,19 +82,27 @@ export default function UserPage() {
             <div className="flex h-full w-full gap-x-8 items-center justify-start">
               <div className="flex">
                 <Avatar className="md:w-48 md:h-48 min-w-32 max-w-48 min-h-32 max-h-48">
-                  <AvatarImage src={profileData?.profileImage} alt={profileData?.name} />
+                  <AvatarImage
+                    src={profileData?.profileImage}
+                    alt={profileData?.name}
+                  />
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>
               </div>
               <div className="flex flex-col items-start justify-between gap-y-4 md:py-6">
-                <div className="md:text-3xl font-bold text-2xl pl-2">
-                  {profileData?.name || "U"}
+                <div className="flex items-center justify-between w-full">
+                  <div className="md:text-3xl font-bold text-2xl pl-2">
+                    {profileData?.name || "U"}
+                  </div>
+                  <div onClick={profileEditModal.onOpen} className="cursor-pointer">
+                    <IconDotsVertical className="size-6 hover:opacity-75" />
+                  </div>
                 </div>
                 <div className="flex gap-x-4">
                   <button className="bg-white text-black hover:bg-black/10 dark:hover:bg-white/75 shadow-lg w-auto font-medium text-sm p-2 rounded-lg">
                     1.5M
                   </button>
-                  <button className="bg-[#FF3F8F] text-black hover:bg-opacity-75 hover:text-black/75 shadow-lg w-auto font-medium text-sm py-2 px-8 rounded-lg">
+                  <button className="bg-[#FF3F8F] text-white hover:bg-opacity-75 hover:text-white/75 shadow-lg w-auto font-medium text-sm py-2 px-8 rounded-lg truncate bg-opacity-90">
                     팔로우
                   </button>
                 </div>

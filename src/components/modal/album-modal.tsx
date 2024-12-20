@@ -16,6 +16,7 @@ import { FileUpload } from "../ui/file-upload";
 import { IconDisc } from "@tabler/icons-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useAlbumModal from "@/hooks/modal/use-album-modal";
+import { api } from "@/lib/axios";
 
 const AlbumModal = () => {
   const [stage, setStage] = useState(1);
@@ -72,8 +73,8 @@ const AlbumModal = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/upload/images`,
+    const response = await api.post(
+      `/upload/images`,
       formData,
       {
         headers: {
@@ -107,8 +108,8 @@ const AlbumModal = () => {
         description: values.albumDescription || "",
       };
 
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/album`,
+      const response = await api.post(
+        `/album`,
         requestData,
         {
           withCredentials: true,
