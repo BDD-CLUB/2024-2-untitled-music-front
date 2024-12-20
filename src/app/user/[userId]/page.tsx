@@ -91,7 +91,7 @@ export default function UserPage() {
               </div>
               <div className="flex flex-col items-start justify-between gap-y-4 md:py-6">
                 <div className="flex items-center justify-between w-full">
-                  <div className="md:text-3xl font-bold text-2xl pl-2">
+                  <div className="md:text-3xl font-bold text-2xl">
                     {profileData?.name || "U"}
                   </div>
                   <div

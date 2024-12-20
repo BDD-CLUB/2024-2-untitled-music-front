@@ -99,6 +99,10 @@ const ProfileEditModal = () => {
 
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     try {
+      console.log(uuid)
+
+      console.log(values)
+
       const hasChanges =
         Object.values(values).some(
           (value) => value !== null && value !== "" && value !== undefined
