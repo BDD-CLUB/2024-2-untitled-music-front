@@ -94,7 +94,10 @@ export default function UserPage() {
                   <div className="md:text-3xl font-bold text-2xl pl-2">
                     {profileData?.name || "U"}
                   </div>
-                  <div onClick={profileEditModal.onOpen} className="cursor-pointer">
+                  <div
+                    onClick={profileEditModal.onOpen}
+                    className="cursor-pointer"
+                  >
                     <IconDotsVertical className="size-6 hover:opacity-75" />
                   </div>
                 </div>
@@ -106,17 +109,19 @@ export default function UserPage() {
                     팔로우
                   </button>
                 </div>
-                <div className="flex md:mt-8 gap-x-2">
-                  <IconLink className="size-6" />
-                  <a
-                    href={profileData?.link1}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sky-500"
-                  >
-                    {profileData?.link1}
-                  </a>
-                </div>
+                {profileData?.link1 && (
+                  <div className="flex md:mt-8 gap-x-2">
+                    <IconLink className="size-6" />
+                    <a
+                      href={profileData?.link1}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sky-500"
+                    >
+                      {profileData?.link1}
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
 

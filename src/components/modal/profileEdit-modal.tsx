@@ -111,7 +111,7 @@ const ProfileEditModal = () => {
 
       setIsloading(true);
 
-      let requestData = { ...values };
+      const requestData = { ...values };
 
       if (file) {
         try {
@@ -140,16 +140,19 @@ const ProfileEditModal = () => {
         { withCredentials: true }
       );
 
+      if (response.status !== 200) {
+        throw new Error("프로필 수정에 실패했습니다.");
+      }
+
       toast.success("프로필이 수정되었습니다.");
       reset();
       profileEditModal.onClose();
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage =
-          error.response?.data?.detail || "프로필 수정 중 오류가 발생했습니다.";
-        toast.error(errorMessage);
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const errorData = error.response.data;
+        toast.error(errorData.detail || "프로필 수정 중 오류가 발생했습니다.");
       } else {
-        toast.error("프로필 수정 중 오류가 발생했습니다.");
+        toast.error("프로필 수정 과정에서 오류가 발생했습니다.");
       }
     } finally {
       setIsloading(false);
