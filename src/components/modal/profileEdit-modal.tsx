@@ -16,11 +16,13 @@ import { Textarea } from "../ui/textarea";
 import { CustomModal } from "./custom-modal";
 import { api } from "@/lib/axios";
 import { useProfile } from "@/provider/profileProvider";
+import { useRouter } from "next/navigation";
 
 const ProfileEditModal = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsloading] = useState(false);
   const profileEditModal = useProfileEditModal();
+  const router = useRouter();
 
   const { uuid } = useProfile();
 
@@ -180,6 +182,7 @@ const ProfileEditModal = () => {
     toast.success("프로필이 수정되었습니다.");
     reset();
     profileEditModal.onClose();
+    router.refresh();
   };
 
   const handleError = (error: unknown) => {

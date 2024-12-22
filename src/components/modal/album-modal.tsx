@@ -17,6 +17,7 @@ import { IconDisc } from "@tabler/icons-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useAlbumModal from "@/hooks/modal/use-album-modal";
 import { api } from "@/lib/axios";
+import { useRouter } from "next/navigation";
 
 const AlbumModal = () => {
   const [stage, setStage] = useState(1);
@@ -24,6 +25,7 @@ const AlbumModal = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isLoading, setIsloading] = useState(false);
 
+  const router = useRouter();
   const albumModal = useAlbumModal();
 
   const handleFileUpload = (files: File[]) => {
@@ -123,6 +125,7 @@ const AlbumModal = () => {
       toast.success("앨범이 생성되었습니다!");
       reset();
       albumModal.onClose();
+      router.refresh();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data) {
         const errorData = error.response.data;
