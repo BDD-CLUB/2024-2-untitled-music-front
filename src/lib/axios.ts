@@ -14,8 +14,6 @@ const createAxiosInstance = (): AxiosInstance => {
       try {
         const response = await fetch('/api/token')
         const data = await response.json()
-
-        console.log('Token:', data.token);
         
         if (data.token) {
           config.headers.Authorization = `Bearer ${data.token}`;

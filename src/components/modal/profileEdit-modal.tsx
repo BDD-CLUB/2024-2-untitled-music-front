@@ -15,13 +15,14 @@ import ModalTitle from "./modal-title";
 import { Textarea } from "../ui/textarea";
 import { CustomModal } from "./custom-modal";
 import { api } from "@/lib/axios";
-import { getProfileUUID } from "@/services/profileService";
+import { useProfile } from "@/provider/profileProvider";
 
 const ProfileEditModal = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsloading] = useState(false);
   const profileEditModal = useProfileEditModal();
-  const uuid = getProfileUUID();
+  
+  const { uuid } = useProfile(); 
 
   const onChange = (open: boolean) => {
     if (!open) {
@@ -68,7 +69,7 @@ const ProfileEditModal = () => {
       .optional(),
     description: z
       .string()
-      .max(500, "소개는 500자 이내로 작성하세요")
+      .max(100, "소개는 100자 이내로 작성하세요")
       .optional(),
     link1: z
       .string()
@@ -99,24 +100,13 @@ const ProfileEditModal = () => {
 
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     try {
-      console.log(uuid)
-
-      console.log(values)
-
-      const hasChanges =
-        Object.values(values).some(
-          (value) => value !== null && value !== "" && value !== undefined
-        ) || file !== null;
-
-      if (!hasChanges) {
-        toast.error("변경된 내용이 없습니다.");
-        return;
-      }
-
+      console.log(uuid);
+      console.log(values);
+  
       setIsloading(true);
-
+  
       const requestData = { ...values };
-
+  
       if (file) {
         try {
           const profileImageUrl = await uploadToS3(file);
@@ -125,29 +115,32 @@ const ProfileEditModal = () => {
           toast.error(`이미지 업로드에 실패했습니다. ${error}`);
           return;
         }
+      } else {
+        delete requestData.profileImage;
       }
-
+  
       const filteredRequestData = Object.fromEntries(
-        Object.entries(requestData).filter(
-          ([, value]) => value !== null && value !== "" && value !== undefined
-        )
+        Object.entries(requestData).map(([key, value]) => [
+          key,
+          value ?? "", 
+        ])
       );
-
+  
       if (!uuid) {
         toast.error("프로필 정보를 찾을 수 없습니다.");
         return;
       }
-
+  
       const response = await api.patch(
         `/profile/${uuid}`,
         filteredRequestData,
         { withCredentials: true }
       );
-
+  
       if (response.status !== 200) {
         throw new Error("프로필 수정에 실패했습니다.");
       }
-
+  
       toast.success("프로필이 수정되었습니다.");
       reset();
       profileEditModal.onClose();
@@ -184,6 +177,7 @@ const ProfileEditModal = () => {
           <Input
             id="profileImage"
             type="file"
+            {...register("profileImage", { required: false })}
             disabled={isLoading}
             className="hidden"
             onChange={handleFileUpload}
@@ -218,6 +212,9 @@ const ProfileEditModal = () => {
             placeholder="👋 소개"
             className="w-full h-full resize-none"
           />
+          <p className={errors.description ? "text-red-500 text-xs" : "hidden"}>
+            {errors.description ? String(errors.description.message) : null}
+          </p>
           <Input
             id="link1"
             disabled={isLoading}
@@ -225,6 +222,9 @@ const ProfileEditModal = () => {
             placeholder="🔗 메인 링크"
             className="w-full h-14"
           />
+          <p className={errors.link1 ? "text-red-500 text-xs" : "hidden"}>
+            {errors.link1 ? String(errors.link1.message) : null}
+          </p>
           <Input
             id="link2"
             disabled={isLoading}
@@ -232,6 +232,9 @@ const ProfileEditModal = () => {
             placeholder="🔗 서브 링크"
             className="w-full h-14"
           />
+          <p className={errors.link2 ? "text-red-500 text-xs" : "hidden"}>
+            {errors.link2 ? String(errors.link2.message) : null}
+          </p>
         </div>
         <div className="flex items-center justify-around w-full pt-10">
           <button

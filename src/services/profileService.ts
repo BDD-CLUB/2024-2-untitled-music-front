@@ -1,6 +1,5 @@
 import { api } from "@/lib/axios";
 import axios from "axios";
-import Cookies from "js-cookie";
 
 export interface Profile {
   name: string;
@@ -10,11 +9,6 @@ export interface Profile {
   profileImage: string;
   isMain: true;
 }
-
-export const getProfileUUID = (): string | null => {
-  const profile = Cookies.get("profile");
-  return profile || null;
-};
 
 export const getProfile = async (): Promise<Profile | null> => {
   try {

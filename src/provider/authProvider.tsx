@@ -19,7 +19,7 @@ export function useAuth() {
 
 export default function AuthProvider({ 
   children, 
-  accessToken 
+  accessToken,
 }: { 
   children: React.ReactNode;
   accessToken: string | undefined;
