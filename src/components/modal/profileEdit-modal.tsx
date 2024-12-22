@@ -16,7 +16,6 @@ import { Textarea } from "../ui/textarea";
 import { CustomModal } from "./custom-modal";
 import { api } from "@/lib/axios";
 import { useProfile } from "@/provider/profileProvider";
-import { request } from "http";
 
 const ProfileEditModal = () => {
   const [file, setFile] = useState<File | null>(null);
