@@ -56,7 +56,7 @@ export default function UserPage() {
     };
 
     fetchProfile();
-  }, []);
+  }, [user]);
 
   const tabs = [
     { id: "track", label: "트랙", icon: IconMusic, onClick: () => {} },

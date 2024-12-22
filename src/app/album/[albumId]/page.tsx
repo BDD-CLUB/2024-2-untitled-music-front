@@ -1,5 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { useMediaQuery } from "react-responsive";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   IconDotsVertical,
@@ -18,22 +22,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { useMediaQuery } from "react-responsive";
-
 import useStreamingBar from "@/hooks/modal/use-streaming-bar";
-import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
-import { Album, Profile, Track, getAlbumById } from "@/services/albumService";
-import { toast } from "sonner";
 import useInformationModal from "@/hooks/modal/use-information-modal";
 import useAlbumEditModal from "@/hooks/modal/use-albumEdit-modal";
+import { Album, Profile, Track, getAlbumById } from "@/services/albumService";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export default function AlbumPage() {
-  const [albumData, setAlbumData] = useState<Album>();
+  const [albumData, setAlbumData] = useState<Album | undefined>(undefined);
   const [albumTrack, setAlbumTrack] = useState<Track[]>([]);
-  const [albumProfile, setAlbumProfile] = useState<Profile>();
+  const [albumProfile, setAlbumProfile] = useState<Profile | undefined>(
+    undefined
+  );
 
   const router = useRouter();
   const streamingBar = useStreamingBar();
@@ -57,7 +58,7 @@ export default function AlbumPage() {
     };
 
     getAlbum();
-  }, []);
+  }, [uuid]);
 
   const handleShareClick = () => {
     navigator.clipboard
@@ -65,6 +66,10 @@ export default function AlbumPage() {
       .then(() => toast.success("링크가 복사되었습니다!"))
       .catch(() => toast.error("복사 실패!"));
   };
+
+  if (!albumData) {
+    return <div>앨범 데이터를 불러오는 중입니다...</div>;
+  }
 
   return (
     <main
@@ -77,7 +82,7 @@ export default function AlbumPage() {
         <div className="flex w-full flex-row md:h-[250px] gap-x-8 pr-2">
           <div className="h-full w-full flex flex-col items-center justify-center group">
             <Image
-              src={albumData ? albumData?.artImage : ""}
+              src={albumData.artImage || ""}
               alt="album"
               width={250}
               height={250}
@@ -91,23 +96,25 @@ export default function AlbumPage() {
             </div>
           </div>
           <div className="flex flex-col w-full h-full items-start justify-between py-2 gap-y-4">
-            <div
-              onClick={() => router.push(`/profile/${albumProfile?.name}`)}
-              className="flex gap-x-2 items-center"
-            >
-              <Avatar className="w-6 h-6 lg:w-10 lg:h-10">
-                <AvatarImage
-                  src={`${albumProfile?.profileImage}`}
-                  alt="profile"
-                />
-                <AvatarFallback>U</AvatarFallback>
-              </Avatar>
-              <span className="text-sm hover:underline truncate">
-                {albumProfile?.name}
-              </span>
-            </div>
+            {albumProfile && (
+              <div
+                onClick={() => router.push(`/profile/${albumProfile.name}`)}
+                className="flex gap-x-2 items-center"
+              >
+                <Avatar className="w-6 h-6 lg:w-10 lg:h-10">
+                  <AvatarImage
+                    src={`${albumProfile.profileImage}`}
+                    alt="profile"
+                  />
+                  <AvatarFallback>U</AvatarFallback>
+                </Avatar>
+                <span className="text-sm hover:underline truncate">
+                  {albumProfile.name}
+                </span>
+              </div>
+            )}
             <div className="tracking-wide text-3xl md:text-4xl lg:text-5xl font-extrabold truncate">
-              {albumData?.title}
+              {albumData.title}
             </div>
             <div className="flex w-full items-center justify-between">
               <div className="flex gap-x-2 items-center justify-center mr-2 lg:mr-0">
@@ -115,12 +122,20 @@ export default function AlbumPage() {
                 <span className="text-base">13.1k</span>
               </div>
               <div className="flex gap-x-3">
-                <IconShare onClick={handleShareClick} className="size-6 cursor-pointer" />
-                <IconInfoCircle
-                  onClick={() => informationModal.onOpen(albumData)}
+                <IconShare
+                  onClick={handleShareClick}
                   className="size-6 cursor-pointer"
                 />
-                <IconDotsVertical onClick={albumEditModal.onOpen} className="size-6 cursor-pointer" />
+                <IconInfoCircle
+                  onClick={() =>
+                    albumData && informationModal.onOpen(albumData)
+                  }
+                  className="size-6 cursor-pointer"
+                />
+                <IconDotsVertical
+                  onClick={albumEditModal.onOpen}
+                  className="size-6 cursor-pointer"
+                />
               </div>
             </div>
           </div>
