@@ -92,23 +92,25 @@ export default function AlbumPage() {
             </div>
           </div>
           <div className="flex flex-col w-full h-full items-start justify-between py-2 gap-y-4">
-            {albumProfile && (
-              <div
-                onClick={() => router.push(`/profile/${albumProfile.name}`)}
-                className="flex gap-x-2 items-center"
-              >
-                <Avatar className="w-6 h-6 lg:w-10 lg:h-10">
-                  <AvatarImage
-                    src={`${albumProfile.profileImage}`}
-                    alt="profile"
-                  />
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
-                <span className="text-sm hover:underline truncate">
-                  {albumProfile.name}
-                </span>
-              </div>
-            )}
+            <div>
+              {albumProfile && (
+                <div
+                  onClick={() => router.push(`/profile/${albumProfile.name}`)}
+                  className="flex gap-x-2 items-center"
+                >
+                  <Avatar className="w-6 h-6 lg:w-10 lg:h-10">
+                    <AvatarImage
+                      src={`${albumProfile.profileImage}`}
+                      alt="profile"
+                    />
+                    <AvatarFallback>U</AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm hover:underline truncate">
+                    {albumProfile.name}
+                  </span>
+                </div>
+              )}
+            </div>
             <div className="tracking-wide text-3xl md:text-4xl font-extrabold truncate">
               {albumData?.title}
             </div>

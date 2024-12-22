@@ -13,10 +13,14 @@ import { CustomModal } from "./custom-modal";
 import { IconPlaylist } from "@tabler/icons-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import usePlaylistModal from "@/hooks/modal/use-playlist-modal";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/axios";
+import axios from "axios";
 
 const PlaylistModal = () => {
   const [isLoading, setIsloading] = useState(false);
 
+  const router = useRouter();
   const playlistModal = usePlaylistModal();
 
   const onChange = (open: boolean) => {
@@ -27,11 +31,12 @@ const PlaylistModal = () => {
   };
 
   const FormSchema = z.object({
-    playlistName: z
+    title: z
       .string()
       .min(1, { message: "플레이리스트 이름은 필수입니다." })
       .max(20, { message: "플레이리스트 이름은 20자 이하로 입력해야 합니다." }),
-    playlistDescription: z.string().optional(),
+    description: z.string().optional(),
+    trackUuids: z.array(z.string()).optional(),
   });
 
   const {
@@ -42,34 +47,52 @@ const PlaylistModal = () => {
   } = useForm<FieldValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      // 이후 수정
-      playlistName: "",
-      playlistDescription: "",
+      title: "",
+      description: "",
+      trackUuids: [],
     },
   });
 
-  const onSubmit: SubmitHandler<FieldValues> = async () => {
-    // 이후 수정
+  const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     try {
       setIsloading(true);
+
+      const response = await api.post("/playlists", values, {
+        withCredentials: true,
+      });
+
+      if (response.status !== 201) {
+        throw new Error("플레이리스트 생성에 실패하였습니다.");
+      }
+
+      console.log(`플레이리스트: ${values}`);
+
+      toast.success("플레이리스트가 생성되었습니다!");
+      reset();
+      playlistModal.onClose();
+      router.refresh();
     } catch (error) {
-      toast.error(`문제가 발생하였습니다 ${error}`);
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const errorData = error.response.data;
+        toast.error(errorData.detail || "플레이리스트 생성에 실패했습니다.");
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("알 수 없는 오류가 발생했습니다.");
+      }
     } finally {
       setIsloading(false);
-
-      playlistModal.onClose();
-      toast.success("플레이리스트가 생성되었습니다!");
     }
   };
 
   return (
     <CustomModal
-    title={
-      <ModalTitle
-        icon={<IconPlaylist className="size-10 p-1" />}
-        title="플레이리스트 생성"
-      />
-    }
+      title={
+        <ModalTitle
+          icon={<IconPlaylist className="size-10 p-1" />}
+          title="플레이리스트 생성"
+        />
+      }
       description="플레이리스트에 대한 정보를 입력해주세요"
       isOpen={playlistModal.isOpen}
       onChange={onChange}
@@ -81,21 +104,19 @@ const PlaylistModal = () => {
       >
         <div className="flex flex-col gap-y-4 items-center justify-center h-full w-full rounded-md overflow-y-auto mt-2">
           <Input
-            id="playlistName"
+            id="title"
             disabled={isLoading}
-            {...register("playlistName", { required: true })}
+            {...register("title", { required: true })}
             placeholder="플레이리스트 이름 (필수)"
             className="w-full h-14"
           />
-          <p
-            className={errors.playlistName ? "text-red-500 text-xs" : "hidden"}
-          >
-            {errors.playlistName ? String(errors.playlistName.message) : null}
+          <p className={errors.title ? "text-red-500 text-xs" : "hidden"}>
+            {errors.title ? String(errors.title.message) : null}
           </p>
           <Textarea
-            id="playlistDescription"
+            id="description"
             disabled={isLoading}
-            {...register("playlistDescription", { required: false })}
+            {...register("description", { required: false })}
             placeholder="플레이리스트 설명 (선택)"
             className="w-full h-full resize-none"
           />

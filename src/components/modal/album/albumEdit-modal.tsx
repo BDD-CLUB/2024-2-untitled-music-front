@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
-import { IconUserCircle } from "@tabler/icons-react";
+import { IconDisc } from "@tabler/icons-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
@@ -101,10 +101,6 @@ const AlbumEditModal = () => {
     try {
       const albumArtUrl = file ? await uploadToS3(file) : "";
 
-      console.log(uuid);
-      console.log(values);
-      console.log(albumArtUrl);
-
       const response = await api.patch(`/album/${uuid}`, {
         title: values.title,
         description: values.description,
@@ -152,11 +148,11 @@ const AlbumEditModal = () => {
     <CustomModal
       title={
         <ModalTitle
-          icon={<IconUserCircle className="size-10 p-1" />}
+          icon={<IconDisc className="size-10 p-1" />}
           title="앨범 편집"
         />
       }
-      description="앨범을 소개해주세요"
+      description="앨범 정보를 입력해주세요"
       isOpen={albumEditModal.isOpen}
       onChange={onChange}
       className="p-4 flex flex-col items-center justify-center"
