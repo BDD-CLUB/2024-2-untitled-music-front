@@ -16,13 +16,14 @@ import { Textarea } from "../ui/textarea";
 import { CustomModal } from "./custom-modal";
 import { api } from "@/lib/axios";
 import { useProfile } from "@/provider/profileProvider";
+import { request } from "http";
 
 const ProfileEditModal = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsloading] = useState(false);
   const profileEditModal = useProfileEditModal();
-  
-  const { uuid } = useProfile(); 
+
+  const { uuid } = useProfile();
 
   const onChange = (open: boolean) => {
     if (!open) {
@@ -64,21 +65,27 @@ const ProfileEditModal = () => {
   const FormSchema = z.object({
     name: z
       .string()
-      .min(1, "1자 이상으로 작성하세요.")
+      .min(2, "2자 이상 입력하세요")
       .max(20, "20자 이하로 입력하세요")
-      .optional(),
+      .nullable()
+      .transform((val) => val ?? ""),
     description: z
       .string()
       .max(100, "소개는 100자 이내로 작성하세요")
-      .optional(),
+      .nullable()
+      .transform((val) => val ?? ""),
     link1: z
       .string()
       .regex(/^https?:\/\//, "http:// 또는 https:// 형식의 URL을 입력하세요")
-      .optional(),
+      .nullable()
+      .transform((val) => val ?? ""),
     link2: z
       .string()
       .regex(/^https?:\/\//, "http:// 또는 https:// 형식의 URL을 입력하세요")
-      .optional(),
+      .nullable()
+      .transform((val) => val ?? ""),
+    profileImage: z.string().nullable().optional(),
+    isMain: z.boolean().default(true),
   });
 
   const {
@@ -100,13 +107,10 @@ const ProfileEditModal = () => {
 
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     try {
-      console.log(uuid);
-      console.log(values);
-  
       setIsloading(true);
-  
+
       const requestData = { ...values };
-  
+
       if (file) {
         try {
           const profileImageUrl = await uploadToS3(file);
@@ -116,31 +120,31 @@ const ProfileEditModal = () => {
           return;
         }
       } else {
-        delete requestData.profileImage;
+        requestData.profileImage = "";
       }
-  
-      const filteredRequestData = Object.fromEntries(
-        Object.entries(requestData).map(([key, value]) => [
-          key,
-          value ?? "", 
-        ])
-      );
-  
+
+      const filteredRequestData = {
+        ...values,
+        profileImage: requestData.profileImage,
+      }
+
       if (!uuid) {
         toast.error("프로필 정보를 찾을 수 없습니다.");
         return;
       }
-  
+
+      console.log("데이터:", filteredRequestData);
+
       const response = await api.patch(
         `/profile/${uuid}`,
         filteredRequestData,
         { withCredentials: true }
       );
-  
+
       if (response.status !== 200) {
         throw new Error("프로필 수정에 실패했습니다.");
       }
-  
+
       toast.success("프로필이 수정되었습니다.");
       reset();
       profileEditModal.onClose();
@@ -198,7 +202,7 @@ const ProfileEditModal = () => {
           <Input
             id="name"
             disabled={isLoading}
-            {...register("name", { required: false })}
+            {...register("name", { required: true })}
             placeholder="🚨 이름"
             className="w-full h-14"
           />
