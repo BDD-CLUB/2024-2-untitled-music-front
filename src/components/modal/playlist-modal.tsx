@@ -57,7 +57,13 @@ const PlaylistModal = () => {
     try {
       setIsloading(true);
 
-      const response = await api.post("/playlists", values, {
+      const requestData = {
+        title: values.title,
+        description: values.description,
+        trackUuids: [],
+      }
+
+      const response = await api.post("/playlist", requestData, {
         withCredentials: true,
       });
 
