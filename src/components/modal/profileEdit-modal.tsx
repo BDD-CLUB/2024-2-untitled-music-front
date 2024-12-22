@@ -1,7 +1,7 @@
 "use client";
 
 import { z } from "zod";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { toast } from "sonner";
 import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
@@ -115,65 +115,89 @@ const ProfileEditModal = () => {
   const link2Value = watch("link2");
 
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
+    if (!uuid) {
+      toast.error("프로필 정보를 찾을 수 없습니다.");
+      return;
+    }
+
+    setIsloading(true);
+
     try {
-      setIsloading(true);
-
-      const requestData = { ...values };
-
-      if (file) {
-        try {
-          const profileImageUrl = await uploadToS3(file);
-          requestData.profileImage = profileImageUrl;
-        } catch (error) {
-          toast.error(`이미지 업로드에 실패했습니다. ${error}`);
-          return;
-        }
-      } else {
-        requestData.profileImage = "";
-      }
-
-      const filteredRequestData = {
-        ...values,
-        profileImage: requestData.profileImage,
-      };
-
-      if (!uuid) {
-        toast.error("프로필 정보를 찾을 수 없습니다.");
-        return;
-      }
-
-      console.log("데이터:", filteredRequestData);
-
-      const response = await api.patch(
-        `/profile/${uuid}`,
-        filteredRequestData,
-        { withCredentials: true }
-      );
-
-      if (response.status >= 200 && response.status < 300) {
-        toast.success("프로필이 수정되었습니다.");
-        reset();
-        profileEditModal.onClose();
-      } else {
-        throw new Error(
-          `프로필 수정에 실패했습니다. 상태 코드: ${response.status}`
-        );
-      }
+      await updateProfile(values);
+      handleSuccess();
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("서버 응답:", error.response);
-        toast.error(
-          error.response?.data?.message ||
-            error.response?.data?.detail ||
-            "프로필 수정 중 오류가 발생했습니다."
-        );
-      } else {
-        console.error("에러 상세:", error);
-        toast.error("프로필 수정 과정에서 오류가 발생했습니다.");
-      }
+      handleError(error);
     } finally {
       setIsloading(false);
     }
+  };
+
+  const updateProfile = async (values: FieldValues) => {
+    const uploadedImageUrl = file ? await uploadToS3(file) : "";
+
+    await updateProfileInfo(values);
+
+    if (uploadedImageUrl) {
+      await updateProfileImage(uploadedImageUrl);
+    }
+  };
+
+  const updateProfileInfo = async (values: FieldValues) => {
+    const response = await api.patch(
+      `/profile/${uuid}`,
+      {
+        ...values,
+        profileImage: "",
+      },
+      { withCredentials: true }
+    );
+
+    if (!isSuccessResponse(response)) {
+      throw new Error(
+        `프로필 수정에 실패했습니다. 상태 코드: ${response.status}`
+      );
+    }
+
+    return response;
+  };
+
+  const updateProfileImage = async (uploadedImageUrl: string) => {
+    const response = await api.patch(`/profile/${uuid}/image`, null, {
+      params: { profileImageLink: uploadedImageUrl },
+      withCredentials: true,
+    });
+
+    if (!isSuccessResponse(response)) {
+      throw new Error(
+        `이미지 수정에 실패했습니다. 상태 코드: ${response.status}`
+      );
+    }
+
+    return response;
+  };
+
+  const handleSuccess = () => {
+    toast.success("프로필이 수정되었습니다.");
+    reset();
+    profileEditModal.onClose();
+  };
+
+  const handleError = (error: unknown) => {
+    if (axios.isAxiosError(error)) {
+      console.error("서버 응답:", error.response);
+      toast.error(
+        error.response?.data?.message ||
+          error.response?.data?.detail ||
+          "프로필 수정 중 오류가 발생했습니다."
+      );
+    } else {
+      console.error("에러 상세:", error);
+      toast.error("프로필 수정 과정에서 오류가 발생했습니다.");
+    }
+  };
+
+  const isSuccessResponse = (response: AxiosResponse) => {
+    return response.status >= 200 && response.status < 300;
   };
 
   return (
