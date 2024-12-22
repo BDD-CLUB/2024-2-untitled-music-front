@@ -75,12 +75,18 @@ const ProfileEditModal = () => {
       .transform((val) => val ?? ""),
     link1: z
       .string()
-      .regex(/^https?:\/\//, "http:// 또는 https:// 형식의 URL을 입력하세요")
+      .regex(
+        /^(https?:\/\/.*)?$/,
+        "http:// 또는 https:// 형식의 URL을 입력하세요"
+      )
       .nullable()
       .transform((val) => val ?? ""),
     link2: z
       .string()
-      .regex(/^https?:\/\//, "http:// 또는 https:// 형식의 URL을 입력하세요")
+      .regex(
+        /^(https?:\/\/.*)?$/,
+        "http:// 또는 https:// 형식의 URL을 입력하세요"
+      )
       .nullable()
       .transform((val) => val ?? ""),
     profileImage: z.string().nullable().optional(),
@@ -144,19 +150,25 @@ const ProfileEditModal = () => {
         { withCredentials: true }
       );
 
-      if (response.status !== 200) {
-        throw new Error("프로필 수정에 실패했습니다.");
-      }
-
-      toast.success("프로필이 수정되었습니다.");
-      reset();
-      profileEditModal.onClose();
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.data) {
-        const errorData = error.response.data;
-        toast.error(errorData.detail || "프로필 수정 중 오류가 발생했습니다.");
+      if (response.status >= 200 && response.status < 300) {
+        toast.success("프로필이 수정되었습니다.");
+        reset();
+        profileEditModal.onClose();
       } else {
-        console.log(error);
+        throw new Error(
+          `프로필 수정에 실패했습니다. 상태 코드: ${response.status}`
+        );
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("서버 응답:", error.response);
+        toast.error(
+          error.response?.data?.message ||
+            error.response?.data?.detail ||
+            "프로필 수정 중 오류가 발생했습니다."
+        );
+      } else {
+        console.error("에러 상세:", error);
         toast.error("프로필 수정 과정에서 오류가 발생했습니다.");
       }
     } finally {

@@ -111,12 +111,12 @@ export default function UserPage() {
                 </div>
                 {profileData?.link1 && (
                   <div className="flex md:mt-8 gap-x-2">
-                    <IconLink className="size-6" />
+                    <IconLink className="size-4" />
                     <a
                       href={profileData?.link1}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sky-500"
+                      className="text-sky-500 text-sm"
                     >
                       {profileData?.link1}
                     </a>
