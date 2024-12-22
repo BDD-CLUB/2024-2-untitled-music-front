@@ -5,7 +5,6 @@ import {
   useContext,
   useState,
   useEffect,
-  ReactNode,
 } from "react";
 
 type ProfileContextType = {
