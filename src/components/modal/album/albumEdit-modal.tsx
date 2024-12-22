@@ -99,7 +99,7 @@ const AlbumEditModal = () => {
     setIsloading(true);
 
     try {
-      const albumArtUrl = file ? (await uploadToS3(file)).url : "";
+      const albumArtUrl = file ? await uploadToS3(file) : "";
 
       console.log(uuid);
       console.log(values);
