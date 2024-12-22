@@ -15,6 +15,8 @@ import { MobileUploadMenu } from "../bar/mobile-upload-menu";
 import { MobileSettingMenu } from "../bar/mobile-setting-menu";
 import ProfileModal from "./profile-modal";
 import ProfileEditModal from "./profileEdit-modal";
+import InformationModal from "./album/information-modal";
+import AlbumEditModal from "./album/albumEdit-modal";
 
 const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -35,8 +37,12 @@ const ModalProvider = () => {
 
       <SearchInput />
       <NotiModal />
+
+      <InformationModal />
+      <AlbumEditModal />
       
       <SigninModal />
+
       <ProfileModal />
       <ProfileEditModal />
 

@@ -19,39 +19,52 @@ import {
 } from "@/components/ui/table";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMediaQuery } from "react-responsive";
 
 import useStreamingBar from "@/hooks/modal/use-streaming-bar";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { Album, Profile, Track, getAlbumById } from "@/services/albumService";
+import { toast } from "sonner";
+import useInformationModal from "@/hooks/modal/use-information-modal";
+import useAlbumEditModal from "@/hooks/modal/use-albumEdit-modal";
 
 export default function AlbumPage() {
+  const [albumData, setAlbumData] = useState<Album>();
+  const [albumTrack, setAlbumTrack] = useState<Track[]>([]);
+  const [albumProfile, setAlbumProfile] = useState<Profile>();
+
   const router = useRouter();
   const streamingBar = useStreamingBar();
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const informationModal = useInformationModal();
+  const albumEditModal = useAlbumEditModal();
 
-  const dummy = [
-    {
-      id: 1,
-      title: "피곤해",
-      duration: "3:02",
-    },
-    {
-      id: 2,
-      title: "피곤해",
-      duration: "3:02",
-    },
-    {
-      id: 3,
-      title: "피곤해",
-      duration: "3:02",
-    },
-    {
-      id: 4,
-      title: "피곤해",
-      duration: "3:02",
-    },
-  ];
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const pathname = usePathname();
+  const uuid = String(pathname.split("/").pop());
+
+  useEffect(() => {
+    const getAlbum = async () => {
+      try {
+        const data = await getAlbumById(uuid);
+        setAlbumData(data.albumResponseDto);
+        setAlbumTrack(data.trackResponseDtos);
+        setAlbumProfile(data.profileResponseDto);
+      } catch (error) {
+        console.error("앨범 로딩 실패:", error);
+      }
+    };
+
+    getAlbum();
+  }, []);
+
+  const handleShareClick = () => {
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => toast.success("링크가 복사되었습니다!"))
+      .catch(() => toast.error("복사 실패!"));
+  };
 
   return (
     <main
@@ -64,8 +77,8 @@ export default function AlbumPage() {
         <div className="flex w-full flex-row md:h-[250px] gap-x-8 pr-2">
           <div className="h-full w-full flex flex-col items-center justify-center group">
             <Image
-              src="/images/music1.png"
-              alt="albumCover"
+              src={albumData ? albumData?.artImage : ""}
+              alt="album"
               width={250}
               height={250}
               className="rounded-xl group-hover:opacity-75"
@@ -79,17 +92,22 @@ export default function AlbumPage() {
           </div>
           <div className="flex flex-col w-full h-full items-start justify-between py-2 gap-y-4">
             <div
-              onClick={() => router.push("/user/123")}
+              onClick={() => router.push(`/profile/${albumProfile?.name}`)}
               className="flex gap-x-2 items-center"
             >
               <Avatar className="w-6 h-6 lg:w-10 lg:h-10">
-                <AvatarImage src="/images/music1.png" alt="profile" />
+                <AvatarImage
+                  src={`${albumProfile?.profileImage}`}
+                  alt="profile"
+                />
                 <AvatarFallback>U</AvatarFallback>
               </Avatar>
-              <span className="text-sm hover:underline truncate">RARO YANG</span>
+              <span className="text-sm hover:underline truncate">
+                {albumProfile?.name}
+              </span>
             </div>
             <div className="tracking-wide text-3xl md:text-4xl lg:text-5xl font-extrabold truncate">
-              THIRSTY
+              {albumData?.title}
             </div>
             <div className="flex w-full items-center justify-between">
               <div className="flex gap-x-2 items-center justify-center mr-2 lg:mr-0">
@@ -97,9 +115,12 @@ export default function AlbumPage() {
                 <span className="text-base">13.1k</span>
               </div>
               <div className="flex gap-x-3">
-                <IconShare className="size-6" />
-                <IconInfoCircle className="size-6" />
-                <IconDotsVertical className="size-6" />
+                <IconShare onClick={handleShareClick} className="size-6 cursor-pointer" />
+                <IconInfoCircle
+                  onClick={() => informationModal.onOpen(albumData)}
+                  className="size-6 cursor-pointer"
+                />
+                <IconDotsVertical onClick={albumEditModal.onOpen} className="size-6 cursor-pointer" />
               </div>
             </div>
           </div>
@@ -120,13 +141,15 @@ export default function AlbumPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {dummy.map((song) => (
+            {albumTrack.map((song) => (
               <TableRow
-                key={song.id}
+                key={song.uuid}
                 className="group hover:bg-[#7E47631F] dark:hover:bg-white/10 h-12"
               >
                 <TableCell className="w-[50px] pr-4">
-                  <div className="flex group-hover:hidden pr-4">{song.id}</div>
+                  <div className="flex group-hover:hidden pr-4">
+                    {song.uuid}
+                  </div>
                   <div
                     onClick={() => streamingBar.onOpen()}
                     className="hidden group-hover:flex text-[#FF239C]"
@@ -136,7 +159,7 @@ export default function AlbumPage() {
                 </TableCell>
                 <TableCell className="w-full truncate">{song.title}</TableCell>
                 <TableCell></TableCell>
-                <TableCell className="text-right">{song.duration}</TableCell>
+                <TableCell className="text-right">{song.title}</TableCell>
                 <TableCell>
                   <IconDotsVertical className="size-6" />
                 </TableCell>
