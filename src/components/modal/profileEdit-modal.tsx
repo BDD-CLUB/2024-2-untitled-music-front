@@ -91,6 +91,7 @@ const ProfileEditModal = () => {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(FormSchema),
@@ -103,6 +104,9 @@ const ProfileEditModal = () => {
       isMain: true,
     },
   });
+
+  const link1Value = watch("link1");
+  const link2Value = watch("link2");
 
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     try {
@@ -125,7 +129,7 @@ const ProfileEditModal = () => {
       const filteredRequestData = {
         ...values,
         profileImage: requestData.profileImage,
-      }
+      };
 
       if (!uuid) {
         toast.error("프로필 정보를 찾을 수 없습니다.");
@@ -152,6 +156,7 @@ const ProfileEditModal = () => {
         const errorData = error.response.data;
         toast.error(errorData.detail || "프로필 수정 중 오류가 발생했습니다.");
       } else {
+        console.log(error);
         toast.error("프로필 수정 과정에서 오류가 발생했습니다.");
       }
     } finally {
@@ -225,9 +230,11 @@ const ProfileEditModal = () => {
             placeholder="🔗 메인 링크"
             className="w-full h-14"
           />
-          <p className={errors.link1 ? "text-red-500 text-xs" : "hidden"}>
-            {errors.link1 ? String(errors.link1.message) : null}
-          </p>
+          {link1Value && errors.link1 && (
+            <p className="text-red-500 text-xs">
+              {String(errors.link1.message)}
+            </p>
+          )}
           <Input
             id="link2"
             disabled={isLoading}
@@ -235,9 +242,11 @@ const ProfileEditModal = () => {
             placeholder="🔗 서브 링크"
             className="w-full h-14"
           />
-          <p className={errors.link2 ? "text-red-500 text-xs" : "hidden"}>
-            {errors.link2 ? String(errors.link2.message) : null}
-          </p>
+          {link2Value && errors.link2 && (
+            <p className="text-red-500 text-xs">
+              {String(errors.link2.message)}
+            </p>
+          )}
         </div>
         <div className="flex items-center justify-around w-full pt-10">
           <button
