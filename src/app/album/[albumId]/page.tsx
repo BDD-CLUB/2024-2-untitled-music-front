@@ -67,10 +67,6 @@ export default function AlbumPage() {
       .catch(() => toast.error("복사 실패!"));
   };
 
-  if (!albumData) {
-    return <div>앨범 데이터를 불러오는 중입니다...</div>;
-  }
-
   return (
     <main
       className={cn(
@@ -82,11 +78,11 @@ export default function AlbumPage() {
         <div className="flex w-full flex-row md:h-[250px] gap-x-8 pr-2">
           <div className="h-full w-full flex flex-col items-center justify-center group">
             <Image
-              src={albumData.artImage || ""}
+              src={albumData?.artImage || ""}
               alt="album"
               width={250}
               height={250}
-              className="rounded-xl group-hover:opacity-75"
+              className="rounded-xl group-hover:opacity-75 overflow-hidden"
             />
             <div
               onClick={() => streamingBar.onOpen()}
@@ -113,8 +109,8 @@ export default function AlbumPage() {
                 </span>
               </div>
             )}
-            <div className="tracking-wide text-3xl md:text-4xl lg:text-5xl font-extrabold truncate">
-              {albumData.title}
+            <div className="tracking-wide text-3xl md:text-4xl font-extrabold truncate">
+              {albumData?.title}
             </div>
             <div className="flex w-full items-center justify-between">
               <div className="flex gap-x-2 items-center justify-center mr-2 lg:mr-0">

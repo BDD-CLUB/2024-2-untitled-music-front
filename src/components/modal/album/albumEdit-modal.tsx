@@ -70,7 +70,7 @@ const AlbumEditModal = () => {
       .max(20, "20자 이하로 입력하세요"),
     description: z
       .string()
-      .max(100, "소개는 100자 이내로 작성하세요")
+      .max(500, "소개는 500자 이내로 작성하세요")
       .nullable()
       .transform((val) => val ?? ""),
     albumArt: z.string().nullable().optional(),
@@ -100,6 +100,10 @@ const AlbumEditModal = () => {
 
     try {
       const albumArtUrl = file ? (await uploadToS3(file)).url : "";
+
+      console.log(uuid);
+      console.log(values);
+      console.log(albumArtUrl);
 
       const response = await api.patch(`/album/${uuid}`, {
         title: values.title,
