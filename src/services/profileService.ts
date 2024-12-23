@@ -38,7 +38,7 @@ export const deleteProfile = async (uuid: string) => {
     const response = await api.delete(`/profile/${uuid}`);
 
     if (response.status >= 200 && response.status < 300) {
-      return response.data;
+      return response.status;
     }
 
     return null;

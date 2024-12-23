@@ -105,12 +105,12 @@ export default function UserPage() {
                     <DropdownMenuTrigger asChild>
                       <IconDotsVertical className="size-6 hover:opacity-75" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-20 items-center justify-center flex flex-col">
+                    <DropdownMenuContent className="w-20 items-center justify-start flex flex-col">
                       <DropdownMenuItem onClick={profileEditModal.onOpen}>
                         프로필 편집
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="text-red-500"
+                        className="text-red-500 focus:text-red-300"
                         onClick={() => handleConfirm(profileData?.uuid || "")}
                       >
                         프로필 삭제
