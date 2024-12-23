@@ -38,7 +38,7 @@ const UserAlbum = () => {
             key={album.uuid}
             src={album.artImage}
             name={album.title}
-            description={album.description}
+            description={album.releaseDate}
             design="rounded-xl"
             onClickName={() => router.push(`/album/${album.uuid}`)}
           />

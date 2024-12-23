@@ -17,6 +17,7 @@ import ProfileModal from "./profile-modal";
 import ProfileEditModal from "./profileEdit-modal";
 import InformationModal from "./album/information-modal";
 import AlbumEditModal from "./album/albumEdit-modal";
+import ConfirmModal from "./confirm-modal";
 
 const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -40,6 +41,7 @@ const ModalProvider = () => {
 
       <InformationModal />
       <AlbumEditModal />
+      <ConfirmModal />
       
       <SigninModal />
 

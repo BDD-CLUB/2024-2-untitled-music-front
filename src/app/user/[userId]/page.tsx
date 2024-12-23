@@ -105,7 +105,7 @@ export default function UserPage() {
                     <DropdownMenuTrigger asChild>
                       <IconDotsVertical className="size-6 hover:opacity-75" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
+                    <DropdownMenuContent className="w-20 items-center justify-center flex">
                       <DropdownMenuItem onClick={profileEditModal.onOpen}>
                         프로필 편집
                       </DropdownMenuItem>
