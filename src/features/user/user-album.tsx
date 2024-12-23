@@ -1,67 +1,46 @@
 'use client'
 
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+
+import { Album, getAlbumByProfileUUID } from "@/services/albumService";
 import SquareContainer from "@/components/container/square-container";
-import { useRouter } from "next/navigation";
 
 const UserAlbum = () => {
+  const [albums, setAlbums] = useState<Album[]>([]);
+
   const router = useRouter();
+  const pathname = usePathname();
+  const profileUUID = String(pathname.split("/").pop());
 
-  const dummy = [
-    {
-      id: 1,
-      src: "/images/music1.png",
-      name: "ROCK-STAR",
-      description: "2024 · IPCGRDN",
-      onClickName: () => router.push("/album/123"),
-    },
-    {
-      id: 2,
-      src: "/images/music1.png",
-      name: "ROCK-STAR",
-      description: "2024 · IPCGRDN",
-      onClickName: () => router.push("/album/123"),
-    },
-    {
-      id: 3,
-      src: "/images/music1.png",
-      name: "ROCK-STAR",
-      description: "2024 · IPCGRDN",
-      onClickName: () => router.push("/album/123"),
-    },
-    {
-      id: 4,
-      src: "/images/music1.png",
-      name: "BREAK",
-      description: "2018 · PALM",
-      onClickName: () => router.push("/album/123"),
-    },
-    {
-      id: 5,
-      src: "/images/music1.png",
-      name: "Thirsty",
-      description: "1988 · RARO",
-      onClickName: () => router.push("/album/123"),
-    },
-    {
-      id: 6,
-      src: "/images/music1.png",
-      name: "산책",
-      description: "EP · BDD",
-      onClickName: () => router.push("/album/123"),
-    },
-  ];
+  useEffect(() => {
+    const getAlbums = async () => {
+      try {
+        const data = await getAlbumByProfileUUID(profileUUID);
+        setAlbums(data);
+      } catch (error) {
+        console.error("앨범 로딩 실패:", error);
+      }
+    };
 
+    getAlbums();
+  }, [profileUUID]);
+
+  if (!albums.length) {
+    return null;
+  }
+  
   return (
     <div className="h-full w-full">
       <div className="w-full gap-x-2 grid grid-cols-2 xl:grid-cols-4">
-        {dummy.map((item) => (
+        {albums.map((album) => (
           <SquareContainer
-            key={item.id}
-            src={item.src}
-            name={item.name}
-            description={item.description}
+            key={album.uuid}
+            src={album.artImage}
+            name={album.title}
+            description={album.description}
             design="rounded-xl"
-            onClickName={item.onClickName}
+            onClickName={() => router.push(`/album/${album.uuid}`)}
           />
         ))}
       </div>

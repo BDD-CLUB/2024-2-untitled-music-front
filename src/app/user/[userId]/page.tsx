@@ -17,6 +17,9 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -31,10 +34,12 @@ import { Profile, getProfile } from "@/services/profileService";
 import useProfileModal from "@/hooks/modal/use-profile-modal";
 import { useUser } from "@/provider/userProvider";
 import useProfileEditModal from "@/hooks/modal/use-profileEdit-modal";
+import useConfirmModal from "@/hooks/modal/use-confirm-modal";
 
 export default function UserPage() {
   const streamingBar = useStreamingBar();
   const profileModal = useProfileModal();
+  const confirmModal = useConfirmModal();
   const profileEditModal = useProfileEditModal();
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -57,6 +62,10 @@ export default function UserPage() {
 
     fetchProfile();
   }, [user]);
+
+  const handleConfirm = (uuid: string) => {
+    confirmModal.onOpen(uuid);
+  };
 
   const tabs = [
     { id: "track", label: "트랙", icon: IconMusic, onClick: () => {} },
@@ -94,12 +103,24 @@ export default function UserPage() {
                   <div className="md:text-3xl font-bold text-2xl">
                     {profileData?.name || "U"}
                   </div>
-                  <div
-                    onClick={profileEditModal.onOpen}
-                    className="cursor-pointer"
-                  >
-                    <IconDotsVertical className="size-6 hover:opacity-75" />
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <IconDotsVertical className="size-6 hover:opacity-75" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56">
+                      <DropdownMenuLabel>프로필 설정</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={profileEditModal.onOpen}>
+                        프로필 편집
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-red-500"
+                        onClick={() => handleConfirm(profileData?.uuid || "")}
+                      >
+                        프로필 삭제
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 <div className="flex gap-x-4">
                   <button className="bg-white text-black hover:bg-black/10 dark:hover:bg-white/75 shadow-lg w-auto font-medium text-sm p-2 rounded-lg">

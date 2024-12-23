@@ -95,7 +95,7 @@ export default function AlbumPage() {
             <div>
               {albumProfile && (
                 <div
-                  onClick={() => router.push(`/profile/${albumProfile.name}`)}
+                  onClick={() => router.push(`/user/${albumProfile.uuid}`)}
                   className="flex gap-x-2 items-center"
                 >
                   <Avatar className="w-6 h-6 lg:w-10 lg:h-10">
@@ -172,7 +172,7 @@ export default function AlbumPage() {
                 </TableCell>
                 <TableCell className="w-full truncate">{song.title}</TableCell>
                 <TableCell></TableCell>
-                <TableCell className="text-right">{song.title}</TableCell>
+                <TableCell className="text-right">{song.duration}</TableCell>
                 <TableCell>
                   <IconDotsVertical className="size-6" />
                 </TableCell>
