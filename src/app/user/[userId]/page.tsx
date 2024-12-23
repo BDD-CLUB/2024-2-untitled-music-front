@@ -18,8 +18,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -108,8 +106,6 @@ export default function UserPage() {
                       <IconDotsVertical className="size-6 hover:opacity-75" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56">
-                      <DropdownMenuLabel>프로필 설정</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={profileEditModal.onOpen}>
                         프로필 편집
                       </DropdownMenuItem>
@@ -146,7 +142,7 @@ export default function UserPage() {
               </div>
             </div>
 
-            <div className="flex w-full h-28 md:h-full font-light text-sm items-start md:items-center whitespace-pre-line leading-normal overflow-auto">
+            <div className="flex w-full h-28 md:h-full text-sm items-start md:items-center whitespace-pre-line leading-normal overflow-auto">
               {profileData?.description}
             </div>
           </div>

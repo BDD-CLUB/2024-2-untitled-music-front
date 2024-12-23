@@ -29,6 +29,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/provider/authProvider";
 import { useUser } from "@/provider/userProvider";
 import { Profile, getProfile } from "@/services/profileService";
+import { useProfile } from "@/provider/profileProvider";
 
 export function Bar() {
   const router = useRouter();
@@ -36,6 +37,7 @@ export function Bar() {
 
   const { isLoggedIn } = useAuth();
   const { user } = useUser();
+  const { uuid} = useProfile();
 
   const searchInput = useSearchInput();
   const notiModal = useNotiModal();
@@ -127,7 +129,7 @@ export function Bar() {
         if (!isLoggedIn) {
           signinModal.onOpen();
         } else {
-          router.push(`/user/${user?.uuid}`);
+          router.push(`/user/${uuid}`);
         }
       },
     },

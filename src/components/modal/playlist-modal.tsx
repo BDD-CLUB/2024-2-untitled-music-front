@@ -71,8 +71,6 @@ const PlaylistModal = () => {
         throw new Error("플레이리스트 생성에 실패하였습니다.");
       }
 
-      console.log(`플레이리스트: ${values}`);
-
       toast.success("플레이리스트가 생성되었습니다!");
       reset();
       playlistModal.onClose();

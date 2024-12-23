@@ -122,8 +122,8 @@ const AlbumEditModal = () => {
   const handleSuccess = () => {
     toast.success("앨범이 수정되었습니다.");
     reset();
-    albumEditModal.onClose();
     router.refresh();
+    albumEditModal.onClose();
   };
 
   const handleError = (error: unknown) => {
@@ -178,7 +178,7 @@ const AlbumEditModal = () => {
               <span className="text-gray-400 truncate max-w-[70%]">
                 {file ? file.name : "🖼️ 앨범 커버"}
               </span>
-              <span className="bg-black text-white dark:bg-white dark:text-black px-4 py-1 rounded-lg text-sm">
+              <span className="bg-black text-muted-foreground dark:bg-white dark:text-black px-4 py-1 rounded-lg text-sm">
                 커버 변경
               </span>
             </div>
@@ -188,7 +188,7 @@ const AlbumEditModal = () => {
             disabled={isLoading}
             {...register("title", { required: true })}
             placeholder="🚨 앨범 제목"
-            className="w-full h-14"
+            className="w-full h-14 placeholder:text-muted-foreground dark:placeholder:text-muted-foreground-dark"
           />
           <p className={errors.title ? "text-red-500 text-xs" : "hidden"}>
             {errors.title ? String(errors.title.message) : null}
@@ -198,7 +198,7 @@ const AlbumEditModal = () => {
             disabled={isLoading}
             {...register("description", { required: false })}
             placeholder="📝 소개"
-            className="w-full h-full resize-none"
+            className="w-full h-full resize-none placeholder:text-muted-foreground dark:placeholder:text-muted-foreground-dark"
           />
           <p className={errors.description ? "text-red-500 text-xs" : "hidden"}>
             {errors.description ? String(errors.description.message) : null}
