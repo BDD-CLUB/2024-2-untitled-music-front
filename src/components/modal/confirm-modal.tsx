@@ -42,19 +42,19 @@ const ConfirmModal = () => {
       }
 
       toast.success("프로필이 삭제되었습니다.");
-      confirmModal.onClose();
       router.refresh();
+      confirmModal.onClose();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("서버 응답:", error.response);
         toast.error(
           error.response?.data?.message ||
             error.response?.data?.detail ||
-            "프로필 수정 중 오류가 발생했습니다."
+            "프로필 삭제 중 오류가 발생했습니다."
         );
       } else {
         console.error("에러 상세:", error);
-        toast.error("프로필 수정 과정에서 오류가 발생했습니다.");
+        toast.error("프로필 삭제 과정에서 오류가 발생했습니다.");
       }
     } finally {
       setLoading(false);
@@ -74,8 +74,8 @@ const ConfirmModal = () => {
       onChange={onChange}
       className="p-4 flex flex-col items-center justify-center h-[50%]"
     >
-      <div className="flex flex-col items-center justify-center w-full">
-        <div className="flex w-full items-center justify-center space-x-3">
+      <div className="flex flex-col items-center justify-center w-full h-full">
+        <div className="flex h-full w-full items-center justify-center space-x-3">
           <Checkbox
             id="check"
             checked={checked}
@@ -105,7 +105,7 @@ const ConfirmModal = () => {
             onClick={handleDelete}
             disabled={!checked || loading}
           >
-            <div className="px-8 py-2  bg-[#FF3F8F] rounded-xl relative group transition duration-200 text-white hover:bg-opacity-75 text-sm disabled:cursor-not-allowed disabled:opacity-50">
+            <div className="px-8 py-2  bg-[#FF3F8F] rounded-xl relative group transition duration-200 text-white hover:bg-opacity-75 text-sm disabled:cursor-not-allowed disabled:bg-opacity-50">
               삭제
             </div>
           </button>

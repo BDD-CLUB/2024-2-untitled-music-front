@@ -110,7 +110,7 @@ export default function UserPage() {
                         프로필 편집
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="text-red-500 focus:text-red-300"
+                        className="text-red-500 focus:text-red-600 dark:focus:focus:text-red-600"
                         onClick={() => handleConfirm(profileData?.uuid || "")}
                       >
                         프로필 삭제
