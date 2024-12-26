@@ -10,6 +10,7 @@ import { useState } from "react";
 import { deleteProfile } from "@/services/profileService";
 import { toast } from "sonner";
 import axios from "axios";
+import { deleteAlbum } from "@/services/albumService";
 
 const ConfirmModal = () => {
   const [loading, setLoading] = useState(false);
@@ -33,17 +34,36 @@ const ConfirmModal = () => {
     try {
       setLoading(true);
       const uuid = confirmModal.uuid;
-      const response = await deleteProfile(uuid);
 
-      console.log(response);
+      if (confirmModal.data === "album") {
+        const response = await deleteAlbum(uuid);
 
-      if (!response) {
-        throw new Error("삭제에 실패했습니다.");
+        console.log(response);
+
+        if (!response) {
+          throw new Error("앨범 삭제에 실패했습니다.");
+        }
+
+        toast.success("성공적으로 앨범을 삭제하였습니다.");
+        router.refresh();
+        confirmModal.onClose();
+        return;
       }
 
-      toast.success("성공적으로 삭제하였습니다.");
-      router.refresh();
-      confirmModal.onClose();
+      if (confirmModal.data === "profile") {
+        const response = await deleteProfile(uuid);
+
+        console.log(response);
+
+        if (!response) {
+          throw new Error("프로필 삭제에 실패했습니다.");
+        }
+
+        toast.success("프로필을 성공적으로 삭제하였습니다.");
+        router.refresh();
+        confirmModal.onClose();
+        return;
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("서버 응답:", error.response);

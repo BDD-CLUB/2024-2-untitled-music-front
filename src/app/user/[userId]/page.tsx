@@ -114,7 +114,7 @@ export default function UserPage() {
                         onClick={() =>
                           handleConfirm(
                             profileData?.uuid || "",
-                            "deleteProfile"
+                            "profile"
                           )
                         }
                       >

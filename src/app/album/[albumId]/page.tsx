@@ -152,9 +152,9 @@ export default function AlbumPage() {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-red-500 focus:text-red-600 dark:focus:focus:text-red-600"
-                      onClick={() => handleConfirm(uuid || "", "deleteAlbum")}
+                      onClick={() => handleConfirm(uuid || "", "album")}
                     >
-                      프로필 삭제
+                      앨범 삭제
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
