@@ -45,7 +45,7 @@ const ConfirmModal = () => {
         }
 
         toast.success("성공적으로 앨범을 삭제하였습니다.");
-        router.refresh();
+        router.back();
         confirmModal.onClose();
         return;
       }

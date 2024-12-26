@@ -124,8 +124,8 @@ const AlbumModal = () => {
 
       toast.success("앨범이 생성되었습니다!");
       reset();
-      albumModal.onClose();
       router.refresh();
+      albumModal.onClose();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data) {
         const errorData = error.response.data;
