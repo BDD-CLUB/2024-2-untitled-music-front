@@ -61,8 +61,8 @@ export default function UserPage() {
     fetchProfile();
   }, [user]);
 
-  const handleConfirm = (uuid: string) => {
-    confirmModal.onOpen(uuid);
+  const handleConfirm = (uuid: string, data: string) => {
+    confirmModal.onOpen(uuid, data);
   };
 
   const tabs = [
@@ -111,7 +111,12 @@ export default function UserPage() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-red-500 focus:text-red-600 dark:focus:focus:text-red-600"
-                        onClick={() => handleConfirm(profileData?.uuid || "")}
+                        onClick={() =>
+                          handleConfirm(
+                            profileData?.uuid || "",
+                            "deleteProfile"
+                          )
+                        }
                       >
                         프로필 삭제
                       </DropdownMenuItem>

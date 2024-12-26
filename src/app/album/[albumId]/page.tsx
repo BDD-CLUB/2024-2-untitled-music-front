@@ -6,6 +6,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useMediaQuery } from "react-responsive";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   IconDotsVertical,
   IconHeart,
   IconInfoCircle,
@@ -28,6 +34,7 @@ import useAlbumEditModal from "@/hooks/modal/use-albumEdit-modal";
 import { Album, Profile, Track, getAlbumById } from "@/services/albumService";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import useConfirmModal from "@/hooks/modal/use-confirm-modal";
 
 export default function AlbumPage() {
   const [albumData, setAlbumData] = useState<Album | undefined>(undefined);
@@ -38,6 +45,7 @@ export default function AlbumPage() {
 
   const router = useRouter();
   const streamingBar = useStreamingBar();
+  const confirmModal = useConfirmModal();
   const informationModal = useInformationModal();
   const albumEditModal = useAlbumEditModal();
 
@@ -65,6 +73,10 @@ export default function AlbumPage() {
       .writeText(window.location.href)
       .then(() => toast.success("링크가 복사되었습니다!"))
       .catch(() => toast.error("복사 실패!"));
+  };
+
+  const handleConfirm = (uuid: string, data: string) => {
+    confirmModal.onOpen(uuid, data);
   };
 
   return (
@@ -122,18 +134,30 @@ export default function AlbumPage() {
               <div className="flex gap-x-3">
                 <IconShare
                   onClick={handleShareClick}
-                  className="size-6 cursor-pointer"
+                  className="size-6 cursor-pointer hover:opacity-75"
                 />
                 <IconInfoCircle
                   onClick={() =>
                     albumData && informationModal.onOpen(albumData)
                   }
-                  className="size-6 cursor-pointer"
+                  className="size-6 cursor-pointer hover:opacity-75"
                 />
-                <IconDotsVertical
-                  onClick={albumEditModal.onOpen}
-                  className="size-6 cursor-pointer"
-                />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <IconDotsVertical className="size-6 hover:opacity-75 cursor-pointer" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-20 items-center justify-start flex flex-col">
+                    <DropdownMenuItem onClick={albumEditModal.onOpen}>
+                      앨범 편집
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-red-500 focus:text-red-600 dark:focus:focus:text-red-600"
+                      onClick={() => handleConfirm(uuid || "", "deleteAlbum")}
+                    >
+                      프로필 삭제
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>

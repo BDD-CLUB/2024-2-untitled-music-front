@@ -66,7 +66,7 @@ const ProfileEditModal = () => {
   const FormSchema = z.object({
     name: z
       .string()
-      .min(1, "1자 이상 입력하세요")
+      .min(1, "이름은 필수 항목입니다")
       .max(20, "20자 이하로 입력하세요")
       .nullable()
       .transform((val) => val ?? ""),

@@ -90,4 +90,21 @@ export const getAlbumByProfileUUID = async (uuid: string): Promise<Album[]> => {
     }
     throw error;
   }
-}
+};
+
+export const deleteAlbum = async (uuid: string) => {
+  try {
+    const response = await api.delete(`/album/${uuid}`);
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(
+        `앨범 삭제 실패: ${error.response?.status}`,
+        error.message
+      );
+    } else {
+      console.error("앨범 삭제 중 알 수 없는 오류 발생:", error);
+    }
+    throw error;
+  }
+};
