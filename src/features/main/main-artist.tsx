@@ -28,11 +28,7 @@ const MainArtist = () => {
   if (!artists.length) {
     return null;
   }
-
-  if (artists) {
-    console.log(`artists: ${artists}`);
-  }
-
+  
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex justify-between items-center">

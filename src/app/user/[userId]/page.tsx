@@ -109,26 +109,28 @@ export default function UserPage() {
               <div className="md:text-3xl font-bold text-2xl">
                 {profileData?.name || "U"}
               </div>
-              {profileUuid === uuid && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <IconDotsVertical className="size-6 hover:opacity-75" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-20 items-center justify-start flex flex-col">
-                    <DropdownMenuItem onClick={profileEditModal.onOpen}>
-                      프로필 편집
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="text-red-500 focus:text-red-600 dark:focus:focus:text-red-600"
-                      onClick={() =>
-                        handleConfirm(profileData?.uuid || "", "profile")
-                      }
-                    >
-                      프로필 삭제
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+              <div>
+                {profileUuid === uuid && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <IconDotsVertical className="size-6 hover:opacity-75" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-20 items-center justify-start flex flex-col">
+                      <DropdownMenuItem onClick={profileEditModal.onOpen}>
+                        프로필 편집
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-red-500 focus:text-red-600 dark:focus:focus:text-red-600"
+                        onClick={() =>
+                          handleConfirm(profileData?.uuid || "", "profile")
+                        }
+                      >
+                        프로필 삭제
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </div>
             </div>
             <div className="flex gap-x-4">
               <button className="bg-white text-black hover:bg-black/10 dark:hover:bg-white/75 shadow-lg w-auto font-medium text-sm p-2 rounded-lg">
