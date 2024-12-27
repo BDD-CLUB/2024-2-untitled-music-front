@@ -58,15 +58,10 @@ export const getProfile = async (): Promise<Profile | null> => {
   }
 };
 
-export const getProfileById = async (uuid: string): Promise<Profile | null> => {
+export const getProfileById = async (uuid: string): Promise<Profile> => {
   try {
     const response = await api.get<Profile>(`/profile/${uuid}`);
-
-    if (response.status === 200 && response.data) {
-      return response.data;
-    }
-
-    return null;
+    return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(
@@ -76,7 +71,7 @@ export const getProfileById = async (uuid: string): Promise<Profile | null> => {
     } else {
       console.error("개별 프로필 데이터 조회 중 알 수 없는 오류 발생:", error);
     }
-    return null;
+    throw error;
   }
 };
 

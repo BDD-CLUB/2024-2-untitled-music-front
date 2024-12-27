@@ -22,6 +22,8 @@ const MainArtist = () => {
     };
 
     getArtists();
+    
+    console.log(artists)
   }, []);
 
   if (!artists.length) {

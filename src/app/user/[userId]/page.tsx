@@ -40,7 +40,7 @@ export default function UserPage() {
 
   const [activeTab, setActiveTab] = useState("track");
   const [array, setArray] = useState("new");
-  const [profileData, setProfileData] = useState<Profile | null>(null);
+  const [profileData, setProfileData] = useState<Profile | undefined>(undefined);
 
   const pathname = usePathname();
   const uuid = String(pathname.split("/").pop());
@@ -52,11 +52,13 @@ export default function UserPage() {
         setProfileData(data);
       } catch (error) {
         console.error("개별 프로필 로딩 실패:", error, uuid);
-        setProfileData(null);
       }
     };
 
     fetchProfile();
+
+    console.log(profileData);
+    console.log(uuid);
   }, [profileData]);
 
   const handleConfirm = (uuid: string, data: string) => {
