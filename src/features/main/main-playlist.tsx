@@ -50,7 +50,7 @@ const MainPlaylist = () => {
         {playlists.map((playlist) => (
           <SquareContainer
             key={playlist.uuid}
-            src={playlist.playlistItemResponseDtos[0].track.artUrl}
+            src={playlist.title}
             name={playlist.title}
             description="플레이리스트"
             design="rounded-xl"
