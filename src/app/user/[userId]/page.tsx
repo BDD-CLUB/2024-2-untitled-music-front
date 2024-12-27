@@ -109,38 +109,43 @@ export default function UserPage() {
               <div className="md:text-3xl font-bold text-2xl">
                 {profileData?.name || "U"}
               </div>
-              <div>
-                {profileUuid === uuid && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <IconDotsVertical className="size-6 hover:opacity-75" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-20 items-center justify-start flex flex-col">
-                      <DropdownMenuItem onClick={profileEditModal.onOpen}>
-                        프로필 편집
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="text-red-500 focus:text-red-600 dark:focus:focus:text-red-600"
-                        onClick={() =>
-                          handleConfirm(profileData?.uuid || "", "profile")
-                        }
-                      >
-                        프로필 삭제
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <IconDotsVertical className="size-6 hover:opacity-75" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-20 items-center justify-start flex flex-col">
+                  <DropdownMenuItem
+                    className={profileUuid !== uuid ? "hidden" : ""}
+                    onClick={profileEditModal.onOpen}
+                  >
+                    프로필 편집
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className={cn(
+                      "text-red-500 focus:text-red-600 dark:focus:focus:text-red-600",
+                      profileUuid !== uuid && "hidden"
+                    )}
+                    onClick={() =>
+                      handleConfirm(profileData?.uuid || "", "profile")
+                    }
+                  >
+                    프로필 삭제
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
             <div className="flex gap-x-4">
               <button className="bg-white text-black hover:bg-black/10 dark:hover:bg-white/75 shadow-lg w-auto font-medium text-sm p-2 rounded-lg">
                 1.5M
               </button>
-              {profileUuid !== uuid && (
-                <button className="bg-[#FF3F8F] text-white hover:bg-opacity-75 hover:text-white/75 shadow-lg w-auto font-medium text-sm py-2 px-8 rounded-lg truncate bg-opacity-90">
-                  팔로우
-                </button>
-              )}
+              <button
+                className={cn(
+                  "bg-[#FF3F8F] text-white hover:bg-opacity-75 hover:text-white/75 shadow-lg w-auto font-medium text-sm py-2 px-8 rounded-lg truncate bg-opacity-90",
+                  profileUuid !== uuid && "hidden"
+                )}
+              >
+                팔로우
+              </button>
             </div>
             {profileData?.link1 && (
               <div className="flex md:mt-8 gap-x-2">
