@@ -31,36 +31,45 @@ import { Profile, getProfileById } from "@/services/profileService";
 import useProfileEditModal from "@/hooks/modal/use-profileEdit-modal";
 import useConfirmModal from "@/hooks/modal/use-confirm-modal";
 import { usePathname } from "next/navigation";
+import { useProfile } from "@/provider/profileProvider";
 
 export default function UserPage() {
   const streamingBar = useStreamingBar();
   const confirmModal = useConfirmModal();
   const profileEditModal = useProfileEditModal();
-  
+
   const [activeTab, setActiveTab] = useState("track");
   const [array, setArray] = useState("new");
-  const [profileData, setProfileData] = useState<Profile | undefined>(undefined);
-  
+  const [profileData, setProfileData] = useState<Profile | undefined>(
+    undefined
+  );
+
   const isMobile = useMediaQuery({ maxWidth: 768 });
+  const { uuid: profileUuid } = useProfile();
   const pathname = usePathname();
   const uuid = String(pathname.split("/").pop());
 
   useEffect(() => {
     const fetchProfile = async () => {
-      try {
-        const data = await getProfileById(uuid);
-        setProfileData(data);
-      } catch (error) {
-        console.error("개별 프로필 로딩 실패:", error, uuid);
+      if (profileUuid === uuid) {
+        try {
+          const myData = await getProfileById(profileUuid);
+          setProfileData(myData);
+        } catch (error) {
+          console.error("나의 프로필 로딩 실패:", error);
+        }
+      } else {
+        try {
+          const data = await getProfileById(uuid);
+          setProfileData(data);
+        } catch (error) {
+          console.error("개별 프로필 로딩 실패:", error, uuid);
+        }
       }
     };
 
     fetchProfile();
   }, [uuid]);
-
-  if (profileData) {
-    console.log(`getprofilebyid: ${profileData}`);
-  }
 
   const handleConfirm = (uuid: string, data: string) => {
     confirmModal.onOpen(uuid, data);
@@ -100,32 +109,36 @@ export default function UserPage() {
               <div className="md:text-3xl font-bold text-2xl">
                 {profileData?.name || "U"}
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <IconDotsVertical className="size-6 hover:opacity-75" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-20 items-center justify-start flex flex-col">
-                  <DropdownMenuItem onClick={profileEditModal.onOpen}>
-                    프로필 편집
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-red-500 focus:text-red-600 dark:focus:focus:text-red-600"
-                    onClick={() =>
-                      handleConfirm(profileData?.uuid || "", "profile")
-                    }
-                  >
-                    프로필 삭제
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {profileUuid === uuid && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <IconDotsVertical className="size-6 hover:opacity-75" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-20 items-center justify-start flex flex-col">
+                    <DropdownMenuItem onClick={profileEditModal.onOpen}>
+                      프로필 편집
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-red-500 focus:text-red-600 dark:focus:focus:text-red-600"
+                      onClick={() =>
+                        handleConfirm(profileData?.uuid || "", "profile")
+                      }
+                    >
+                      프로필 삭제
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
             <div className="flex gap-x-4">
               <button className="bg-white text-black hover:bg-black/10 dark:hover:bg-white/75 shadow-lg w-auto font-medium text-sm p-2 rounded-lg">
                 1.5M
               </button>
-              <button className="bg-[#FF3F8F] text-white hover:bg-opacity-75 hover:text-white/75 shadow-lg w-auto font-medium text-sm py-2 px-8 rounded-lg truncate bg-opacity-90">
-                팔로우
-              </button>
+              {profileUuid !== uuid && (
+                <button className="bg-[#FF3F8F] text-white hover:bg-opacity-75 hover:text-white/75 shadow-lg w-auto font-medium text-sm py-2 px-8 rounded-lg truncate bg-opacity-90">
+                  팔로우
+                </button>
+              )}
             </div>
             {profileData?.link1 && (
               <div className="flex md:mt-8 gap-x-2">
