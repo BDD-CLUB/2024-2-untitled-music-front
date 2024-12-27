@@ -13,7 +13,7 @@ export interface Profile {
 
 export const getProfile = async (): Promise<Profile | null> => {
   try {
-    const response = await api.get<Profile>("/profile");
+    const response = await api.get<Profile>("/profile/now");
 
     if (response.status === 200 && response.data) {
       return response.data;
