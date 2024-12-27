@@ -16,7 +16,6 @@ const MainArtist = () => {
       try {
         const data = await getAllProfiles(0, 10);
 
-        console.log(`data: ${data}`);
         setArtists(data);
       } catch (error) {
         console.error("프로필 로딩 실패:", error);
@@ -24,12 +23,14 @@ const MainArtist = () => {
     };
 
     getArtists();
-
-    console.log(artists)
   }, []);
 
   if (!artists.length) {
     return null;
+  }
+
+  if (artists) {
+    console.log(`artists: ${artists}`);
   }
 
   return (

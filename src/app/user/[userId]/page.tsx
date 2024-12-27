@@ -49,8 +49,6 @@ export default function UserPage() {
     const fetchProfile = async () => {
       try {
         const data = await getProfileById(uuid);
-
-        console.log(`getprofilebyid: ${data}`);
         setProfileData(data);
       } catch (error) {
         console.error("개별 프로필 로딩 실패:", error, uuid);
@@ -59,6 +57,10 @@ export default function UserPage() {
 
     fetchProfile();
   }, [uuid]);
+
+  if (profileData) {
+    console.log(`getprofilebyid: ${profileData}`);
+  }
 
   const handleConfirm = (uuid: string, data: string) => {
     confirmModal.onOpen(uuid, data);
