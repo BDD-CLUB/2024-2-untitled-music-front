@@ -27,7 +27,7 @@ import UserPlaylist from "@/features/user/user-playlist";
 import useStreamingBar from "@/hooks/modal/use-streaming-bar";
 
 import { cn } from "@/lib/utils";
-import { Profile, getProfile, getProfileById } from "@/services/profileService";
+import { Profile, getProfileById } from "@/services/profileService";
 import useProfileEditModal from "@/hooks/modal/use-profileEdit-modal";
 import useConfirmModal from "@/hooks/modal/use-confirm-modal";
 import { usePathname } from "next/navigation";
