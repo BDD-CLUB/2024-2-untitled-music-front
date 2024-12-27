@@ -60,7 +60,7 @@ const PlaylistModal = () => {
       const requestData = {
         title: values.title,
         description: values.description,
-        trackUuids: [],
+        trackUuids: ["", ""],
       }
 
       const response = await api.post("/playlist", requestData, {
