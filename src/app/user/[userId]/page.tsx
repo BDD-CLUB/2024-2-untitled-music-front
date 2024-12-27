@@ -69,7 +69,7 @@ export default function UserPage() {
     };
 
     fetchProfile();
-  }, [uuid]);
+  }, [profileUuid]);
 
   const handleConfirm = (uuid: string, data: string) => {
     confirmModal.onOpen(uuid, data);

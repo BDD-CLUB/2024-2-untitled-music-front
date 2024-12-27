@@ -30,7 +30,12 @@ import { Playlist, getPlaylistById } from "@/services/playlistService";
 import useConfirmModal from "@/hooks/modal/use-confirm-modal";
 import useInformationModal from "@/hooks/modal/use-information-modal";
 import { toast } from "sonner";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import usePlaylistEditModal from "@/hooks/modal/use-playlistEdit-modal";
 
 export default function PlaylistPage() {
@@ -47,6 +52,41 @@ export default function PlaylistPage() {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const pathname = usePathname();
   const uuid = String(pathname.split("/").pop());
+
+  const GridImage = () => {
+    return (
+      <div className="grid grid-cols-2 grid-rows-2 max-w-[250px] max-h-[250px] rounded-xl overflow-hidden group-hover:opacity-75">
+        <Image
+          src="/images/music1.png"
+          alt="albumCover1"
+          width={125}
+          height={125}
+          className="w-full h-full object-cover"
+        />
+        <Image
+          src="/images/music1.png"
+          alt="albumCover2"
+          width={125}
+          height={125}
+          className="w-full h-full object-cover"
+        />
+        <Image
+          src="/images/music1.png"
+          alt="albumCover3"
+          width={125}
+          height={125}
+          className="w-full h-full object-cover"
+        />
+        <Image
+          src="/images/music1.png"
+          alt="albumCover4"
+          width={125}
+          height={125}
+          className="w-full h-full object-cover"
+        />
+      </div>
+    );
+  };
 
   useEffect(() => {
     const getPlaylist = async () => {
@@ -114,9 +154,12 @@ export default function PlaylistPage() {
               </div>
               <div className="flex gap-x-3">
                 <IconShare onClick={handleShareClick} className="size-6" />
-                <IconInfoCircle onClick={() =>
+                <IconInfoCircle
+                  onClick={() =>
                     playlistData && informationModal.onOpen(playlistData)
-                  } className="size-6" />
+                  }
+                  className="size-6"
+                />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <IconDotsVertical className="size-6 hover:opacity-75 cursor-pointer" />
@@ -159,7 +202,9 @@ export default function PlaylistPage() {
                 className="group hover:bg-[#7E47631F] dark:hover:bg-white/10"
               >
                 <TableCell className="w-[50px] pr-4">
-                  <div className="flex group-hover:hidden pr-4">{item.track.uuid}</div>
+                  <div className="flex group-hover:hidden pr-4">
+                    {item.track.uuid}
+                  </div>
                   <div
                     onClick={() => streamingBar.onOpen()}
                     className="hidden group-hover:flex text-[#FF239C]"
@@ -196,7 +241,9 @@ export default function PlaylistPage() {
                   </div>
                 </TableCell>
                 <TableCell></TableCell>
-                <TableCell className="text-right">{item.track.duration}</TableCell>
+                <TableCell className="text-right">
+                  {item.track.duration}
+                </TableCell>
                 <TableCell>
                   <IconDotsVertical className="size-6" />
                 </TableCell>
@@ -212,38 +259,3 @@ export default function PlaylistPage() {
     </main>
   );
 }
-
-export const GridImage = () => {
-  return (
-    <div className="grid grid-cols-2 grid-rows-2 max-w-[250px] max-h-[250px] rounded-xl overflow-hidden group-hover:opacity-75">
-      <Image
-        src="/images/music1.png"
-        alt="albumCover1"
-        width={125}
-        height={125}
-        className="w-full h-full object-cover"
-      />
-      <Image
-        src="/images/music1.png"
-        alt="albumCover2"
-        width={125}
-        height={125}
-        className="w-full h-full object-cover"
-      />
-      <Image
-        src="/images/music1.png"
-        alt="albumCover3"
-        width={125}
-        height={125}
-        className="w-full h-full object-cover"
-      />
-      <Image
-        src="/images/music1.png"
-        alt="albumCover4"
-        width={125}
-        height={125}
-        className="w-full h-full object-cover"
-      />
-    </div>
-  );
-};
