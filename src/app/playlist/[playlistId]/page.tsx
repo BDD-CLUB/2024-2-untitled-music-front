@@ -19,86 +19,57 @@ import {
 } from "@/components/ui/table";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import useStreamingBar from "@/hooks/modal/use-streaming-bar";
 import Link from "next/link";
 import { useMediaQuery } from "react-responsive";
 import { cn } from "@/lib/utils";
+import { Playlist, getPlaylistById } from "@/services/playlistService";
+import useConfirmModal from "@/hooks/modal/use-confirm-modal";
+import useInformationModal from "@/hooks/modal/use-information-modal";
+import { toast } from "sonner";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import usePlaylistEditModal from "@/hooks/modal/use-playlistEdit-modal";
 
 export default function PlaylistPage() {
+  const [playlistData, setPlaylistData] = useState<Playlist | undefined>(
+    undefined
+  );
+
   const router = useRouter();
   const streamingBar = useStreamingBar();
+  const confirmModal = useConfirmModal();
+  const playlistEditModal = usePlaylistEditModal();
+  const informationModal = useInformationModal();
+
   const isMobile = useMediaQuery({ maxWidth: 768 });
+  const pathname = usePathname();
+  const uuid = String(pathname.split("/").pop());
 
-  const dummy = [
-    {
-      id: 1,
-      cover: "/images/music1.png",
-      title: "행복해",
-      artist: "라로",
-      album: "THIRSTY",
-      duration: "3:02",
-    },
-    {
-      id: 2,
-      cover: "/images/music1.png",
-      title: "행복해",
-      artist: "라로",
-      album: "THIRSTY",
-      duration: "3:02",
-    },
-    {
-      id: 3,
-      cover: "/images/music1.png",
-      title: "행복해",
-      artist: "라로",
-      album: "THIRSTY",
-      duration: "3:02",
-    },
-    {
-      id: 4,
-      cover: "/images/music1.png",
-      title: "행복해",
-      artist: "라로",
-      album: "THIRSTY",
-      duration: "3:02",
-    },
-  ];
+  useEffect(() => {
+    const getPlaylist = async () => {
+      try {
+        const data = await getPlaylistById(uuid);
+        setPlaylistData(data);
+      } catch (error) {
+        console.error("플레이리스트 로딩 실패:", error);
+      }
+    };
 
-  const GridImage = () => {
-    return (
-      <div className="grid grid-cols-2 grid-rows-2 max-w-[250px] max-h-[250px] rounded-xl overflow-hidden group-hover:opacity-75">
-        <Image
-          src="/images/music1.png"
-          alt="albumCover1"
-          width={125}
-          height={125}
-          className="w-full h-full object-cover"
-        />
-        <Image
-          src="/images/music1.png"
-          alt="albumCover2"
-          width={125}
-          height={125}
-          className="w-full h-full object-cover"
-        />
-        <Image
-          src="/images/music1.png"
-          alt="albumCover3"
-          width={125}
-          height={125}
-          className="w-full h-full object-cover"
-        />
-        <Image
-          src="/images/music1.png"
-          alt="albumCover4"
-          width={125}
-          height={125}
-          className="w-full h-full object-cover"
-        />
-      </div>
-    );
+    getPlaylist();
+  }, [uuid]);
+
+  const handleShareClick = () => {
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => toast.success("링크가 복사되었습니다!"))
+      .catch(() => toast.error("복사 실패!"));
+  };
+
+  const handleConfirm = (uuid: string, data: string) => {
+    confirmModal.onOpen(uuid, data);
   };
 
   return (
@@ -129,10 +100,12 @@ export default function PlaylistPage() {
                 <AvatarImage src="/images/music1.png" alt="profile" />
                 <AvatarFallback>U</AvatarFallback>
               </Avatar>
-              <span className="text-sm hover:underline truncate">RARO YANG</span>
+              <span className="text-sm hover:underline truncate">
+                RARO YANG
+              </span>
             </div>
             <div className="tracking-wide text-3xl md:text-4xl lg:text-5xl font-extrabold truncate">
-              THIRSTY
+              {playlistData?.title}
             </div>
             <div className="flex w-full items-center justify-between">
               <div className="flex gap-x-2 items-center justify-center mr-2 lg:mr-0">
@@ -140,9 +113,26 @@ export default function PlaylistPage() {
                 <span className="text-base">13.1k</span>
               </div>
               <div className="flex gap-x-3">
-                <IconShare className="size-6" />
-                <IconInfoCircle className="size-6" />
-                <IconDotsVertical className="size-6" />
+                <IconShare onClick={handleShareClick} className="size-6" />
+                <IconInfoCircle onClick={() =>
+                    playlistData && informationModal.onOpen(playlistData)
+                  } className="size-6" />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <IconDotsVertical className="size-6 hover:opacity-75 cursor-pointer" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-20 items-center justify-start flex flex-col">
+                    <DropdownMenuItem onClick={playlistEditModal.onOpen}>
+                      플레이리스트 편집
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-red-500 focus:text-red-600 dark:focus:focus:text-red-600"
+                      onClick={() => handleConfirm(uuid || "", "album")}
+                    >
+                      플레이리스트 삭제
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
@@ -163,13 +153,13 @@ export default function PlaylistPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {dummy.map((song) => (
+            {playlistData?.playlistItemResponseDtos.map((item) => (
               <TableRow
-                key={song.id}
+                key={item.uuid}
                 className="group hover:bg-[#7E47631F] dark:hover:bg-white/10"
               >
                 <TableCell className="w-[50px] pr-4">
-                  <div className="flex group-hover:hidden pr-4">{song.id}</div>
+                  <div className="flex group-hover:hidden pr-4">{item.track.uuid}</div>
                   <div
                     onClick={() => streamingBar.onOpen()}
                     className="hidden group-hover:flex text-[#FF239C]"
@@ -179,7 +169,7 @@ export default function PlaylistPage() {
                 </TableCell>
                 <TableCell className="flex flex-row items-start w-full gap-x-2">
                   <Image
-                    src={song.cover}
+                    src={item.track.artUrl}
                     alt="cover"
                     width={40}
                     height={40}
@@ -187,26 +177,26 @@ export default function PlaylistPage() {
                   />
                   <div className="flex flex-col gap-y-1 items-start w-full">
                     <p className="text-sm font-semibold overflow-x-hidden truncate">
-                      {song.title}
+                      {item.track.title}
                     </p>
                     <div className="flex flex-row w-full overflow-x-hidden gap-x-2">
                       <Link
                         href={"/user/123"}
                         className="text-xs text-neutral-500 overflow-x-hidden hover:underline truncate"
                       >
-                        {song.artist}
+                        {item.track.title}
                       </Link>
                       <Link
                         href={"/album/123"}
                         className="text-xs text-neutral-500 overflow-x-hidden hover:underline truncate"
                       >
-                        {song.album}
+                        {item.track.title}
                       </Link>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell></TableCell>
-                <TableCell className="text-right">{song.duration}</TableCell>
+                <TableCell className="text-right">{item.track.duration}</TableCell>
                 <TableCell>
                   <IconDotsVertical className="size-6" />
                 </TableCell>
@@ -222,3 +212,38 @@ export default function PlaylistPage() {
     </main>
   );
 }
+
+export const GridImage = () => {
+  return (
+    <div className="grid grid-cols-2 grid-rows-2 max-w-[250px] max-h-[250px] rounded-xl overflow-hidden group-hover:opacity-75">
+      <Image
+        src="/images/music1.png"
+        alt="albumCover1"
+        width={125}
+        height={125}
+        className="w-full h-full object-cover"
+      />
+      <Image
+        src="/images/music1.png"
+        alt="albumCover2"
+        width={125}
+        height={125}
+        className="w-full h-full object-cover"
+      />
+      <Image
+        src="/images/music1.png"
+        alt="albumCover3"
+        width={125}
+        height={125}
+        className="w-full h-full object-cover"
+      />
+      <Image
+        src="/images/music1.png"
+        alt="albumCover4"
+        width={125}
+        height={125}
+        className="w-full h-full object-cover"
+      />
+    </div>
+  );
+};

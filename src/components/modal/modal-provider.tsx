@@ -18,6 +18,7 @@ import ProfileEditModal from "./profileEdit-modal";
 import InformationModal from "./album/information-modal";
 import AlbumEditModal from "./album/albumEdit-modal";
 import ConfirmModal from "./confirm-modal";
+import PlaylistEditModal from "./playlistEdit-modal";
 
 const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -40,8 +41,10 @@ const ModalProvider = () => {
       <NotiModal />
 
       <InformationModal />
-      <AlbumEditModal />
       <ConfirmModal />
+
+      <AlbumEditModal />
+      <PlaylistEditModal />
       
       <SigninModal />
 

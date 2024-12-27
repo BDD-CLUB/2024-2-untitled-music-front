@@ -141,7 +141,7 @@ export default function UserPage() {
               <button
                 className={cn(
                   "bg-[#FF3F8F] text-white hover:bg-opacity-75 hover:text-white/75 shadow-lg w-auto font-medium text-sm py-2 px-8 rounded-lg truncate bg-opacity-90",
-                  profileUuid !== uuid && "hidden"
+                  profileUuid === uuid && "hidden"
                 )}
               >
                 팔로우

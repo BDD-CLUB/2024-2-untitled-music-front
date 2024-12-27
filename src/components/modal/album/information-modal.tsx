@@ -14,14 +14,14 @@ const InformationModal = () => {
     }
   };
 
-  const albumData = informationModal.data;
+  const data = informationModal.data;
 
   return (
     <CustomModal
       title={
         <ModalTitle
           icon={<IconDisc className="size-10 p-1" />}
-          title="앨범 소개"
+          title="소개"
         />
       }
       description=""
@@ -30,10 +30,10 @@ const InformationModal = () => {
       className="p-4 flex flex-col items-center justify-center h-[50%]"
     >
       <div className="px-4">
-        {albumData ? (
+        {data ? (
           <div className="flex flex-col items-center gap-y-4">
             <p className="test-sm truncate overflow-y-auto">
-              {albumData.description}
+              {data.description}
             </p>
           </div>
         ) : (
