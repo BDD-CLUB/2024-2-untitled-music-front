@@ -1,55 +1,37 @@
 "use client";
 
 import SquareContainer from "@/components/container/square-container";
+import { TrackResponse, getAllTracks } from "@/services/trackService";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const MainTrack = () => {
   const router = useRouter();
+  const [tracks, setTracks] = useState<TrackResponse[]>([]);
 
-  const dummy = [
-    {
-      id: 1,
-      src: "/images/music1.png",
-      name: "ROCK-STAR",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 2,
-      src: "/images/music1.png",
-      name: "ROCK-STAR",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 3,
-      src: "/images/music1.png",
-      name: "ROCK-STAR",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 4,
-      src: "/images/music1.png",
-      name: "BREAK",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 5,
-      src: "/images/music1.png",
-      name: "Thirsty",
-      onClickName: () => router.push("/album/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-  ];
+  useEffect(() => {
+    const getTracks = async () => {
+      try {
+        const data = await getAllTracks(0, 10);
+        setTracks(data);
+      } catch (error) {
+        console.error("트랙 로딩 실패:", error);
+      }
+    };
+
+    getTracks();
+  }, []);
+
+  if (!tracks.length) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex justify-between items-center">
         <div className="flex justify-start">
           <p className="text-[#FF4D74] font-bold text-xl tracking-wide">
-            TRACK
+            🔥 HOT TRACKS
           </p>
         </div>
         <div className="flex justify-end rounded-full drop-shadow-lg bg-[#F1DCDC] hover:bg-pink-200 transition-colors duration-300 dark:bg-[#FFFFFF0D] dark:hover:bg-[#FFFFFF1A] px-4 py-1">
@@ -62,15 +44,15 @@ const MainTrack = () => {
         </div>
       </div>
       <div className="w-full overflow-x-auto flex gap-x-4">
-        {dummy.map((item) => (
+        {tracks.map((track) => (
           <SquareContainer
-            key={item.id}
-            src={item.src}
-            name={item.name}
-            description="IPCGRDN"
+            key={track.trackResponseDto.uuid}
+            src={track.trackResponseDto.artUrl}
+            name={track.trackResponseDto.title}
+            description={`${track.albumResponseDto.title} · ${track.profileResponseDto.name}`}
             design="rounded-xl"
-            onClickName={item.onClickName}
-            onClickDescription={item.onClickDescription}
+            onClickName={() => router.push(`/album/${track.albumResponseDto.uuid}`)}
+            onClickDescription={() => router.push(`/user/${track.profileResponseDto.uuid}`)}
           />
         ))}
       </div>

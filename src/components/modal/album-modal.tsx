@@ -221,13 +221,13 @@ const AlbumModal = () => {
               </div>
             </div>
             <div className="flex items-center justify-around w-full pt-10">
-              <button className="p-[3px] relative" onClick={() => setStage(1)}>
-                <div className="px-8 py-2 bg-white rounded-xl relative group text-black hover:bg-neutral-100 text-sm dark:bg-black/95 dark:text-white dark:hover:bg-neutral-800">
+              <button className="p-[3px] relative" onClick={() => setStage(1)} disabled={isLoading}>
+                <div className="px-8 py-2 bg-white rounded-xl relative group text-black hover:bg-neutral-100 text-sm dark:bg-black/95 dark:text-white dark:hover:bg-neutral-800 disabled:bg-opacity-50">
                   이전
                 </div>
               </button>
-              <button className="p-[3px] relative" type="submit">
-                <div className="px-8 py-2  bg-[#FF3F8F] rounded-xl relative group transition duration-200 text-white hover:bg-opacity-75 text-sm">
+              <button className="p-[3px] relative" type="submit" disabled={isLoading}>
+                <div className="px-8 py-2  bg-[#FF3F8F] rounded-xl relative group transition duration-200 text-white hover:bg-opacity-75 text-sm disabled:bg-opacity-50">
                   확인
                 </div>
               </button>
