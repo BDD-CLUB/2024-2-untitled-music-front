@@ -27,7 +27,7 @@ import UserPlaylist from "@/features/user/user-playlist";
 import useStreamingBar from "@/hooks/modal/use-streaming-bar";
 
 import { cn } from "@/lib/utils";
-import { Profile, getProfileById } from "@/services/profileService";
+import { Profile, getProfile, getProfileById } from "@/services/profileService";
 import useProfileEditModal from "@/hooks/modal/use-profileEdit-modal";
 import useConfirmModal from "@/hooks/modal/use-confirm-modal";
 import { usePathname } from "next/navigation";
@@ -40,9 +40,7 @@ export default function UserPage() {
 
   const [activeTab, setActiveTab] = useState("track");
   const [array, setArray] = useState("new");
-  const [profileData, setProfileData] = useState<Profile | undefined>(
-    undefined
-  );
+  const [profileData, setProfileData] = useState<Profile | null>(null);
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const { uuid: profileUuid } = useProfile();
@@ -53,7 +51,7 @@ export default function UserPage() {
     const fetchProfile = async () => {
       if (profileUuid === uuid) {
         try {
-          const myData = await getProfileById(profileUuid);
+          const myData = await getProfile();
           setProfileData(myData);
         } catch (error) {
           console.error("나의 프로필 로딩 실패:", error);

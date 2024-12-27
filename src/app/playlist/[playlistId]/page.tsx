@@ -170,7 +170,7 @@ export default function PlaylistPage() {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-red-500 focus:text-red-600 dark:focus:focus:text-red-600"
-                      onClick={() => handleConfirm(uuid || "", "album")}
+                      onClick={() => handleConfirm(uuid || "", "playlist")}
                     >
                       플레이리스트 삭제
                     </DropdownMenuItem>

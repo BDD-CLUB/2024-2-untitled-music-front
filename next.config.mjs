@@ -9,6 +9,11 @@ const nextConfig = {
         hostname: "soundflyer.s3.ap-northeast-2.amazonaws.com",
         pathname: "/resources/images/**",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**", 
+      },
     ],
   },
 };

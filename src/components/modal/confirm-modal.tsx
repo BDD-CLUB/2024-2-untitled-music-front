@@ -11,6 +11,7 @@ import { deleteProfile } from "@/services/profileService";
 import { toast } from "sonner";
 import axios from "axios";
 import { deleteAlbum } from "@/services/albumService";
+import { deletePlaylist } from "@/services/playlistService";
 
 const ConfirmModal = () => {
   const [loading, setLoading] = useState(false);
@@ -61,6 +62,21 @@ const ConfirmModal = () => {
 
         toast.success("프로필을 성공적으로 삭제하였습니다.");
         router.refresh();
+        confirmModal.onClose();
+        return;
+      }
+
+      if (confirmModal.data === "playlist") {
+        const response = await deletePlaylist(uuid);
+
+        console.log(response);
+
+        if (!response) {
+          throw new Error("플레이리스트 삭제에 실패했습니다.");
+        }
+
+        toast.success("성공적으로 플레이리스트를 삭제하였습니다.");
+        router.back();
         confirmModal.onClose();
         return;
       }
