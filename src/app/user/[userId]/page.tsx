@@ -36,12 +36,12 @@ export default function UserPage() {
   const streamingBar = useStreamingBar();
   const confirmModal = useConfirmModal();
   const profileEditModal = useProfileEditModal();
-  const isMobile = useMediaQuery({ maxWidth: 768 });
-
+  
   const [activeTab, setActiveTab] = useState("track");
   const [array, setArray] = useState("new");
   const [profileData, setProfileData] = useState<Profile | undefined>(undefined);
-
+  
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const pathname = usePathname();
   const uuid = String(pathname.split("/").pop());
 
@@ -49,6 +49,8 @@ export default function UserPage() {
     const fetchProfile = async () => {
       try {
         const data = await getProfileById(uuid);
+
+        console.log(`getprofilebyid: ${data}`);
         setProfileData(data);
       } catch (error) {
         console.error("개별 프로필 로딩 실패:", error, uuid);
@@ -56,10 +58,7 @@ export default function UserPage() {
     };
 
     fetchProfile();
-
-    console.log(profileData);
-    console.log(uuid);
-  }, [profileData]);
+  }, [uuid]);
 
   const handleConfirm = (uuid: string, data: string) => {
     confirmModal.onOpen(uuid, data);

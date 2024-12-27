@@ -1,10 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/provider/userProvider";
-import SquareContainer from "@/components/container/square-container";
-import { useEffect, useState } from "react";
 import { Profile, getAllProfiles } from "@/services/profileService";
+import SquareContainer from "@/components/container/square-container";
 
 const MainArtist = () => {
   const router = useRouter();
@@ -15,6 +15,8 @@ const MainArtist = () => {
     const getArtists = async () => {
       try {
         const data = await getAllProfiles(0, 10);
+
+        console.log(`data: ${data}`);
         setArtists(data);
       } catch (error) {
         console.error("프로필 로딩 실패:", error);
@@ -22,7 +24,7 @@ const MainArtist = () => {
     };
 
     getArtists();
-    
+
     console.log(artists)
   }, []);
 
