@@ -1,39 +1,32 @@
 "use client";
 
-import SquareContainer from "@/components/container/square-container";
-import { useUser } from "@/provider/userProvider";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/provider/userProvider";
+import SquareContainer from "@/components/container/square-container";
+import { useEffect, useState } from "react";
+import { Profile, getAllProfiles } from "@/services/profileService";
 
 const MainArtist = () => {
   const router = useRouter();
   const { user } = useUser();
+  const [artists, setArtists] = useState<Profile[]>([]);
 
-  const dummy = [
-    {
-      id: 1,
-      src: "/images/music1.png",
-      name: "IPCGRDN",
-      onClickName: () => router.push("/user/123"),
-    },
-    {
-      id: 2,
-      src: "/images/music1.png",
-      name: "IPCGRDN",
-      onClickName: () => router.push("/user/123"),
-    },
-    {
-      id: 3,
-      src: "/images/albumcover.png",
-      name: "AESPA",
-      onClickName: () => router.push("/user/123"),
-    },
-    {
-      id: 4,
-      src: "/images/music1.png",
-      name: "RARO",
-      onClickName: () => router.push("/user/123"),
-    },
-  ];
+  useEffect(() => {
+    const getArtists = async () => {
+      try {
+        const data = await getAllProfiles(0, 10);
+        setArtists(data);
+      } catch (error) {
+        console.error("프로필 로딩 실패:", error);
+      }
+    };
+
+    getArtists();
+  }, []);
+
+  if (!artists.length) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-y-2">
@@ -54,13 +47,13 @@ const MainArtist = () => {
         </div>
       </div>
       <div className="w-full overflow-x-auto flex gap-x-4">
-        {dummy.map((item) => (
+        {artists.map((artist) => (
           <SquareContainer
-            key={item.id}
-            src={item.src}
-            name={item.name}
+            key={artist.uuid}
+            src={artist.profileImage}
+            name={artist.name}
             design="rounded-full"
-            onClickName={item.onClickName}
+            onClickName={() => router.push(`/user/${artist.uuid}`)}
           />
         ))}
       </div>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
 import { useUser } from "@/provider/userProvider";
 import { AlbumResponse, getAllAlbums } from "@/services/albumService";
 import SquareContainer from "@/components/container/square-container";

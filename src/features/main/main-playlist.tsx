@@ -2,62 +2,31 @@
 
 import SquareContainer from "@/components/container/square-container";
 import { useUser } from "@/provider/userProvider";
+import { Playlist, getAllPlaylists } from "@/services/playlistService";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const MainPlaylist = () => {
   const router = useRouter();
   const { user } = useUser();
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
-  const dummy = [
-    {
-      id: 1,
-      src: "/images/music1.png",
-      name: "THIRSTY",
-      description: "RARO",
-      onClickName: () => router.push("/playlist/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 2,
-      src: "/images/music1.png",
-      name: "THIRSTY",
-      description: "RARO",
-      onClickName: () => router.push("/playlist/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 3,
-      src: "/images/music1.png",
-      name: "THIRSTY",
-      description: "RARO",
-      onClickName: () => router.push("/playlist/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 4,
-      src: "/images/music1.png",
-      name: "THIRSTY",
-      description: "RARO",
-      onClickName: () => router.push("/playlist/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 5,
-      src: "/images/music1.png",
-      name: "THIRSTY",
-      description: "RARO",
-      onClickName: () => router.push("/playlist/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-    {
-      id: 6,
-      src: "/images/music1.png",
-      name: "THIRSTY",
-      description: "RARO",
-      onClickName: () => router.push("/playlist/123"),
-      onClickDescription: () => router.push("/user/123"),
-    },
-  ];
+  useEffect(() => {
+    const getPlaylists = async () => {
+      try {
+        const data = await getAllPlaylists(0, 10);
+        setPlaylists(data);
+      } catch (error) {
+        console.error("플레이리스트 로딩 실패:", error);
+      }
+    };
+
+    getPlaylists();
+  }, []);
+
+  if (!playlists.length) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-y-2">
@@ -78,15 +47,15 @@ const MainPlaylist = () => {
         </div>
       </div>
       <div className="w-full overflow-x-auto flex gap-x-4">
-        {dummy.map((item) => (
+        {playlists.map((playlist) => (
           <SquareContainer
-            key={item.id}
-            src={item.src}
-            name={item.name}
-            description={item.description}
+            key={playlist.uuid}
+            src={playlist.playlistItemResponseDtos[0].track.artUrl}
+            name={playlist.title}
+            description="플레이리스트"
             design="rounded-xl"
-            onClickName={item.onClickName}
-            onClickDescription={item.onClickDescription}
+            onClickName={() => router.push(`/playlist/${playlist.uuid}`)}
+            onClickDescription={() => {}}
           />
         ))}
       </div>
