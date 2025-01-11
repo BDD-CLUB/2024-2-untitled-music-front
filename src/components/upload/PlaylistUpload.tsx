@@ -56,7 +56,7 @@ export function PlaylistUpload() {
         throw new Error('플레이리스트 생성에 실패했습니다.');
       }
 
-      const data = await response.json();
+      await response.json();
 
       toast({
         description: "플레이리스트가 생성되었습니다.",

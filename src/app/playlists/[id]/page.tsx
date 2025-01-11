@@ -25,7 +25,7 @@ async function getPlaylist(id: string) {
     }
 
     return response.json();
-  } catch (error) {
+  } catch {
     throw new Error('플레이리스트를 불러오는데 실패했습니다.');
   }
 }
