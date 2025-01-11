@@ -51,7 +51,7 @@ export function AlbumList({ albums }: AlbumListProps) {
               <div className="absolute -inset-2 rounded-2xl bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative rounded-xl overflow-hidden">
                 <Image
-                  src={album.artImage}
+                  src={album.artImage || "/images/logo.svg"}
                   alt={album.title}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"

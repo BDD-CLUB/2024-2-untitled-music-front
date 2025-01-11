@@ -16,6 +16,7 @@ async function getAlbum(id: string) {
     headers: {
       "Authorization": `Bearer ${accessToken}`,
     },
+    credentials: 'include',
   });
 
   if (!response.ok) {

@@ -6,6 +6,7 @@ import { Disc3, ListMusic } from "lucide-react";
 import { AlbumList } from "./AlbumList";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { checkAuth } from "@/lib/auth";
 
 interface ProfileTabsProps {
   userId: string;
@@ -19,9 +20,14 @@ export function ProfileTabs({ userId }: ProfileTabsProps) {
   useEffect(() => {
     const fetchAlbums = async () => {
       try {
+        const { accessToken } = await checkAuth();
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${userId}/albums`,
           {
+            headers: {
+              "Authorization": `Bearer ${accessToken}`,
+            },
             credentials: 'include',
           }
         );
