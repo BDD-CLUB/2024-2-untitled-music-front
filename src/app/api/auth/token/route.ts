@@ -1,18 +1,35 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import cookie from 'cookie';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  // 요청 헤더에서 쿠키를 가져옵니다.
-  const cookies = req.headers.cookie || '';
-  const parsedCookies = cookie.parse(cookies);
+export async function GET() {
+  try {
+    // 쿠키 스토어에서 모든 쿠키 가져오기
+    const cookieStore = cookies();
+    const allCookies = cookieStore.getAll();
+    console.log('Available cookies:', allCookies.map(c => c.name));
 
-  // 특정 쿠키 값 가져오기
-  const token = parsedCookies['token']; // 쿠키 이름은 서버 설정에 따라 변경
+    // access_token 찾기
+    const accessToken = cookieStore.get('access_token')?.value;
+    console.log('Found access_token:', accessToken ? 'exists' : 'not found');
 
-  if (!token) {
-    return res.status(401).json({ message: 'Token not found' });
+    if (!accessToken) {
+      return NextResponse.json(
+        { 
+          token: null,
+          debug: {
+            availableCookies: allCookies.map(c => c.name)
+          }
+        }, 
+        { status: 401 }
+      );
+    }
+
+    return NextResponse.json({ token: accessToken });
+  } catch (error) {
+    console.error('Error in token route:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' }, 
+      { status: 500 }
+    );
   }
-
-  // 클라이언트로 반환
-  res.status(200).json({ token });
 }
