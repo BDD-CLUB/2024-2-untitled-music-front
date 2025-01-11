@@ -41,7 +41,7 @@ export function Sidebar() {
     { icon: Upload, label: "업로드", href: "/upload" },
     { icon: Bell, label: "알림", href: "/" },
     {
-      icon: ({ className }: { className?: string }) => (
+      icon: ({ className }: { className?: string }) =>
         isAuthenticated ? (
           <Avatar className={cn("w-6 h-6", className)}>
             <AvatarImage src={user?.artistImage || ""} />
@@ -51,15 +51,15 @@ export function Sidebar() {
           </Avatar>
         ) : (
           <User className={className} />
-        )
-      ),
+        ),
       label: "프로필",
       href: isAuthenticated ? `/profile/${user?.uuid}` : "/",
-      onClick: () => {
+      onClick: (e: React.MouseEvent) => {
         if (!isAuthenticated) {
-          setShowLoginModal(true);
+          e.preventDefault(); // 기본 링크 이동 동작 차단
+          setShowLoginModal(true); // 로그인 모달 표시
         }
-      }
+      },
     },
     { icon: Settings, label: "설정", href: "/" },
   ];
@@ -90,8 +90,7 @@ export function Sidebar() {
                     href={item.href}
                     onClick={(e) => {
                       if (item.onClick) {
-                        e.preventDefault();
-                        item.onClick();
+                        item.onClick(e);
                       }
                     }}
                     className={cn(
