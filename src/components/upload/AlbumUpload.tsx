@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { checkAuth } from "@/lib/auth";
+import { api } from "@/lib/axios";
 
 interface AlbumForm {
   title: string;
@@ -69,19 +70,17 @@ export function AlbumUpload() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/images`, {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
+      const response = await api.post(`/uploads/images`, formData);
 
-      if (!response.ok) throw new Error("이미지 업로드에 실패했습니다.");
+      if (!response.data) throw new Error("이미지 업로드에 실패했습니다.");
 
-      const imageUrl = await response.text();
+      const imageUrl = response.data;
       setForm(prev => ({ ...prev, albumArt: imageUrl }));
       setPreviewImage(URL.createObjectURL(file));
       
       toast({
+        variant: "default",
+        title: "이미지 업로드 완료",
         description: "이미지가 성공적으로 업로드되었습니다.",
       });
     } catch (error) {
@@ -91,6 +90,7 @@ export function AlbumUpload() {
       }));
       toast({
         variant: "destructive",
+        title: "이미지 업로드 실패",
         description: error instanceof Error ? error.message : "이미지 업로드에 실패했습니다.",
       });
     } finally {
@@ -129,27 +129,22 @@ export function AlbumUpload() {
 
       const { accessToken } = await checkAuth();
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/albums`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(form),
-        credentials: "include",
-      });
+      const response = await api.post(`/albums`, form);
 
-      if (!response.ok) throw new Error("앨범 생성에 실패했습니다.");
+      if (!response.data) throw new Error("앨범 생성에 실패했습니다.");
 
       toast({
+        variant: "default",
+        title: "앨범 생성 완료",
         description: "앨범이 성공적으로 생성되었습니다.",
       });
 
-      router.push("/");
+      router.push(`/albums/${response.data.uuid}`);
       router.refresh();
     } catch (error) {
       toast({
         variant: "destructive",
+        title: "앨범 생성 실패",
         description: error instanceof Error ? error.message : "앨범 생성에 실패했습니다.",
       });
     }
@@ -259,7 +254,7 @@ export function AlbumUpload() {
             className="w-full"
             disabled={isUploading || !form.albumArt}
           >
-            앨범 생성하기
+            {isUploading ? "앨범 생성 중..." : "앨범 생성하기"}
           </Button>
         </div>
       </div>

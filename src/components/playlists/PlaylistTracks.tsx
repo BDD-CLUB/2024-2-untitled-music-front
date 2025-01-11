@@ -31,18 +31,7 @@ export function PlaylistTracks({ tracks }: PlaylistTracksProps) {
   const hasNoTracks = !tracks || tracks.length === 0;
 
   return (
-    <div className="p-8 pt-0">
-      {/* 트랙 목록 헤더 */}
-      <div className="flex items-center gap-4 mb-6 px-3">
-        <Music2 className="w-5 h-5 text-muted-foreground" />
-        <h2 className="font-medium">트랙 목록</h2>
-        {!hasNoTracks && (
-          <span className="text-sm text-muted-foreground">
-            {tracks.length}곡
-          </span>
-        )}
-      </div>
-
+    <div className="p-8 pt-4">
       {/* 트랙이 없는 경우 */}
       {hasNoTracks ? (
         <div className="flex flex-col items-center justify-center py-16 px-4">

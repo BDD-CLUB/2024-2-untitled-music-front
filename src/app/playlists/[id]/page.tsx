@@ -1,5 +1,6 @@
 import { PlaylistInfo } from "@/components/playlists/PlaylistInfo";
 import { PlaylistTracks } from "@/components/playlists/PlaylistTracks";
+import { api } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
@@ -11,20 +12,17 @@ interface PlaylistPageProps {
 
 async function getPlaylist(id: string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${id}`, {
-      cache: 'no-store',
-      credentials: 'include',
-    });
+    const response = await api.get(`/playlists/${id}`);
 
     if (response.status === 404) {
       notFound();
     }
 
-    if (!response.ok) {
+    if (!response.data) {
       throw new Error('플레이리스트를 불러오는데 실패했습니다.');
     }
 
-    return response.json();
+    return response.data();
   } catch {
     throw new Error('플레이리스트를 불러오는데 실패했습니다.');
   }
@@ -34,7 +32,7 @@ export default async function PlaylistPage({ params }: PlaylistPageProps) {
   const playlist = await getPlaylist(params.id);
 
   return (
-    <div className="container mx-auto px-4 py-8 pl-32">
+    <div className="container mx-auto px-4 py-4 pl-32">
       <div
         className={cn(
           "rounded-3xl",

@@ -37,7 +37,7 @@ export function AlbumInfo({ album, artist }: AlbumInfoProps) {
           src={album.artImage}
           alt={album.title}
           fill
-          className="object-cover opacity-20 blur-3xl scale-110"
+          className="object-cover opacity-50 blur-3xl scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />
       </div>
@@ -73,10 +73,10 @@ export function AlbumInfo({ album, artist }: AlbumInfoProps) {
                 />
               )}
             </div>
-            <div className="flex items-center gap-6 mb-6">
+            <div className="flex items-center mb-6">
               <Link 
                 href={`/profile/${artist.uuid}`}
-                className="flex items-center gap-3 hover:bg-white/5 px-3 py-2 rounded-full transition-colors"
+                className="flex items-center gap-2 hover:bg-white/5 px-3 py-2 rounded-full transition-colors"
               >
                 <Avatar className="w-8 h-8 border-2 border-white/10">
                   <AvatarImage src={artist.artistImage} />
@@ -86,12 +86,8 @@ export function AlbumInfo({ album, artist }: AlbumInfoProps) {
                 </Avatar>
                 <span className="font-medium">{artist.name}</span>
               </Link>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="w-4 h-4" />
-                <span>{new Date(album.releaseDate).getFullYear()}</span>
-              </div>
             </div>
-            <p className="text-base text-muted-foreground max-w-2xl text-center md:text-left">
+            <p className="text-base text-muted-foreground max-w-2xl text-center md:text-left truncate">
               {album.description}
             </p>
           </div>

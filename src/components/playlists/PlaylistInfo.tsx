@@ -59,7 +59,7 @@ export function PlaylistInfo({ playlist }: PlaylistInfoProps) {
             {creator && (
               <Link 
                 href={`/profile/${creator.uuid}`}
-                className="flex items-center gap-3 hover:bg-white/5 px-3 py-2 rounded-full transition-colors mb-6"
+                className="flex items-center gap-2 hover:bg-white/5 px-3 py-2 rounded-full transition-colors mb-6"
               >
                 <Avatar className="w-8 h-8 border-2 border-white/10">
                   <AvatarImage src={creator.artistImage} />
@@ -70,7 +70,7 @@ export function PlaylistInfo({ playlist }: PlaylistInfoProps) {
                 <span className="font-medium">{creator.name}</span>
               </Link>
             )}
-            <p className="text-base text-muted-foreground max-w-2xl text-center md:text-left">
+            <p className="text-base text-muted-foreground max-w-2xl text-center md:text-left truncate">
               {playlist.description}
             </p>
           </div>

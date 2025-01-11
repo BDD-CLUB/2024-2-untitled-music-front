@@ -94,7 +94,7 @@ export function Sidebar() {
                       }
                     }}
                     className={cn(
-                      "p-3 rounded-3xl",
+                      "p-2 rounded-3xl",
                       "group relative",
                       "transition-all duration-300 ease-in-out",
                       "hover:bg-white/20 dark:hover:bg-white/5",
@@ -108,7 +108,7 @@ export function Sidebar() {
                   >
                     <Icon
                       className={cn(
-                        "w-4 h-4",
+                        "w-6 h-6",
                         "text-gray-800 dark:text-gray-200",
                         "transition-all duration-300",
                         isActive && "text-primary dark:text-primary"

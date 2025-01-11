@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/axios";
 
 interface PlaylistForm {
   title: string;
@@ -27,6 +28,7 @@ export function PlaylistUpload() {
 
     if (!form.title.trim()) {
       toast({
+        title: "플레이리스트 제목 입력 실패",
         variant: "destructive",
         description: "플레이리스트 제목을 입력해주세요.",
       });
@@ -35,34 +37,29 @@ export function PlaylistUpload() {
     
     try {
       setIsLoading(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...form,
-          title: form.title.trim(),
-          description: form.description.trim(),
-          trackUuids: [],
-        }),
-        credentials: 'include',
+      const response = await api.post(`/playlists`, {
+        ...form,
+        title: form.title.trim(),
+        description: form.description.trim(),
+        trackUuids: [],
       });
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         if (response.status === 401) {
           throw new Error('로그인이 필요합니다.');
         }
         throw new Error('플레이리스트 생성에 실패했습니다.');
       }
 
-      await response.json();
+      await response.data();
 
       toast({
+        title: "플레이리스트 생성 완료",
+        variant: "default",
         description: "플레이리스트가 생성되었습니다.",
       });
 
-      router.push(`/profile`);
+      router.push(`/playlists/${response.data.uuid}`);
       router.refresh();
     } catch (error) {
       toast({

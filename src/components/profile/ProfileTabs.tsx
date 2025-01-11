@@ -6,6 +6,7 @@ import { Disc3, ListMusic } from "lucide-react";
 import { AlbumList } from "./AlbumList";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/axios";
 
 interface ProfileTabsProps {
   userId: string;
@@ -19,22 +20,17 @@ export function ProfileTabs({ userId }: ProfileTabsProps) {
   useEffect(() => {
     const fetchAlbums = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${userId}/albums`,
-          {
-            credentials: 'include',
-          }
-        );
+        const response = await api.get(`/artists/${userId}/albums`);
 
-        if (!response.ok) {
+        if (!response.data) {
           throw new Error('앨범 목록을 불러오는데 실패했습니다.');
         }
 
-        const data = await response.json();
-        setAlbums(data);
+        setAlbums(response.data);
       } catch (error) {
         toast({
           variant: "destructive",
+          title: "앨범 목록 불러오기 실패",
           description: error instanceof Error ? error.message : "앨범 목록을 불러오는데 실패했습니다.",
         });
       } finally {

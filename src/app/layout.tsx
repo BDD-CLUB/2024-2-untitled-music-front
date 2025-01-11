@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { BackgroundImage } from "@/components/layout/BackgroundImage";
 import { getAuthCookie } from "@/lib/server-auth";
+import { api } from "@/lib/axios";
 
 export const metadata: Metadata = {
   title: "SOFO",
@@ -28,19 +29,9 @@ async function getUser() {
   }
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-        Cookie: `access_token=${accessToken}`,
-      },
-      credentials: "include",
-      cache: 'no-store',
-    });
-
-    if (!response.ok) return null;
-    const userData = await response.json();
-    return userData;
+    const response = await api.get(`/artists`);
+    if (!response.data) return null;
+    return response.data;
   } catch (error) {
     console.error('Failed to fetch user:', error);
     return null;

@@ -1,12 +1,19 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/axios";
 
 interface EditAlbumModalProps {
   album: {
@@ -19,7 +26,11 @@ interface EditAlbumModalProps {
   onClose: () => void;
 }
 
-export function EditAlbumModal({ album, isOpen, onClose }: EditAlbumModalProps) {
+export function EditAlbumModal({
+  album,
+  isOpen,
+  onClose,
+}: EditAlbumModalProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,25 +42,20 @@ export function EditAlbumModal({ album, isOpen, onClose }: EditAlbumModalProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       setIsSubmitting(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/${album.uuid}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: form.title,
-          description: form.description,
-          albumArt: form.albumArt,
-        }),
-        credentials: 'include',
+      const response = await api.patch(`/albums/${album.uuid}`, {
+        title: form.title,
+        description: form.description,
+        albumArt: form.albumArt,
       });
 
-      if (!response.ok) throw new Error('앨범 수정에 실패했습니다.');
+      if (response.status !== 200) throw new Error("앨범 수정에 실패했습니다.");
 
       toast({
+        variant: "default",
+        title: "앨범 수정 완료",
         description: "앨범이 수정되었습니다.",
       });
 
@@ -58,7 +64,9 @@ export function EditAlbumModal({ album, isOpen, onClose }: EditAlbumModalProps) 
     } catch (error) {
       toast({
         variant: "destructive",
-        description: error instanceof Error ? error.message : "앨범 수정에 실패했습니다.",
+        title: "앨범 수정 실패",
+        description:
+          error instanceof Error ? error.message : "앨범 수정에 실패했습니다.",
       });
     } finally {
       setIsSubmitting(false);
@@ -70,16 +78,17 @@ export function EditAlbumModal({ album, isOpen, onClose }: EditAlbumModalProps) 
       <DialogContent>
         <DialogHeader>
           <DialogTitle>앨범 수정</DialogTitle>
+          <DialogDescription className="hidden">앨범 정보를 수정해주세요.</DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 mt-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">
-              앨범 제목
-            </label>
+            <label className="text-sm font-medium mb-2 block">앨범 제목</label>
             <Input
               value={form.title}
-              onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, title: e.target.value }))
+              }
               className="bg-white/5 border-white/10"
               maxLength={50}
               required
@@ -87,13 +96,13 @@ export function EditAlbumModal({ album, isOpen, onClose }: EditAlbumModalProps) 
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">
-              앨범 설명
-            </label>
+            <label className="text-sm font-medium mb-2 block">앨범 설명</label>
             <Textarea
               value={form.description}
-              onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))}
-              className="bg-white/5 border-white/10 min-h-[120px]"
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, description: e.target.value }))
+              }
+              className="bg-white/5 border-white/10 min-h-[120px] resize-none"
               maxLength={500}
               required
             />
@@ -108,10 +117,7 @@ export function EditAlbumModal({ album, isOpen, onClose }: EditAlbumModalProps) 
             >
               취소
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" disabled={isSubmitting}>
               수정하기
             </Button>
           </div>
@@ -119,4 +125,4 @@ export function EditAlbumModal({ album, isOpen, onClose }: EditAlbumModalProps) 
       </DialogContent>
     </Dialog>
   );
-} 
+}

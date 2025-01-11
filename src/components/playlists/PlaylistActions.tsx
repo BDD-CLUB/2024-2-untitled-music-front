@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { EditPlaylistModal } from "./EditPlaylistModal";
+import { api } from "@/lib/axios";
 
 interface PlaylistActionsProps {
   playlistId: string;
@@ -31,12 +32,9 @@ export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
+      const response = await api.delete(`/playlists/${playlistId}`);
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         if (response.status === 401) {
           throw new Error('권한이 없습니다.');
         }
@@ -44,14 +42,17 @@ export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
       }
 
       toast({
+        variant: "default",
+        title: "플레이리스트 삭제 완료",
         description: "플레이리스트가 삭제되었습니다.",
       });
 
-      router.push('/profile');
+      router.push('/');
       router.refresh();
     } catch (error) {
       toast({
         variant: "destructive",
+        title: "플레이리스트 삭제 실패",
         description: error instanceof Error ? error.message : "플레이리스트 삭제에 실패했습니다.",
       });
     } finally {
@@ -62,7 +63,7 @@ export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
 
   return (
     <>
-      <div className="flex gap-2">
+      <div className="flex gap-1">
         <Button
           variant="ghost"
           size="icon"
@@ -78,7 +79,7 @@ export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
           onClick={() => setShowDeleteDialog(true)}
           disabled={isDeleting}
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="w-4 h-4 text-red-500" />
         </Button>
       </div>
 
