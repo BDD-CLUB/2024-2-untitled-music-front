@@ -4,7 +4,7 @@ import { AuthProvider } from "@/contexts/auth/AuthContext";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { BackgroundImage } from "@/components/layout/BackgroundImage";
-import { getAuthCookie } from "@/lib/auth";
+import { getAuthCookie } from "@/lib/server-auth";
 
 export const metadata: Metadata = {
   title: "SOFO",
