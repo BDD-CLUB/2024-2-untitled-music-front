@@ -44,6 +44,7 @@ export function AlbumUpload() {
   useEffect(() => {
     if (!isAuthenticated) {
       toast({
+        title: "로그인이 필요한 서비스입니다.",
         variant: "destructive",
         description: "로그인이 필요한 서비스입니다.",
       });

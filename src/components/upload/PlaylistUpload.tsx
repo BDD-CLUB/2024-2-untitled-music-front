@@ -4,10 +4,11 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { checkAuth } from "@/lib/auth";
+import { useAuth } from "@/contexts/auth/AuthContext";
 
 interface PlaylistForm {
   title: string;
@@ -17,11 +18,23 @@ interface PlaylistForm {
 export function PlaylistUpload() {
   const router = useRouter();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState<PlaylistForm>({
     title: "",
     description: "",
   });
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast({
+        title: "로그인이 필요한 서비스입니다.",
+        variant: "destructive",
+        description: "로그인이 필요한 서비스입니다.",
+      });
+      router.push("/");
+    }
+  }, [isAuthenticated, router, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +52,7 @@ export function PlaylistUpload() {
       setIsLoading(true);
 
       const { accessToken } = await checkAuth();
+      
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`, {
         method: "POST",
         headers: {

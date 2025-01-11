@@ -20,15 +20,29 @@ interface EditProfileModalProps {
   onClose: () => void;
 }
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+
 export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
   const { toast } = useToast();
   const { user, updateUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
+  const validateFile = (file: File) => {
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      throw new Error("JPG, PNG, WEBP, JPG 형식의 이미지만 업로드 가능합니다.");
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      throw new Error("파일 크기는 5MB를 초과할 수 없습니다.");
+    }
+  };
+
   const handleImageUpload = async (file: File) => {
     try {
       setIsLoading(true);
+      validateFile(file);
+
       const { accessToken } = await checkAuth();
 
       // 1. S3에 이미지 업로드
@@ -37,10 +51,8 @@ export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
 
       const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/images`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
         body: formData,
+        credentials: 'include',
       });
 
       if (!uploadResponse.ok) throw new Error('이미지 업로드에 실패했습니다.');
@@ -56,6 +68,7 @@ export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
         body: JSON.stringify({
           artistImage: imageUrl,
         }),
+        credentials: 'include',
       });
 
       if (!updateResponse.ok) throw new Error('프로필 업데이트에 실패했습니다.');
