@@ -2,6 +2,7 @@
 
 import { createContext, useContext } from "react";
 import { AuthContextType, User } from "./types";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -11,15 +12,10 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
+  const router = useRouter();
   const login = () => {
-    console.log('Starting login process...');
-    console.log('OAuth URL:', process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL);
-    
-    if (!process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL) {
-      console.error('OAuth URL is not defined');
-      return;
-    }
-    window.location.href = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL;
+    const googleOAuthUrl = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL;
+    router.push(googleOAuthUrl as string);
   };
 
   const logout = async () => {

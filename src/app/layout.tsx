@@ -4,7 +4,7 @@ import { AuthProvider } from "@/contexts/auth/AuthContext";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { BackgroundImage } from "@/components/layout/BackgroundImage";
-import { getAuthCookie } from "@/lib/auth";
+import { getAuthToken } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "SOFO",
@@ -20,7 +20,7 @@ export const viewport = {
 };
 
 async function getUser() {
-  const accessToken = getAuthCookie();
+  const accessToken = getAuthToken();
   if (!accessToken) return null;
 
   try {
