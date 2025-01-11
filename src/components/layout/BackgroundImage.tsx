@@ -8,8 +8,9 @@ export function BackgroundImage() {
           src="/images/background-color.webp"
           alt="Background"
           fill
-          loading="lazy"
-          quality={75}
+          priority
+          sizes="100vw"
+          quality={60}
           className="object-cover"
         />
       </div>
@@ -18,8 +19,9 @@ export function BackgroundImage() {
           src="/images/background-color-dark.webp"
           alt="Background Dark"
           fill
-          loading="lazy"
-          quality={75}
+          priority
+          sizes="100vw"
+          quality={60}
           className="object-cover"
         />
       </div>

@@ -26,10 +26,12 @@ export function Sidebar() {
       icon: ({ className }: { className?: string }) => (
         <div className={cn("relative w-4 h-4", className)}>
           <Image
-            src="/images/logo.webp"
+            src="/images/logo.svg"
             alt="SOFO Logo"
             fill
             priority
+            sizes="16px"
+            quality={90}
             className="object-contain"
           />
         </div>

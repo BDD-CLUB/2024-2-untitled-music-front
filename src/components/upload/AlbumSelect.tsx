@@ -40,6 +40,11 @@ export function AlbumSelect({ albums, selectedAlbum, onSelect }: AlbumSelectProp
                 src={album.artImage}
                 alt={album.title}
                 fill
+                sizes="(max-width: 640px) 50vw, 
+                       (max-width: 1024px) 33vw,
+                       25vw"
+                loading="lazy"
+                quality={75}
                 className="object-cover"
               />
               {selectedAlbum === album.uuid && (
