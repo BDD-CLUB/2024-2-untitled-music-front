@@ -23,6 +23,8 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
         const { isAuthenticated } = await checkAuth();
         if (!isAuthenticated && user) {
           setUser(null);
+        } else {
+          setUser(initialUser);
         }
       } catch (error) {
         console.error('Auth verification failed:', error);

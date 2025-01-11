@@ -43,7 +43,7 @@ export function Sidebar() {
     {
       icon: ({ className }: { className?: string }) => (
         isAuthenticated ? (
-          <Avatar className={cn("w-4 h-4", className)}>
+          <Avatar className={cn("w-6 h-6", className)}>
             <AvatarImage src={user?.artistImage || ""} />
             <AvatarFallback>
               <User className="w-3 h-3" />
