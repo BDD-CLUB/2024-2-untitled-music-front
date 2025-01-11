@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Calendar } from "lucide-react";
+import { User } from "lucide-react";
 import { AlbumActions } from "./AlbumActions";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useState } from "react";

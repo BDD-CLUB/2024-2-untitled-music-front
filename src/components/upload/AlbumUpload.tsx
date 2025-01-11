@@ -10,7 +10,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth/AuthContext";
-import { checkAuth } from "@/lib/auth";
 import { api } from "@/lib/axios";
 
 interface AlbumForm {
@@ -126,8 +125,6 @@ export function AlbumUpload() {
     
     try {
       validateForm();
-
-      const { accessToken } = await checkAuth();
 
       const response = await api.post(`/albums`, form);
 

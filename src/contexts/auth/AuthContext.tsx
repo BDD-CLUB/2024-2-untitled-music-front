@@ -34,7 +34,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
     };
 
     verifyAuth();
-  }, [user]);
+  }, [user, initialUser]);
 
   const login = () => {
     setIsLoading(true);
