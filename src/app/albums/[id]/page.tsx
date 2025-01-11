@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { AlbumInfo } from "@/components/albums/AlbumInfo";
 import { TrackList } from "@/components/albums/TrackList";
-import { api } from "@/lib/axios";
+import { checkAuth } from "@/lib/auth";
 
 interface AlbumPageProps {
   params: {
@@ -10,13 +10,19 @@ interface AlbumPageProps {
 }
 
 async function getAlbum(id: string) {
-  const response = await api.get(`/albums/${id}`);
+  const { accessToken } = await checkAuth();
 
-  if (!response.data) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/${id}`, {
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
     throw new Error('앨범을 불러오는데 실패했습니다.');
   }
 
-  return response.data;
+  return response.json();
 }
 
 export default async function AlbumPage({ params }: AlbumPageProps) {

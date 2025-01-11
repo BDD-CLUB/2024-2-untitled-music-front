@@ -1,12 +1,13 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { checkAuth } from "@/lib/auth";
 
 interface EditPlaylistModalProps {
   playlistId: string;
@@ -25,9 +26,14 @@ export function EditPlaylistModal({ playlistId, isOpen, onClose }: EditPlaylistM
 
   useEffect(() => {
     const fetchPlaylist = async () => {
+      const { accessToken } = await checkAuth();
+
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}`, {
           credentials: 'include',
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+          },
         });
 
         if (!response.ok) throw new Error('플레이리스트 정보를 불러오는데 실패했습니다.');
@@ -40,6 +46,7 @@ export function EditPlaylistModal({ playlistId, isOpen, onClose }: EditPlaylistM
       } catch (error) {
         toast({
           variant: "destructive",
+          title: "플레이리스트 정보 불러오기 실패",
           description: error instanceof Error ? error.message : "플레이리스트 정보를 불러오는데 실패했습니다.",
         });
         onClose();
@@ -57,6 +64,7 @@ export function EditPlaylistModal({ playlistId, isOpen, onClose }: EditPlaylistM
     if (!form.title.trim()) {
       toast({
         variant: "destructive",
+        title: "플레이리스트 제목 입력 실패",
         description: "플레이리스트 제목을 입력해주세요.",
       });
       return;
@@ -64,10 +72,12 @@ export function EditPlaylistModal({ playlistId, isOpen, onClose }: EditPlaylistM
 
     try {
       setIsLoading(true);
+      const { accessToken } = await checkAuth();
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          "Authorization": `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           title: form.title.trim(),
@@ -84,6 +94,8 @@ export function EditPlaylistModal({ playlistId, isOpen, onClose }: EditPlaylistM
       }
 
       toast({
+        title: "플레이리스트 수정 완료",
+        variant: "default",
         description: "플레이리스트가 수정되었습니다.",
       });
 
@@ -92,6 +104,7 @@ export function EditPlaylistModal({ playlistId, isOpen, onClose }: EditPlaylistM
     } catch (error) {
       toast({
         variant: "destructive",
+        title: "플레이리스트 수정 실패",
         description: error instanceof Error ? error.message : "플레이리스트 수정에 실패했습니다.",
       });
     } finally {
@@ -104,6 +117,7 @@ export function EditPlaylistModal({ playlistId, isOpen, onClose }: EditPlaylistM
       <DialogContent>
         <DialogHeader>
           <DialogTitle>플레이리스트 수정</DialogTitle>
+          <DialogDescription className="hidden">플레이리스트 정보를 수정해주세요.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">

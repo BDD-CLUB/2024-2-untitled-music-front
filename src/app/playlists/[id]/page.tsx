@@ -1,9 +1,8 @@
 import { PlaylistInfo } from "@/components/playlists/PlaylistInfo";
 import { PlaylistTracks } from "@/components/playlists/PlaylistTracks";
-import { api } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { notFound } from "next/navigation";
-
+import { checkAuth } from "@/lib/auth";
 interface PlaylistPageProps {
   params: {
     id: string;
@@ -12,17 +11,23 @@ interface PlaylistPageProps {
 
 async function getPlaylist(id: string) {
   try {
-    const response = await api.get(`/playlists/${id}`);
+    const { accessToken } = await checkAuth();
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${id}`, {
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+      },
+    });
 
     if (response.status === 404) {
       notFound();
     }
 
-    if (!response.data) {
+    if (!response.ok) {
       throw new Error('플레이리스트를 불러오는데 실패했습니다.');
     }
 
-    return response.data();
+    return response.json();
   } catch {
     throw new Error('플레이리스트를 불러오는데 실패했습니다.');
   }

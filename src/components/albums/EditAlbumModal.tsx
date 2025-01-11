@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/axios";
+import { checkAuth } from "@/lib/auth";
 
 interface EditAlbumModalProps {
   album: {
@@ -45,13 +45,21 @@ export function EditAlbumModal({
 
     try {
       setIsSubmitting(true);
-      const response = await api.patch(`/albums/${album.uuid}`, {
-        title: form.title,
-        description: form.description,
-        albumArt: form.albumArt,
+      const { accessToken } = await checkAuth();
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/${album.uuid}`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          title: form.title,
+          description: form.description,
+          albumArt: form.albumArt,
+        }),
       });
 
-      if (response.status !== 200) throw new Error("앨범 수정에 실패했습니다.");
+      if (!response.ok) throw new Error("앨범 수정에 실패했습니다.");
 
       toast({
         variant: "default",

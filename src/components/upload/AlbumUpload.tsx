@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth/AuthContext";
-import { api } from "@/lib/axios";
+import { checkAuth } from "@/lib/auth";
 
 interface AlbumForm {
   title: string;
@@ -69,11 +69,15 @@ export function AlbumUpload() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await api.post(`/uploads/images`, formData);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/images`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
 
-      if (!response.data) throw new Error("이미지 업로드에 실패했습니다.");
+      if (!response.ok) throw new Error("이미지 업로드에 실패했습니다.");
 
-      const imageUrl = response.data;
+      const imageUrl = await response.text();
       setForm(prev => ({ ...prev, albumArt: imageUrl }));
       setPreviewImage(URL.createObjectURL(file));
       
@@ -126,9 +130,19 @@ export function AlbumUpload() {
     try {
       validateForm();
 
-      const response = await api.post(`/albums`, form);
+      const { accessToken } = await checkAuth();
 
-      if (!response.data) throw new Error("앨범 생성에 실패했습니다.");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/albums`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(form),
+        credentials: "include",
+      });
+
+      if (!response.ok) throw new Error("앨범 생성에 실패했습니다.");
 
       toast({
         variant: "default",
@@ -136,7 +150,7 @@ export function AlbumUpload() {
         description: "앨범이 성공적으로 생성되었습니다.",
       });
 
-      router.push(`/albums/${response.data.uuid}`);
+      router.push("/");
       router.refresh();
     } catch (error) {
       toast({

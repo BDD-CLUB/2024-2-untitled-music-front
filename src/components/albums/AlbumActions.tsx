@@ -15,7 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { api } from "@/lib/axios";
+import { checkAuth } from "@/lib/auth";
 
 interface AlbumActionsProps {
   albumId: string;
@@ -31,9 +31,16 @@ export function AlbumActions({ albumId, onEdit }: AlbumActionsProps) {
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      const response = await api.delete(`/albums/${albumId}`);
+      const { accessToken } = await checkAuth();
 
-      if (response.status !== 200) {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/${albumId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
         throw new Error('앨범 삭제에 실패했습니다.');
       }
 

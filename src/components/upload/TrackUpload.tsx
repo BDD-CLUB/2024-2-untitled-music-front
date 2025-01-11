@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { AlbumSelect } from "./AlbumSelect";
-import { api } from "@/lib/axios";
+import { checkAuth } from "@/lib/auth";
 
 interface Album {
   uuid: string;
@@ -45,13 +45,20 @@ export function TrackUpload() {
     const fetchAlbums = async () => {
       if (!user) return;
 
-      try {
-        const response = await api.get(`/artists/${user.uuid}/albums`);
+      const { accessToken } = await checkAuth();
 
-        if (!response.data)
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${user.uuid}/albums`, {
+          credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!response.ok)
           throw new Error("앨범 목록을 불러오는데 실패했습니다.");
 
-        const data = await response.data();
+        const data = await response.json();
         setAlbums(data);
       } catch (error) {
         toast({
@@ -75,11 +82,15 @@ export function TrackUpload() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await api.post(`/uploads/musics`, formData);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/musics`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
 
-      if (!response.data) throw new Error("트랙 파일 업로드에 실패했습니다.");
+      if (!response.ok) throw new Error("트랙 파일 업로드에 실패했습니다.");
 
-      const trackUrl = await response.data;
+      const trackUrl = await response.text();
       setForm((prev) => ({ ...prev, trackFile: trackUrl }));
 
       // 오디오 파일의 재생 시간 가져오기
@@ -121,9 +132,18 @@ export function TrackUpload() {
 
     try {
       setIsLoading(true);
-      const response = await api.post(`/albums/${selectedAlbum}/tracks`, form);
+      const { accessToken } = await checkAuth();
 
-      if (!response.data) throw new Error("트랙 생성에 실패했습니다.");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/${selectedAlbum}/tracks`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(form),
+        credentials: "include",
+      });
+
+      if (!response.ok) throw new Error("트랙 생성에 실패했습니다.");
 
       toast({
         variant: "default",
