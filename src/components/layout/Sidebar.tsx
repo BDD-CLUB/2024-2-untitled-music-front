@@ -29,6 +29,7 @@ export function Sidebar() {
             src="/images/logo.svg"
             alt="SOFO Logo"
             fill
+            priority
             className="object-contain"
           />
         </div>

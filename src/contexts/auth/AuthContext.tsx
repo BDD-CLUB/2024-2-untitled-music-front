@@ -12,12 +12,14 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const login = () => {
-    const OAUTH_URL = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL;
-    if (!OAUTH_URL) {
+    console.log('Starting login process...');
+    console.log('OAuth URL:', process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL);
+    
+    if (!process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL) {
       console.error('OAuth URL is not defined');
       return;
     }
-    window.location.href = OAUTH_URL;
+    window.location.href = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL;
   };
 
   const logout = async () => {
