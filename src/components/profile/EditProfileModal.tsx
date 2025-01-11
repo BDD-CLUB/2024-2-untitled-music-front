@@ -38,7 +38,6 @@ export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
       const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/images`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'multipart/form-data',
         },
         body: formData,
