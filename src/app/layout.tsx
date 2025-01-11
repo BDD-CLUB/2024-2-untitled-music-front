@@ -1,32 +1,43 @@
 import "./globals.css";
 import type { Metadata } from "next";
-
-import { Bar } from "@/features/main/bar";
-import { getAccessToken, getProfileUUID } from "@/lib/cookie";
-import Topbar from "@/features/main/topbar";
-import ModalProvider from "@/components/modal/modal-provider";
-import { Toaster } from "@/components/ui/sonner";
-import { ThemeProvider } from "@/components/ui/theme-provider";
-
-import AuthProvider from "@/provider/authProvider";
-import { UserProvider } from "@/provider/userProvider";
-import { ProfileProvider } from "@/provider/profileProvider";
+import { AuthProvider } from "@/contexts/auth/AuthContext";
+import { cookies } from "next/headers";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { Header } from "@/components/layout/Header";
 
 export const metadata: Metadata = {
-  title: "Untitled",
-  description: "untitled demo app",
+  title: "SOFO",
+  description: "SOund FOrest",
   icons: {
     icon: "/images/logo.svg",
   },
 };
 
-export default function RootLayout({
+async function getUser() {
+  const cookieStore = cookies();
+  const authCookie = cookieStore.get('access_token');
+  
+  if (!authCookie) return null;
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists`, {
+    headers: {
+      Cookie: `access_token=${authCookie.value}`,
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) return null;
+  return response.json();
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const accessToken = getAccessToken();
-  const profileUUID = getProfileUUID() ?? null;
+  const user = await getUser();
 
   return (
     <html>
@@ -34,36 +45,44 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body suppressHydrationWarning>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AuthProvider accessToken={accessToken}>
-            <UserProvider>
-              <ProfileProvider uuid={profileUUID}>
-                <ModalProvider />
-                <Toaster />
+        <AuthProvider initialUser={user}>
+          <div className="relative min-h-screen w-full overflow-hidden">
+            {/* 배경 이미지 */}
+            <div className="fixed inset-0 w-full h-full">
+              <div className="absolute inset-0 bg-background dark:hidden">
+                <Image
+                  src="/images/background-color.svg"
+                  alt="Background"
+                  fill
+                  priority
+                  className="object-cover"
+                />
+              </div>
+              <div className="absolute inset-0 bg-background hidden dark:block">
+                <Image
+                  src="/images/background-color-dark.svg"
+                  alt="Background Dark"
+                  fill
+                  priority
+                  className="object-cover"
+                />
+              </div>
+            </div>
 
-                <div className="relative flex h-full flex-col overflow-hidden bg-[url('/images/background-color.svg')] bg-cover bg-center dark:bg-[url('/images/background-color-dark.svg')]">
-                  <div className="md:hidden fixed bottom-0 inset-x-0 flex mb-1">
-                    <Bar />
-                  </div>
-                  <div className="hidden md:flex fixed left-0 top-1/2 transform -translate-y-1/2 ml-4">
-                    <Bar />
-                  </div>
-
-                  <div className="fixed top-0 left-0 right-0">
-                    <Topbar />
-                  </div>
-
-                  {children}
-                </div>
-              </ProfileProvider>
-            </UserProvider>
-          </AuthProvider>
-        </ThemeProvider>
+            {/* 글래스모피즘 컨테이너 */}
+            <div className="relative">
+              <div
+                className={cn(
+                  "fixed inset-0 backdrop-blur-[2px]",
+                  "bg-white/[0.01] dark:bg-transparent",
+                )}
+              />
+              <Sidebar />
+              <Header />
+              <main className="relative pt-24">{children}</main>
+            </div>
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );

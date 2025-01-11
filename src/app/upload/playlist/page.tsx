@@ -1,7 +1,7 @@
+import { PlaylistUpload } from "@/components/upload/PlaylistUpload";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
 
-export default function Loading() {
+export default function PlaylistUploadPage() {
   return (
     <div className="container mx-auto px-4 py-8 pl-32">
       <div
@@ -14,11 +14,8 @@ export default function Loading() {
           "overflow-hidden"
         )}
       >
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-10 h-10 animate-spin mb-4" />
-          <p className="text-muted-foreground">로딩중...</p>
-        </div>
+        <PlaylistUpload />
       </div>
     </div>
   );
-} 
+}
