@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { AuthContextType, User } from "./types";
-import { useRouter } from "next/navigation";
+import { checkAuth } from "@/lib/auth";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -12,10 +12,28 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
-  const router = useRouter();
+  const [user, setUser] = useState<User | null>(initialUser);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 인증 상태 확인
+  useEffect(() => {
+    const verifyAuth = async () => {
+      const { isAuthenticated } = await checkAuth();
+      if (!isAuthenticated && user) {
+        setUser(null);
+      }
+    };
+
+    verifyAuth();
+  }, [user]);
+
   const login = () => {
     const googleOAuthUrl = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL;
-    router.push(googleOAuthUrl as string);
+    if (!googleOAuthUrl) {
+      console.error('OAuth URL is not defined');
+      return;
+    }
+    window.location.href = googleOAuthUrl;
   };
 
   const logout = async () => {
@@ -39,9 +57,9 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   return (
     <AuthContext.Provider
       value={{
-        user: initialUser,
-        isAuthenticated: !!initialUser,
-        isLoading: false,
+        user: user,
+        isAuthenticated: !!user,
+        isLoading: isLoading,
         login,
         logout,
       }}
