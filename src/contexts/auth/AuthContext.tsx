@@ -18,9 +18,16 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   // 인증 상태 확인
   useEffect(() => {
     const verifyAuth = async () => {
-      const { isAuthenticated } = await checkAuth();
-      if (!isAuthenticated && user) {
-        setUser(null);
+      setIsLoading(true);
+      try {
+        const { isAuthenticated } = await checkAuth();
+        if (!isAuthenticated && user) {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Auth verification failed:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -28,9 +35,11 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   }, [user]);
 
   const login = () => {
+    setIsLoading(true);
     const googleOAuthUrl = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL;
     if (!googleOAuthUrl) {
       console.error('OAuth URL is not defined');
+      setIsLoading(false);
       return;
     }
     window.location.href = googleOAuthUrl;
@@ -38,6 +47,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
 
   const logout = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`,
         {
@@ -48,18 +58,21 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
       
       if (!response.ok) throw new Error('Logout failed');
       
+      setUser(null);
       window.location.reload();
     } catch (error) {
       console.error('Logout error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        user: user,
+        user,
         isAuthenticated: !!user,
-        isLoading: isLoading,
+        isLoading,
         login,
         logout,
       }}

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const cookieStore = cookies();
-  const accessToken = cookieStore.get("access_token");
+  const accessToken = cookieStore.get("access_token")?.value;
   
   // 디버깅용 로그
   console.log('Checking cookies:', {
@@ -12,6 +12,7 @@ export async function GET() {
   });
 
   return NextResponse.json({
-    isAuthenticated: !!accessToken,  // 쿠키 존재 여부만 반환
+    isAuthenticated: !!accessToken,
+    accessToken: accessToken || null
   });
 }

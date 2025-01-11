@@ -30,6 +30,7 @@ async function getUser() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists`, {
       headers: {
+        Authorization: `Bearer ${accessToken}`,
         Cookie: `access_token=${accessToken}`,
       },
       credentials: "include",

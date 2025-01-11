@@ -18,7 +18,7 @@ import { LoginModal } from "@/components/auth/LoginModal";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const sidebarItems = [
@@ -42,9 +42,9 @@ export function Sidebar() {
     { icon: Bell, label: "알림", href: "/" },
     {
       icon: ({ className }: { className?: string }) => (
-        user ? (
+        isAuthenticated ? (
           <Avatar className={cn("w-4 h-4", className)}>
-            <AvatarImage src={user.artistImage} />
+            <AvatarImage src={user?.artistImage || ""} />
             <AvatarFallback>
               <User className="w-3 h-3" />
             </AvatarFallback>
@@ -56,7 +56,7 @@ export function Sidebar() {
       label: "프로필",
       href: user ? `/profile/${user.uuid}` : "#",
       onClick: () => {
-        if (!user) {
+        if (!isAuthenticated) {
           setShowLoginModal(true);
         }
       }
