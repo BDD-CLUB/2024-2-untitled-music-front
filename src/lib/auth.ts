@@ -2,8 +2,11 @@ import { cookies } from 'next/headers';
 
 export function getAuthCookie() {
   const cookieStore = cookies();
-
-  console.log(cookieStore.getAll());
-  console.log(cookieStore.get('access_token'));
-  return cookieStore.get('access_token');
+  const accessToken = cookieStore.get('access_token')?.value;
+  
+  // 디버깅 로그
+  console.log('All cookies:', cookieStore.getAll());
+  console.log('Access token:', accessToken);
+  
+  return accessToken;
 } 

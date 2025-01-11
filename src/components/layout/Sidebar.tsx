@@ -36,9 +36,9 @@ export function Sidebar() {
       label: "홈",
       href: "/"
     },
-    { icon: Search, label: "검색", href: "/search" },
+    { icon: Search, label: "검색", href: "/" },
     { icon: Upload, label: "업로드", href: "/upload" },
-    { icon: Bell, label: "알림", href: "/notifications" },
+    { icon: Bell, label: "알림", href: "/" },
     {
       icon: ({ className }: { className?: string }) => (
         user ? (
@@ -60,7 +60,7 @@ export function Sidebar() {
         }
       }
     },
-    { icon: Settings, label: "설정", href: "/settings" },
+    { icon: Settings, label: "설정", href: "/" },
   ];
 
   return (

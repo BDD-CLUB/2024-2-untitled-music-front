@@ -1,10 +1,10 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { AuthProvider } from "@/contexts/auth/AuthContext";
-import { cookies } from "next/headers";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { BackgroundImage } from "@/components/layout/BackgroundImage";
+import { getAuthCookie } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "SOFO",
@@ -20,22 +20,29 @@ export const viewport = {
 };
 
 async function getUser() {
-  const cookieStore = cookies();
-  const authCookie = cookieStore.get('access_token');
+  const accessToken = getAuthCookie();
   
-  if (!authCookie) return null;
+  console.log('GetUser - Access token:', accessToken);
+  
+  if (!accessToken) return null;
 
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists`, {
       headers: {
-        Cookie: `access_token=${authCookie.value}`,
+        Cookie: `access_token=${accessToken}`,
       },
       credentials: "include",
       next: { revalidate: 3600 },
     });
 
+    console.log('GetUser - Response status:', response.status);
+    
     if (!response.ok) return null;
-    return response.json();
+    const userData = await response.json();
+    
+    console.log('GetUser - User data:', userData);
+    
+    return userData;
   } catch (error) {
     console.error('Failed to fetch user:', error);
     return null;
