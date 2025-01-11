@@ -30,6 +30,7 @@ async function getUser() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists`, {
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
         Cookie: `access_token=${accessToken}`,
       },
@@ -38,7 +39,9 @@ async function getUser() {
     });
 
     if (!response.ok) return null;
-    return response.json();
+    const userData = await response.json();
+    console.log('Fetched user data:', userData);
+    return userData;
   } catch (error) {
     console.error('Failed to fetch user:', error);
     return null;
@@ -51,6 +54,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getUser();
+  console.log('User in RootLayout:', user);
 
   return (
     <html lang="ko">

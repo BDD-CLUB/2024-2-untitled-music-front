@@ -25,6 +25,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
           setUser(null);
         } else {
           setUser(initialUser);
+          console.log('User set:', user);
         }
       } catch (error) {
         console.error('Auth verification failed:', error);

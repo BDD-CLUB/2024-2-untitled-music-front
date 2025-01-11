@@ -54,7 +54,7 @@ export function Sidebar() {
         )
       ),
       label: "프로필",
-      href: user ? `/profile/${user.uuid}` : "#",
+      href: isAuthenticated ? `/profile/${user?.uuid}` : "/",
       onClick: () => {
         if (!isAuthenticated) {
           setShowLoginModal(true);
