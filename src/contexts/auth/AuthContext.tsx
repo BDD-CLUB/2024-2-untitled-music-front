@@ -2,7 +2,6 @@
 
 import { createContext, useContext } from "react";
 import { AuthContextType, User } from "./types";
-import axios from "axios";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -13,16 +12,30 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const login = () => {
-    window.location.href = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL as string;
+    const OAUTH_URL = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL;
+    if (!OAUTH_URL) {
+      console.error('OAuth URL is not defined');
+      return;
+    }
+    window.location.href = OAUTH_URL;
   };
 
   const logout = async () => {
-    await axios.post(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`,
-      {},
-      { withCredentials: true }
-    );
-    window.location.reload();
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`,
+        {
+          method: 'POST',
+          credentials: 'include',
+        }
+      );
+      
+      if (!response.ok) throw new Error('Logout failed');
+      
+      window.location.reload();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (

@@ -21,9 +21,6 @@ export const viewport = {
 
 async function getUser() {
   const accessToken = getAuthCookie();
-  
-  console.log('GetUser - Access token:', accessToken);
-  
   if (!accessToken) return null;
 
   try {
@@ -32,17 +29,11 @@ async function getUser() {
         Cookie: `access_token=${accessToken}`,
       },
       credentials: "include",
-      next: { revalidate: 3600 },
+      cache: 'no-store',
     });
 
-    console.log('GetUser - Response status:', response.status);
-    
     if (!response.ok) return null;
-    const userData = await response.json();
-    
-    console.log('GetUser - User data:', userData);
-    
-    return userData;
+    return response.json();
   } catch (error) {
     console.error('Failed to fetch user:', error);
     return null;
