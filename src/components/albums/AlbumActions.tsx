@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Edit2, Trash2 } from "lucide-react";
+import { MoreVertical, Edit2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +15,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { checkAuth } from "@/lib/auth";
 
 interface AlbumActionsProps {
@@ -41,9 +47,7 @@ export function AlbumActions({ albumId, onEdit }: AlbumActionsProps) {
         },
       });
 
-      if (!response.ok) {
-        throw new Error('앨범 삭제에 실패했습니다.');
-      }
+      if (!response.ok) throw new Error('앨범 삭제에 실패했습니다.');
 
       toast({
         variant: "default",
@@ -67,25 +71,30 @@ export function AlbumActions({ albumId, onEdit }: AlbumActionsProps) {
 
   return (
     <>
-      <div className="flex gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hover:bg-white/10"
-          onClick={onEdit}
-        >
-          <Edit2 className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hover:bg-white/10"
-          onClick={() => setShowDeleteDialog(true)}
-          disabled={isDeleting}
-        >
-          <Trash2 className="w-4 h-4 text-red-500" />
-        </Button>
-      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-white/10"
+          >
+            <MoreVertical className="w-4 h-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuItem onClick={onEdit}>
+            <Edit2 className="w-4 h-4 mr-2" />
+            편집
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            onClick={() => setShowDeleteDialog(true)}
+            className="text-red-500 focus:text-red-500"
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            삭제
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
