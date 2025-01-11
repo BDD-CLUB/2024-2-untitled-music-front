@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth/AuthContext";
+import { checkAuth } from "@/lib/auth";
 
 interface AlbumForm {
   title: string;
@@ -126,10 +127,13 @@ export function AlbumUpload() {
     try {
       validateForm();
 
+      const { accessToken } = await checkAuth();
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/albums`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`,
         },
         body: JSON.stringify(form),
         credentials: "include",
