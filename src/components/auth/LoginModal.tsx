@@ -33,7 +33,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         <div className="relative w-full aspect-[1.42/1]">
           {/* 배경 이미지 */}
           <Image
-            src="/images/auth-background.svg"
+            src="/images/auth-background.webp"
             alt=""
             fill
             priority

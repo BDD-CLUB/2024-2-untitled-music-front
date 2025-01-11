@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { AlbumInfo } from "@/components/albums/AlbumInfo";
 import { TrackList } from "@/components/albums/TrackList";
-import { checkAuth } from "@/lib/auth";
+import { getAuthCookie } from "@/lib/server-auth";
 
 interface AlbumPageProps {
   params: {
@@ -10,13 +10,15 @@ interface AlbumPageProps {
 }
 
 async function getAlbum(id: string) {
-  const { accessToken } = await checkAuth();
+  const accessToken = getAuthCookie();
 
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/${id}`, {
     headers: {
       "Authorization": `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
     },
     credentials: 'include',
+    cache: 'no-store',
   });
 
   if (!response.ok) {

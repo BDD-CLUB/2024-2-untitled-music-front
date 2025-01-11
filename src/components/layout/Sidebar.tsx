@@ -26,7 +26,7 @@ export function Sidebar() {
       icon: ({ className }: { className?: string }) => (
         <div className={cn("relative w-4 h-4", className)}>
           <Image
-            src="/images/logo.svg"
+            src="/images/logo.webp"
             alt="SOFO Logo"
             fill
             priority

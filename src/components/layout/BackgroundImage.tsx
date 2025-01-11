@@ -5,7 +5,7 @@ export function BackgroundImage() {
     <div className="fixed inset-0 w-full h-full">
       <div className="absolute inset-0 bg-background dark:hidden">
         <Image
-          src="/images/background-color.svg"
+          src="/images/background-color.webp"
           alt="Background"
           fill
           loading="lazy"
@@ -15,7 +15,7 @@ export function BackgroundImage() {
       </div>
       <div className="absolute inset-0 bg-background hidden dark:block">
         <Image
-          src="/images/background-color-dark.svg"
+          src="/images/background-color-dark.webp"
           alt="Background Dark"
           fill
           loading="lazy"
