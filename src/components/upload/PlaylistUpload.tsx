@@ -43,6 +43,8 @@ export function PlaylistUpload() {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "credentials": "include",
         },
         body: JSON.stringify({
           ...form,
