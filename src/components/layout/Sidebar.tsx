@@ -108,7 +108,7 @@ export function Sidebar() {
                   >
                     <Icon
                       className={cn(
-                        "w-6 h-6",
+                        "w-4 h-4",
                         "text-gray-800 dark:text-gray-200",
                         "transition-all duration-300",
                         isActive && "text-primary dark:text-primary"
