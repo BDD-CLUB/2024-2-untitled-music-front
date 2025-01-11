@@ -66,7 +66,7 @@ export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          artistImage: imageUrl,
+          "imageUrl": imageUrl as string,
         }),
         credentials: 'include',
       });
