@@ -75,7 +75,7 @@ export function ProfileHeader({ userId }: ProfileHeaderProps) {
           </div>
 
           {/* 유저 정보 */}
-          <div className="pt-20">
+          <div className="pt-20 pl-4">
             <h1 className="text-2xl font-bold">{user.name}</h1>
           </div>
         </div>

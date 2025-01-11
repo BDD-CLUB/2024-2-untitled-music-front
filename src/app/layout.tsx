@@ -40,7 +40,6 @@ async function getUser() {
 
     if (!response.ok) return null;
     const userData = await response.json();
-    console.log('Fetched user data:', userData);
     return userData;
   } catch (error) {
     console.error('Failed to fetch user:', error);
@@ -54,7 +53,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getUser();
-  console.log('User in RootLayout:', user);
 
   return (
     <html lang="ko">

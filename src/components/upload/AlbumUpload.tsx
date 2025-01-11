@@ -76,7 +76,7 @@ export function AlbumUpload() {
 
       if (!response.ok) throw new Error("이미지 업로드에 실패했습니다.");
 
-      const imageUrl = await response.json();
+      const imageUrl = await response.text();
       setForm(prev => ({ ...prev, albumArt: imageUrl }));
       setPreviewImage(URL.createObjectURL(file));
       
@@ -102,15 +102,13 @@ export function AlbumUpload() {
 
     if (!form.title.trim()) {
       newErrors.title = "앨범 제목을 입력해주세요.";
-    } else if (form.title.length < 2) {
-      newErrors.title = "앨범 제목은 최소 2자 이상이어야 합니다.";
+    } else if (form.title.length < 1) {
+      newErrors.title = "앨범 제목은 최소 1자 이상이어야 합니다.";
     }
 
     if (!form.description.trim()) {
       newErrors.description = "앨범 설명을 입력해주세요.";
-    } else if (form.description.length < 10) {
-      newErrors.description = "앨범 설명은 최소 10자 이상이어야 합니다.";
-    }
+    } 
 
     if (!form.albumArt) {
       newErrors.albumArt = "앨범 커버 이미지를 업로드해주세요.";
@@ -181,8 +179,8 @@ export function AlbumUpload() {
             />
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-              <ImagePlus className="w-8 h-8 group-hover:text-white/60 transition-colors" />
-              <p className="text-sm group-hover:text-white/60 transition-colors">
+              <ImagePlus className="w-8 h-8 group-hover:text-black/50 transition-colors" />
+              <p className="text-sm group-hover:text-black/50 transition-colors">
                 앨범 커버 이미지 업로드
               </p>
             </div>
