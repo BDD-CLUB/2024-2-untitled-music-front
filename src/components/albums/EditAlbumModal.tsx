@@ -51,11 +51,13 @@ export function EditAlbumModal({
         method: "PATCH",
         headers: {
           "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "credentials": "include",
         },
         body: JSON.stringify({
-          title: form.title,
-          description: form.description,
-          albumArt: form.albumArt,
+          title: form.title.trim(),
+          description: form.description.trim(),
+          albumArt: form.albumArt.trim(),
         }),
       });
 

@@ -32,14 +32,14 @@ export function AlbumInfo({ album, artist }: AlbumInfoProps) {
   return (
     <div className="relative">
       {/* 앨범 커버 배경 (블러 처리) */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden rounded-xl">
         <Image
           src={album.artImage}
           alt={album.title}
           fill
-          className="object-cover opacity-50 blur-3xl scale-110"
+          className="object-cover opacity-75 blur-xl scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/50" />
       </div>
 
       {/* 앨범 정보 */}

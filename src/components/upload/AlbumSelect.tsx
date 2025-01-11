@@ -35,12 +35,11 @@ export function AlbumSelect({ albums, selectedAlbum, onSelect }: AlbumSelectProp
         >
           <div className="relative aspect-square mb-3">
             <div className="absolute -inset-2 rounded-xl bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative rounded-lg overflow-hidden">
+            <div className="relative h-full rounded-lg overflow-hidden">
               <Image
                 src={album.artImage}
                 alt={album.title}
-                width={100}
-                height={100}
+                fill
                 className="object-cover"
               />
               {selectedAlbum === album.uuid && (

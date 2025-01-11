@@ -49,12 +49,11 @@ export function AlbumList({ albums }: AlbumListProps) {
             {/* 앨범 커버 */}
             <div className="relative aspect-square mb-4">
               <div className="absolute -inset-2 rounded-2xl bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative rounded-xl overflow-hidden">
+              <div className="relative h-full rounded-xl overflow-hidden">
                 <Image
                   src={album.artImage}
                   alt={album.title}
-                  width={100}
-                  height={100}
+                  fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 {/* 그라데이션 오버레이 */}

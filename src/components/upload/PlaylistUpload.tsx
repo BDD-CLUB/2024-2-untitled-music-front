@@ -48,7 +48,7 @@ export function PlaylistUpload() {
           ...form,
           title: form.title.trim(),
           description: form.description.trim(),
-          trackUuids: [],
+          trackUuids: [""],
         }),
       });
 

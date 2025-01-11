@@ -37,6 +37,7 @@ export function AlbumActions({ albumId, onEdit }: AlbumActionsProps) {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
       });
 

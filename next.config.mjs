@@ -3,6 +3,9 @@ const nextConfig = {
   output: "standalone",
   images: {
     formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 60,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       {
         protocol: "https",
@@ -12,9 +15,34 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
-        pathname: "/**", 
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+        pathname: "/**",
       },
     ],
+  },
+  // 정적 이미지 최적화
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.(webp)$/i,
+      use: [
+        {
+          loader: 'image-webpack-loader',
+          options: {
+            webp: {
+              quality: 75,
+              lossless: false,
+              progressive: true,
+              optimizationLevel: 3,
+            },
+          },
+        },
+      ],
+    });
+    return config;
   },
 };
 
