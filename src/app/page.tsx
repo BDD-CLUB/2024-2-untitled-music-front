@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { AlbumSection } from "@/components/home/AlbumSection";
 
 export default function Home() {
   return (
@@ -16,14 +17,8 @@ export default function Home() {
               "overflow-hidden"
             )}
           >
-            {/* 추천 앨범 섹션 */}
-            <section className="p-6">
-              <h2 className="text-xl font-bold mb-4">추천 앨범</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {/* 앨범 카드들이 들어갈 자리 */}
-              </div>
-            </section>
-
+            <AlbumSection />
+            
             {/* 최신 업로드 섹션 */}
             <section className="p-6 border-t border-white/10">
               <h2 className="text-xl font-bold mb-4">최신 업로드</h2>
