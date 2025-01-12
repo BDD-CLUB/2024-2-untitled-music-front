@@ -42,7 +42,7 @@ export function AlbumInfo({ album, artist }: AlbumInfoProps) {
           quality={30}
           className="object-cover opacity-75 blur-md scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black/75" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white/75 dark:via-black/50 dark:to-black/75" />
       </div>
 
       {/* 앨범 정보 */}
