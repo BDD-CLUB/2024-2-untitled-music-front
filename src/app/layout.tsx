@@ -56,8 +56,8 @@ export default async function RootLayout({
   const user = await getUser();
 
   return (
-    <html lang="ko">
-      <body suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
+      <body>
         <ThemeProvider>
           <AuthProvider initialUser={user}>
             <div className="relative min-h-screen w-full overflow-hidden">
