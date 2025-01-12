@@ -50,18 +50,20 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const logout = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`,
-        {
-          method: 'POST',
-          credentials: 'include',
-        }
-      );
       
+      // 1. 서버에 로그아웃 요청
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
       if (!response.ok) throw new Error('Logout failed');
-      
+
+      // 2. 클라이언트 상태 초기화
       setUser(null);
-      window.location.reload();
+      
+      // 3. 페이지 새로고침 (선택사항)
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
     } finally {

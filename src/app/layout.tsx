@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { BackgroundImage } from "@/components/layout/BackgroundImage";
 import { getAuthCookie } from "@/lib/server-auth";
+import { ThemeProvider } from "@/contexts/theme/ThemeContext";
 
 export const metadata: Metadata = {
   title: "SOFO",
@@ -57,17 +58,19 @@ export default async function RootLayout({
   return (
     <html lang="ko">
       <body suppressHydrationWarning>
-        <AuthProvider initialUser={user}>
-          <div className="relative min-h-screen w-full overflow-hidden">
-            <BackgroundImage />
-            <div className="relative">
-              <div className="fixed inset-0 backdrop-blur-[2px] bg-white/[0.01] dark:bg-transparent" />
-              <Sidebar />
-              <Header />
-              <main className="relative pt-24">{children}</main>
+        <ThemeProvider>
+          <AuthProvider initialUser={user}>
+            <div className="relative min-h-screen w-full overflow-hidden">
+              <BackgroundImage />
+              <div className="relative">
+                <div className="fixed inset-0 backdrop-blur-[2px] bg-white/[0.01] dark:bg-transparent" />
+                <Sidebar />
+                <Header />
+                <main className="relative pt-24">{children}</main>
+              </div>
             </div>
-          </div>
-        </AuthProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

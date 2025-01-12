@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { formatDate } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
-import { checkAuth } from "@/lib/auth";
 
 export function AlbumSection() {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -16,14 +15,9 @@ export function AlbumSection() {
   useEffect(() => {
     const fetchAlbums = async () => {
       try {
-        const { accessToken } = await checkAuth();
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/albums?page=0&pageSize=6`,
           {
-            headers: {
-              'Authorization': `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-            },
             credentials: 'include',
           }
         );
@@ -87,7 +81,7 @@ export function AlbumSection() {
 
             {/* 앨범 정보 */}
             <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-              <h3 className="font-medium text-sm mb-1 truncate">
+              <h3 className="font-medium text-white text-sm mb-1 truncate">
                 {album.albumResponseDto.title}
               </h3>
               <p className="text-xs text-white/70">

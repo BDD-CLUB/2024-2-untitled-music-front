@@ -63,7 +63,7 @@ export function Sidebar() {
         }
       },
     },
-    { icon: Settings, label: "설정", href: "/" },
+    { icon: Settings, label: "설정", href: "/settings" },
   ];
 
   return (

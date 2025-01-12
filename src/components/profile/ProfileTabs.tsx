@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Disc3, ListMusic } from "lucide-react";
+import { Disc3, ListMusic, Loader2 } from "lucide-react";
 import { AlbumList } from "./AlbumList";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -25,9 +25,6 @@ export function ProfileTabs({ userId }: ProfileTabsProps) {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${userId}/albums`,
           {
-            headers: {
-              "Authorization": `Bearer ${accessToken}`,
-            },
             credentials: 'include',
           }
         );
@@ -52,7 +49,7 @@ export function ProfileTabs({ userId }: ProfileTabsProps) {
   }, [userId, toast]);
 
   return (
-    <Tabs defaultValue="albums" className="p-8">
+    <Tabs defaultValue="albums" className="px-8 pb-8">
       <TabsList
         className={cn(
           "h-14 p-1",
@@ -94,7 +91,7 @@ export function ProfileTabs({ userId }: ProfileTabsProps) {
       <TabsContent value="albums" className="mt-8">
         {isLoading ? (
           <div className="flex justify-center py-16">
-            <div className="animate-pulse">로딩중...</div>
+            <div className="animate-spin"><Loader2 className="w-4 h-4" /></div>
           </div>
         ) : (
           <AlbumList albums={albums} />
