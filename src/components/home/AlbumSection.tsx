@@ -4,23 +4,16 @@ import { Album } from "@/types/album";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { formatDate } from "@/lib/format";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { RefreshCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export function AlbumSection() {
   const [albums, setAlbums] = useState<Album[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const fetchAlbums = async () => {
+  const fetchAlbums = useCallback(async () => {
     try {
-      setError(null);
-      setIsLoading(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/albums?page=0&pageSize=6`,
         {
@@ -32,55 +25,17 @@ export function AlbumSection() {
       setAlbums(data);
     } catch (error) {
       console.error('Failed to fetch albums:', error);
-      setError(error instanceof Error ? error.message : "앨범 목록을 불러오는데 실패했습니다.");
       toast({
         variant: "destructive",
+        title: "앨범 목록을 불러오는데 실패했습니다.",
         description: error instanceof Error ? error.message : "앨범 목록을 불러오는데 실패했습니다.",
       });
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchAlbums();
-  });
-
-  if (isLoading) {
-    return (
-      <section className="p-6">
-        <h2 className="text-xl font-bold mb-4">최신 앨범</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="space-y-3">
-              <Skeleton className="aspect-square rounded-xl" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/2" />
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="p-6">
-        <h2 className="text-xl font-bold mb-4">최신 앨범</h2>
-        <div className="flex flex-col items-center justify-center py-12 px-4">
-          <p className="text-muted-foreground text-center mb-4">{error}</p>
-          <Button
-            variant="outline"
-            onClick={fetchAlbums}
-            className="gap-2"
-          >
-            <RefreshCcw className="w-4 h-4" />
-            다시 시도
-          </Button>
-        </div>
-      </section>
-    );
-  }
+  }, [fetchAlbums]);
 
   return (
     <section className="p-6">
