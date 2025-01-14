@@ -5,6 +5,7 @@ import { User, ListMusic } from "lucide-react";
 import Link from "next/link";
 import { PlaylistActions } from "./PlaylistActions";
 import { useAuth } from "@/contexts/auth/AuthContext";
+import { useUser } from "@/contexts/auth/UserContext";
 
 interface PlaylistInfoProps {
   playlist: {
@@ -24,9 +25,10 @@ interface PlaylistInfoProps {
 }
 
 export function PlaylistInfo({ playlist }: PlaylistInfoProps) {
-  const { user } = useAuth();
-  const creator = playlist.playlistItemResponseDtos[0]?.trackGetResponseDto.artistResponseDto;
-  const isOwner = user?.uuid === creator?.uuid;
+  const { isAuthenticated } = useAuth();
+  const { user } = useUser();
+  
+  const isOwner = isAuthenticated && user?.uuid === playlist.uuid;
 
   return (
     <div className="relative">
@@ -56,18 +58,18 @@ export function PlaylistInfo({ playlist }: PlaylistInfoProps) {
                 <PlaylistActions playlistId={playlist.uuid} />
               )}
             </div>
-            {creator && (
+            {playlist.playlistItemResponseDtos[0]?.trackGetResponseDto.artistResponseDto && (
               <Link 
-                href={`/profile/${creator.uuid}`}
+                href={`/profile/${playlist.playlistItemResponseDtos[0]?.trackGetResponseDto.artistResponseDto.uuid}`}
                 className="flex items-center gap-2 hover:bg-white/5 px-3 py-2 rounded-full transition-colors mb-6"
               >
                 <Avatar className="w-8 h-8 border-2 border-white/10">
-                  <AvatarImage src={creator.artistImage} />
+                  <AvatarImage src={playlist.playlistItemResponseDtos[0]?.trackGetResponseDto.artistResponseDto.artistImage} />
                   <AvatarFallback>
                     <User className="w-4 h-4" />
                   </AvatarFallback>
                 </Avatar>
-                <span className="font-medium">{creator.name}</span>
+                <span className="font-medium">{playlist.playlistItemResponseDtos[0]?.trackGetResponseDto.artistResponseDto.name}</span>
               </Link>
             )}
             <p className="text-base text-muted-foreground max-w-2xl text-center md:text-left truncate">

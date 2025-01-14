@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/contexts/auth/AuthContext";
+import { useUser } from "@/contexts/auth/UserContext";
 import {
   Tooltip,
   TooltipContent,
@@ -18,7 +19,8 @@ import { LoginModal } from "@/components/auth/LoginModal";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const { user } = useUser();
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const sidebarItems = [
@@ -31,7 +33,7 @@ export function Sidebar() {
             fill
             priority
             sizes="16px"
-            quality={90}
+            quality={50}
             className="object-contain"
           />
         </div>
@@ -39,9 +41,9 @@ export function Sidebar() {
       label: "홈",
       href: "/"
     },
-    { icon: Search, label: "검색", href: "/" },
+    { icon: Search, label: "검색", href: "" },
     { icon: Upload, label: "업로드", href: "/upload" },
-    { icon: Bell, label: "알림", href: "/" },
+    { icon: Bell, label: "알림", href: "" },
     {
       icon: ({ className }: { className?: string }) =>
         isAuthenticated ? (

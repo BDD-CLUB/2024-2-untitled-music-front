@@ -10,10 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/auth/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Upload } from "lucide-react";
 import { checkAuth } from "@/lib/auth";
+import { useUser } from "@/contexts/auth/UserContext";
+import { convertToWebP } from "@/lib/image";
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -25,7 +26,7 @@ const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'
 
 export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
   const { toast } = useToast();
-  const { user, updateUser } = useAuth();
+  const { user, updateUser } = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
@@ -43,11 +44,14 @@ export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
       setIsLoading(true);
       validateFile(file);
 
+      // WebP로 변환
+      const optimizedFile = await convertToWebP(file);
+      
       const { accessToken } = await checkAuth();
 
       // 1. S3에 이미지 업로드
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', optimizedFile);  // 변환된 파일 사용
 
       const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/images`, {
         method: 'POST',
@@ -60,13 +64,13 @@ export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
 
       // 2. 프로필 이미지 업데이트
       const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/profile-image`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          "imageUrl": imageUrl as string,
+          "imageUrl": imageUrl,
         }),
         credentials: 'include',
       });

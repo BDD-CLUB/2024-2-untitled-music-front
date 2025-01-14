@@ -9,9 +9,9 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/contexts/auth/AuthContext";
 import { AlbumSelect } from "./AlbumSelect";
 import { checkAuth } from "@/lib/auth";
+import { useUser } from "@/contexts/auth/UserContext";
 
 interface Album {
   uuid: string;
@@ -29,7 +29,7 @@ interface TrackForm {
 export function TrackUpload() {
   const router = useRouter();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const [albums, setAlbums] = useState<Album[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState<string>("");

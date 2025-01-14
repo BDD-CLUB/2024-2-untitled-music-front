@@ -1,5 +1,6 @@
 "use client";
 
+import { useUser } from "@/contexts/auth/UserContext";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, MoreVertical, Edit2 } from "lucide-react";
@@ -18,19 +19,17 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ userId }: ProfileHeaderProps) {
-  const { user } = useAuth();
+  const { user } = useUser();
+  const { isAuthenticated } = useAuth();
   const [showEditModal, setShowEditModal] = useState(false);
-  const isOwner = user?.uuid === userId;
+  const isOwner = isAuthenticated && user?.uuid === userId;
 
   return (
     <div className="relative">
-      {/* 배경 이미지 */}
       <div className="h-48 bg-gradient-to-r from-purple-500/20 to-pink-500/20" />
 
-      {/* 프로필 정보 */}
       <div className="px-8 pb-8">
         <div className="relative flex gap-6 items-end">
-          {/* 프로필 이미지 */}
           <div className="absolute -top-16">
             <Avatar className="w-32 h-32 border-4 border-white/10 shadow-xl">
               <AvatarImage src={user?.artistImage} />
@@ -40,11 +39,9 @@ export function ProfileHeader({ userId }: ProfileHeaderProps) {
             </Avatar>
           </div>
 
-          {/* 유저 정보 */}
           <div className="pt-20 pl-4 flex items-center gap-4">
             <h1 className="text-2xl font-bold">{user?.name}</h1>
             
-            {/* 더보기 메뉴 */}
             {isOwner && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -68,9 +65,9 @@ export function ProfileHeader({ userId }: ProfileHeaderProps) {
         </div>
       </div>
 
-      <EditProfileModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
+      <EditProfileModal 
+        isOpen={showEditModal} 
+        onClose={() => setShowEditModal(false)} 
       />
     </div>
   );

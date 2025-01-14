@@ -57,10 +57,10 @@ export function AlbumList({ albums }: AlbumListProps) {
                   sizes="(max-width: 640px) 100vw, 
                          (max-width: 1024px) 50vw,
                          25vw"
-                  priority={index < 4}  // 처음 4개 이미지는 우선 로딩
-                  loading={index < 4 ? "eager" : "lazy"}
+                  priority={index < 3}  // 처음 3개 이미지는 우선 로딩
+                  loading={index < 3 ? "eager" : "lazy"}
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  quality={75}  // 품질 조정
+                  quality={50}  // 품질 조정
                 />
                 {/* 그라데이션 오버레이 */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

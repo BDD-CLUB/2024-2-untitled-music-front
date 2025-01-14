@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { AlbumActions } from "./AlbumActions";
 import { useAuth } from "@/contexts/auth/AuthContext";
+import { useUser } from "@/contexts/auth/UserContext";
 import { useState } from "react";
 import { EditAlbumModal } from "./EditAlbumModal";
 
@@ -25,9 +26,10 @@ interface AlbumInfoProps {
 }
 
 export function AlbumInfo({ album, artist }: AlbumInfoProps) {
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const { user } = useUser();
   const [showEditModal, setShowEditModal] = useState(false);
-  const isOwner = user?.uuid === artist.uuid;
+  const isOwner = isAuthenticated && user?.uuid === artist.uuid;
 
   return (
     <div className="relative">

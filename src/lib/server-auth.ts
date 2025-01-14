@@ -10,8 +10,5 @@ export function getAuthCookie() {
 // 서버 컴포넌트에서 로그아웃 처리
 export async function serverLogout() {
   const cookieStore = cookies();
-  cookieStore.set('access_token', '', {
-    expires: new Date(0),
-    path: '/',
-  });
+  cookieStore.delete('access_token');
 } 
