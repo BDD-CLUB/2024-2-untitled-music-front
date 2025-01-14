@@ -1,3 +1,5 @@
+'use client'
+
 import { cn } from "@/lib/utils";
 import { Play, Music, Loader2 } from "lucide-react";
 import { formatDuration } from "@/lib/format";
