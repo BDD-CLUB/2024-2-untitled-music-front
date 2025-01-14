@@ -14,6 +14,7 @@ async function getAlbum(id: string) {
       "Content-Type": "application/json",
     },
     credentials: 'include',
+    next: { revalidate: 0 }
   });
 
   if (!response.ok) {
