@@ -9,13 +9,16 @@ interface AlbumPageProps {
 }
 
 async function getAlbum(id: string) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/${id}`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: 'include',
-    next: { revalidate: 0 }
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/${id}?trackPage=0&trackPageSize=10`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: 'include',
+      next: { revalidate: 0 }
+    }
+  );
 
   if (!response.ok) {
     throw new Error('앨범을 불러오는데 실패했습니다.');
@@ -43,7 +46,10 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
           album={album.albumResponseDto}
           artist={album.artistResponseDto}
         />
-        <TrackList tracks={album.trackResponseDtos} />
+        <TrackList 
+          tracks={album.trackResponseDtos} 
+          albumId={params.id}
+        />
       </div>
     </div>
   );
