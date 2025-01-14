@@ -44,7 +44,7 @@ export function AlbumSection() {
 
   useEffect(() => {
     fetchAlbums();
-  }, [fetchAlbums]);
+  });
 
   if (isLoading) {
     return (
