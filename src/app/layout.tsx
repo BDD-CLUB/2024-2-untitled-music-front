@@ -1,4 +1,3 @@
-import { cache } from 'react';
 import "./globals.css";
 import type { Metadata } from "next";
 import { AuthProvider } from "@/contexts/auth/AuthContext";
@@ -10,7 +9,7 @@ import { ThemeProvider } from "@/contexts/theme/ThemeContext";
 import { UserProvider } from "@/contexts/auth/UserContext";
 
 // getUser를 layout 레벨에서 캐싱
-const getUser = cache(async () => {
+const getUser = async () => {
   const accessToken = getAuthCookie();
   
   if (!accessToken) {
@@ -32,7 +31,7 @@ const getUser = cache(async () => {
     console.error('Failed to fetch user:', error);
     return null;
   }
-});
+};
 
 export const metadata: Metadata = {
   title: "SOFO",
@@ -52,7 +51,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // 캐시된 getUser 함수 사용
   const user = await getUser();
 
   return (

@@ -57,7 +57,7 @@ export function Sidebar() {
           <User className={className} />
         ),
       label: "프로필",
-      href: isAuthenticated ? `/profile/${user?.uuid}` : "/",
+      href: isAuthenticated ? `/profile/${user?.uuid}` : "",
       onClick: (e: React.MouseEvent) => {
         if (!isAuthenticated) {
           e.preventDefault(); // 기본 링크 이동 동작 차단
