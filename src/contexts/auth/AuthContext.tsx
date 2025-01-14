@@ -39,6 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!googleOAuthUrl) throw new Error('OAuth URL is not defined');
       window.location.href = googleOAuthUrl;
     } catch (error) {
+      console.error('Login failed:', error);
       dispatch({ type: "SET_ERROR", payload: "로그인에 실패했습니다" });
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
@@ -57,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: "SET_AUTH", payload: false });
       window.location.href = '/';
     } catch (error) {
+      console.error('Logout failed:', error);
       dispatch({ type: "SET_ERROR", payload: "로그아웃에 실패했습니다" });
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
