@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useCallback, useMemo, useReducer } from "react";
+import { createContext, useContext, useCallback, useMemo, useReducer, useEffect } from "react";
 import { AuthContextType, AuthState } from "./types";
+import { checkAuth } from "@/lib/auth";
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -29,8 +30,32 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+interface AuthProviderProps {
+  children: React.ReactNode;
+  initialAuth: boolean;
+}
+
+export function AuthProvider({ children, initialAuth }: AuthProviderProps) {
+  const [state, dispatch] = useReducer(authReducer, {
+    ...initialState,
+    isAuthenticated: initialAuth,
+  });
+
+  // 인증 상태 체크
+  const checkAuthStatus = useCallback(async () => {
+    try {
+      const { isAuthenticated } = await checkAuth();
+      dispatch({ type: "SET_AUTH", payload: isAuthenticated });
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      dispatch({ type: "SET_AUTH", payload: false });
+    }
+  }, []);
+
+  // 초기 마운트 시 인증 상태 체크
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
 
   const login = useCallback(async () => {
     dispatch({ type: "SET_LOADING", payload: true });
@@ -69,7 +94,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     ...state,
     login,
     logout,
-  }), [state, login, logout]);
+    checkAuthStatus,
+  }), [state, login, logout, checkAuthStatus]);
 
   return (
     <AuthContext.Provider value={value}>

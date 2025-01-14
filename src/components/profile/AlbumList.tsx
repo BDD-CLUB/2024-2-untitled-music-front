@@ -69,10 +69,10 @@ export function AlbumList({ albums }: AlbumListProps) {
 
             {/* 앨범 정보 */}
             <div className="space-y-2">
-              <h3 className="font-medium text-lg line-clamp-1 group-hover:text-black/50 transition-colors">
+              <h3 className="font-medium text-md line-clamp-1 group-hover:text-white/50 dark:group-hover:text-black/50 transition-colors">
                 {album.title}
               </h3>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground group-hover:text-black/50 transition-colors">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground group-hover:text-white/50 dark:group-hover:text-black/50 transition-colors">
                 <Calendar className="w-4 h-4" />
                 <span>{formatDate(album.releaseDate)}</span>
               </div>

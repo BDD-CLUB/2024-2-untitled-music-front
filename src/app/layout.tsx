@@ -8,7 +8,7 @@ import { getAuthCookie } from "@/lib/server-auth";
 import { ThemeProvider } from "@/contexts/theme/ThemeContext";
 import { UserProvider } from "@/contexts/auth/UserContext";
 
-// getUser를 layout 레벨에서 캐싱
+// getUser 함수 수정
 const getUser = async () => {
   const accessToken = getAuthCookie();
   
@@ -25,8 +25,14 @@ const getUser = async () => {
       credentials: "include",
     });
 
-    if (!response.ok) return null;
-    return response.json();
+    if (!response.ok) {
+      console.error('Failed to fetch user:', response.status);
+      return null;
+    }
+
+    // response.json() 한 번만 호출
+    const userData = await response.json();
+    return userData;
   } catch (error) {
     console.error('Failed to fetch user:', error);
     return null;
@@ -51,14 +57,16 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getUser();
+  // 초기 유저 정보 가져오기
+  const initialUser = await getUser();
+  const isAuthenticated = !!initialUser;
 
   return (
     <html lang="ko" suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <AuthProvider>
-            <UserProvider initialUser={user}>
+          <AuthProvider initialAuth={isAuthenticated}>
+            <UserProvider initialUser={initialUser}>
               <BackgroundImage />
               <div className="relative min-h-screen w-full overflow-hidden">
                 <div className="fixed inset-0 backdrop-blur-[2px] bg-white/[0.01] dark:bg-transparent" />

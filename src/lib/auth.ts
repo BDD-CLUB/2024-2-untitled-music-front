@@ -9,11 +9,3 @@ export async function checkAuth() {
     return { isAuthenticated: false, accessToken: null };
   }
 }
-
-// API 요청을 위한 헤더 생성 헬퍼 함수
-export function getAuthHeaders(token: string) {
-  return {
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-}
