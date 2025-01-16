@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import { Music, Loader2 } from "lucide-react";
 import { formatDuration } from "@/lib/format";
 import { useEffect, useState } from "react";
-import { useInView } from "react-intersection-observer";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -27,51 +26,64 @@ interface Track {
 
 export function TrackSection() {
   const [tracks, setTracks] = useState<Track[]>([]);
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const { ref, inView } = useInView();
+  const [error, setError] = useState<string | null>(null);
 
   const fetchTracks = async () => {
-    if (isLoading || !hasMore) return;
-
     try {
       setIsLoading(true);
+      setError(null);
+      
+      console.log("Fetching tracks..."); // 디버깅 로그
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks?page=${page}&pageSize=10`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks?page=0&pageSize=10`,
         {
           credentials: "include",
         }
       );
 
-      if (!response.ok) throw new Error("트랙 목록을 불러오는데 실패했습니다.");
+      console.log("Response status:", response.status); // 디버깅 로그
 
-      const data = await response.json();
-
-      if (data.length === 0) {
-        setHasMore(false);
-        return;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      setTracks((prev) => [...prev, ...data]);
-      setPage((prev) => prev + 1);
+      const data = await response.json();
+      console.log("Received data:", data); // 디버깅 로그
+
+      setTracks(data);
     } catch (error) {
-      console.error("Failed to fetch tracks:", error);
+      console.error("Error fetching tracks:", error); // 디버깅 로그
+      setError(error instanceof Error ? error.message : "트랙 목록을 불러오는데 실패했습니다.");
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (inView) {
-      fetchTracks();
-    }
-  }, [inView]);
+    fetchTracks();
+  }, []);
+
+  if (error) {
+    return (
+      <section className="p-6 border-t border-white/10">
+        <h2 className="text-xl font-bold mb-4">최신 업로드</h2>
+        <div className="flex flex-col items-center justify-center py-8">
+          <p className="text-red-500 text-center">{error}</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="p-6 border-t border-white/10">
       <h2 className="text-xl font-bold mb-4">최신 업로드</h2>
-      {tracks.length === 0 && !isLoading ? (
+      {isLoading ? (
+        <div className="flex justify-center py-8">
+          <Loader2 className="w-6 h-6 animate-spin" />
+        </div>
+      ) : tracks.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-8">
           <Music className="w-12 h-12 text-muted-foreground mb-4" />
           <p className="text-muted-foreground text-center">
@@ -131,16 +143,6 @@ export function TrackSection() {
               </div>
             </div>
           ))}
-
-          {hasMore && (
-            <div ref={ref} className="py-4 flex justify-center">
-              {isLoading && (
-                <div className="text-sm text-muted-foreground">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                </div>
-              )}
-            </div>
-          )}
         </div>
       )}
     </section>
