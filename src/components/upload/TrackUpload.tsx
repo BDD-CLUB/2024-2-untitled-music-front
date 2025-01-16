@@ -88,7 +88,7 @@ export function TrackUpload() {
         credentials: "include",
       });
 
-      if (!response.ok) throw new Error("트랙 파일 업로드에 실패했습니다.");
+      if (!response.ok) throw new Error(`트랙 파일 업로드에 실패했습니다. ${response.statusText}`);
 
       const trackUrl = await response.text();
       setForm((prev) => ({ ...prev, trackFile: trackUrl }));
@@ -284,7 +284,7 @@ export function TrackUpload() {
                             트랙 파일을 업로드하세요
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            MP3, WAV 파일 지원
+                            MP3, WAV 파일 지원 (최대 5MB)
                           </p>
                         </>
                       )}
