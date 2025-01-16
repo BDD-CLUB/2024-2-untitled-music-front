@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Play, Music, Loader2, Pause } from "lucide-react";
+import { Play, Music, Loader2 } from "lucide-react";
 import { formatDuration } from "@/lib/format";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -34,8 +34,6 @@ export function TrackList({
   tracks: initialTracks,
   albumId,
   artistId,
-  album,
-  artist,
 }: TrackListProps) {
   const { isAuthenticated } = useAuth();
   const { user } = useUser();
