@@ -5,24 +5,33 @@ import { Play, Music, Loader2 } from "lucide-react";
 import { formatDuration } from "@/lib/format";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
+import { TrackActions } from "@/components/albums/TrackActions";
+import { useAuth } from "@/contexts/auth/AuthContext";
+import { useUser } from "@/contexts/auth/UserContext";
 
 interface Track {
   uuid: string;
   title: string;
   duration: number;
+  lyric: string;
 }
 
 interface TrackListProps {
   tracks: Track[];
   albumId: string;
+  artistId: string;
 }
 
-export function TrackList({ tracks: initialTracks, albumId }: TrackListProps) {
+export function TrackList({ tracks: initialTracks, albumId, artistId }: TrackListProps) {
+  const { isAuthenticated } = useAuth();
+  const { user } = useUser();
   const [tracks, setTracks] = useState<Track[]>(initialTracks);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
+
+  const isOwner = isAuthenticated && user?.uuid === artistId;
 
   const fetchMoreTracks = async () => {
     if (isLoading || !hasMore) return;
@@ -76,7 +85,7 @@ export function TrackList({ tracks: initialTracks, albumId }: TrackListProps) {
       ) : (
         <div className="space-y-1">
           {tracks.map((track, index) => (
-            <button
+            <div
               key={track.uuid}
               className={cn(
                 "w-full px-4 py-3",
@@ -97,11 +106,28 @@ export function TrackList({ tracks: initialTracks, albumId }: TrackListProps) {
                 </div>
                 <Play className="w-4 h-4 absolute left-2 opacity-0 group-hover:opacity-100 transition-all duration-300" />
                 <div className="flex-1 text-left">{track.title}</div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-muted-foreground mr-4">
                   {formatDuration(track.duration)}
                 </div>
+                {isOwner && (
+                  <TrackActions 
+                    track={track} 
+                    onUpdate={(updatedTrack) => {
+                      setTracks(prev => 
+                        prev.map(t => t.uuid === updatedTrack.uuid ? {
+                          ...t,
+                          title: updatedTrack.title,
+                          lyric: updatedTrack.lyric
+                        } : t)
+                      );
+                    }} 
+                    onDelete={(deletedTrackId) => {
+                      setTracks(prev => prev.filter(t => t.uuid !== deletedTrackId));
+                    }} 
+                  />
+                )}
               </div>
-            </button>
+            </div>
           ))}
           
           {hasMore && (

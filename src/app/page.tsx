@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { AlbumSection } from "@/components/home/AlbumSection";
+import { TrackSection } from "@/components/home/TrackSection";
 
 export default function Home() {
   return (
@@ -18,14 +19,7 @@ export default function Home() {
             )}
           >
             <AlbumSection />
-            
-            {/* 최신 업로드 섹션 */}
-            <section className="p-6 border-t border-white/10">
-              <h2 className="text-xl font-bold mb-4">최신 업로드</h2>
-              <div className="space-y-4">
-                {/* 트랙 리스트가 들어갈 자리 */}
-              </div>
-            </section>
+            <TrackSection />
           </div>
         </div>
 

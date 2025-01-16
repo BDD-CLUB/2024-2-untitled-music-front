@@ -49,6 +49,7 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
         <TrackList 
           tracks={album.trackResponseDtos} 
           albumId={params.id}
+          artistId={album.artistResponseDto.uuid}
         />
       </div>
     </div>

@@ -7,6 +7,7 @@ import { BackgroundImage } from "@/components/layout/BackgroundImage";
 import { getAuthCookie } from "@/lib/server-auth";
 import { ThemeProvider } from "@/contexts/theme/ThemeContext";
 import { UserProvider } from "@/contexts/auth/UserContext";
+import { Toaster } from "@/components/ui/toaster"
 
 // getUser 함수 수정
 const getUser = async () => {
@@ -77,6 +78,7 @@ export default async function RootLayout({
             </UserProvider>
           </AuthProvider>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );
