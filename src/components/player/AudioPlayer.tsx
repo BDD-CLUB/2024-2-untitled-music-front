@@ -26,7 +26,7 @@ export function AudioPlayer() {
     )}>
       {/* 트랙 정보 */}
       <div className="flex items-center gap-4 min-w-0 flex-1">
-        <div className="relative w-14 h-14 rounded-xl overflow-hidden shadow-lg">
+        <div className="relative w-10 h-10 rounded-xl overflow-hidden shadow-lg">
           <Image
             src={currentTrack.trackResponseDto.artUrl}
             alt={currentTrack.trackResponseDto.title}
@@ -38,9 +38,9 @@ export function AudioPlayer() {
           <div className="text-sm font-semibold truncate">
             {currentTrack.trackResponseDto.title}
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Link
-              href={`/profile/${currentTrack.artistResponseDto.uuid}`}
+              href={`/${currentTrack.artistResponseDto.uuid}`}
               className="hover:underline truncate hover:text-foreground transition-colors"
             >
               {currentTrack.artistResponseDto.name}

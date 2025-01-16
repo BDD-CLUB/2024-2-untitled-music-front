@@ -33,21 +33,24 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     if (!audioRef.current) return;
 
     try {
-      // 현재 트랙이 다른 트랙이라면 새로운 오디오 소스 설정
-      if (state.currentTrack?.trackResponseDto.uuid !== track.trackResponseDto.uuid) {
+      if (
+        state.currentTrack?.trackResponseDto.uuid !==
+        track.trackResponseDto.uuid
+      ) {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${track.trackResponseDto.uuid}`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${track.trackResponseDto.uuid}/audio`,
           { credentials: "include" }
         );
 
         if (!response.ok) throw new Error("Failed to fetch audio source");
 
-        audioRef.current.src = await response.text();
-        setState(prev => ({ ...prev, currentTrack: track }));
+        const audioUrl = await response.text();
+        audioRef.current.src = audioUrl;
+        setState((prev) => ({ ...prev, currentTrack: track }));
       }
 
       await audioRef.current.play();
-      setState(prev => ({ ...prev, isPlaying: true }));
+      setState((prev) => ({ ...prev, isPlaying: true }));
     } catch (error) {
       console.error("Failed to play track:", error);
     }
@@ -56,19 +59,19 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const pause = () => {
     if (!audioRef.current) return;
     audioRef.current.pause();
-    setState(prev => ({ ...prev, isPlaying: false }));
+    setState((prev) => ({ ...prev, isPlaying: false }));
   };
 
   const setVolume = (volume: number) => {
     if (!audioRef.current) return;
     audioRef.current.volume = volume;
-    setState(prev => ({ ...prev, volume }));
+    setState((prev) => ({ ...prev, volume }));
   };
 
   const seek = (time: number) => {
     if (!audioRef.current) return;
     audioRef.current.currentTime = time;
-    setState(prev => ({ ...prev, progress: time }));
+    setState((prev) => ({ ...prev, progress: time }));
   };
 
   useEffect(() => {
@@ -77,7 +80,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     const audio = audioRef.current;
 
     const handleTimeUpdate = () => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         progress: audio.currentTime,
         duration: audio.duration,
@@ -85,7 +88,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
 
     const handleEnded = () => {
-      setState(prev => ({ ...prev, isPlaying: false, progress: 0 }));
+      setState((prev) => ({ ...prev, isPlaying: false, progress: 0 }));
     };
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
@@ -118,4 +121,4 @@ export const useAudio = () => {
     throw new Error("useAudio must be used within an AudioProvider");
   }
   return context;
-}; 
+};
