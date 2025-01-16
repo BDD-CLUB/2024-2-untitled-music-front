@@ -38,7 +38,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         track.trackResponseDto.uuid
       ) {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${track.trackResponseDto.uuid}/audio`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${track.trackResponseDto.uuid}`,
           { credentials: "include" }
         );
 

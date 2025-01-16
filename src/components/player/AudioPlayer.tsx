@@ -16,8 +16,6 @@ export function AudioPlayer() {
   return (
     <div className={cn(
       "rounded-2xl",
-      "bg-white/5 dark:bg-black/20",
-      "backdrop-blur-xl",
       "border border-white/10",
       "shadow-lg",
       "p-4",
