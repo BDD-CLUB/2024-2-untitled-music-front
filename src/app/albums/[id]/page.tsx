@@ -50,6 +50,14 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
           tracks={album.trackResponseDtos} 
           albumId={params.id}
           artistId={album.artistResponseDto.uuid}
+          album={{
+            title: album.albumResponseDto.title,
+            artImage: album.albumResponseDto.artImage,
+          }}
+          artist={{
+            name: album.artistResponseDto.name,
+            artistImage: album.artistResponseDto.artistImage,
+          }}
         />
       </div>
     </div>

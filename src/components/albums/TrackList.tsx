@@ -1,13 +1,14 @@
 'use client'
 
 import { cn } from "@/lib/utils";
-import { Play, Music, Loader2 } from "lucide-react";
+import { Play, Music, Loader2, Pause } from "lucide-react";
 import { formatDuration } from "@/lib/format";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { TrackActions } from "@/components/albums/TrackActions";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useUser } from "@/contexts/auth/UserContext";
+import { useAudio } from "@/contexts/audio/AudioContext";
 
 interface Track {
   uuid: string;
@@ -20,9 +21,23 @@ interface TrackListProps {
   tracks: Track[];
   albumId: string;
   artistId: string;
+  album: {
+    title: string;
+    artImage: string;
+  };
+  artist: {
+    name: string;
+    artistImage: string;
+  };
 }
 
-export function TrackList({ tracks: initialTracks, albumId, artistId }: TrackListProps) {
+export function TrackList({ 
+  tracks: initialTracks, 
+  albumId, 
+  artistId,
+  album,
+  artist 
+}: TrackListProps) {
   const { isAuthenticated } = useAuth();
   const { user } = useUser();
   const [tracks, setTracks] = useState<Track[]>(initialTracks);
@@ -30,6 +45,7 @@ export function TrackList({ tracks: initialTracks, albumId, artistId }: TrackLis
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
+  const { currentTrack, isPlaying, play, pause } = useAudio();
 
   const isOwner = isAuthenticated && user?.uuid === artistId;
 
@@ -73,6 +89,38 @@ export function TrackList({ tracks: initialTracks, albumId, artistId }: TrackLis
 
   const hasNoTracks = !tracks || tracks.length === 0;
 
+  const handlePlayPause = (track: Track) => {
+    const fullTrack = {
+      trackResponseDto: {
+        uuid: track.uuid,
+        title: track.title,
+        duration: track.duration,
+        lyric: track.lyric,
+        artUrl: album.artImage,
+      },
+      albumResponseDto: {
+        uuid: albumId,
+        title: album.title,
+        artImage: album.artImage,
+      },
+      artistResponseDto: {
+        uuid: artistId,
+        name: artist.name,
+        artistImage: artist.artistImage,
+      },
+    };
+
+    if (currentTrack?.trackResponseDto.uuid === track.uuid) {
+      if (isPlaying) {
+        pause();
+      } else {
+        play(fullTrack);
+      }
+    } else {
+      play(fullTrack);
+    }
+  };
+
   return (
     <div className="p-8 pt-4">
       {hasNoTracks ? (
@@ -93,7 +141,8 @@ export function TrackList({ tracks: initialTracks, albumId, artistId }: TrackLis
                 "rounded-xl",
                 "transition-all duration-300",
                 "hover:bg-white/5",
-                "group relative"
+                "group relative",
+                currentTrack?.trackResponseDto.uuid === track.uuid && "bg-white/5"
               )}
             >
               <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -101,10 +150,20 @@ export function TrackList({ tracks: initialTracks, albumId, artistId }: TrackLis
               </div>
 
               <div className="relative flex items-center gap-4 w-full">
-                <div className="w-8 text-sm text-muted-foreground group-hover:opacity-0 transition-opacity">
-                  {String(index + 1).padStart(2, '0')}
-                </div>
-                <Play className="w-4 h-4 absolute left-2 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                <button
+                  onClick={() => handlePlayPause(track)}
+                  className="w-8 flex items-center justify-center"
+                >
+                  <div className="text-sm text-muted-foreground group-hover:opacity-0 transition-opacity">
+                    {String(index + 1).padStart(2, '0')}
+                  </div>
+                  {currentTrack?.trackResponseDto.uuid === track.uuid && isPlaying ? (
+                    <Pause className="w-4 h-4 absolute opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  ) : (
+                    <Play className="w-4 h-4 absolute opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  )}
+                </button>
+                
                 <div className="flex-1 text-left">{track.title}</div>
                 <div className="text-sm text-muted-foreground mr-4">
                   {formatDuration(track.duration)}

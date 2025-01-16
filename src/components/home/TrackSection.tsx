@@ -6,6 +6,7 @@ import { formatDuration } from "@/lib/format";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAudio } from "@/contexts/audio/AudioContext";
 
 interface Track {
   trackResponseDto: {
@@ -13,14 +14,17 @@ interface Track {
     title: string;
     duration: number;
     artUrl: string;
+    lyric: string;
   };
   albumResponseDto: {
     uuid: string;
     title: string;
+    artImage: string;
   };
   artistResponseDto: {
     uuid: string;
     name: string;
+    artistImage: string;
   };
 }
 
@@ -28,13 +32,12 @@ export function TrackSection() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { currentTrack, isPlaying, play, pause } = useAudio();
 
   const fetchTracks = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      
-      console.log("Fetching tracks..."); // 디버깅 로그
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks?page=0&pageSize=10`,
@@ -43,19 +46,19 @@ export function TrackSection() {
         }
       );
 
-      console.log("Response status:", response.status); // 디버깅 로그
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("Received data:", data); // 디버깅 로그
 
       setTracks(data);
     } catch (error) {
-      console.error("Error fetching tracks:", error); // 디버깅 로그
-      setError(error instanceof Error ? error.message : "트랙 목록을 불러오는데 실패했습니다.");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "트랙 목록을 불러오는데 실패했습니다."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -64,6 +67,18 @@ export function TrackSection() {
   useEffect(() => {
     fetchTracks();
   }, []);
+
+  const handlePlayPause = (track: Track) => {
+    if (currentTrack?.trackResponseDto.uuid === track.trackResponseDto.uuid) {
+      if (isPlaying) {
+        pause();
+      } else {
+        play(track);
+      }
+    } else {
+      play(track);
+    }
+  };
 
   if (error) {
     return (
@@ -93,15 +108,19 @@ export function TrackSection() {
       ) : (
         <div className="space-y-1">
           {tracks.map((track) => (
-            <div
+            <button
               key={track.trackResponseDto.uuid}
+              onClick={() => handlePlayPause(track)}
               className={cn(
                 "w-full px-4 py-3",
                 "flex items-center gap-4",
                 "rounded-xl",
                 "transition-all duration-300",
                 "hover:bg-white/5",
-                "group relative"
+                "group relative",
+                "text-left",
+                currentTrack?.trackResponseDto.uuid === track.trackResponseDto.uuid &&
+                  "bg-white/5"
               )}
             >
               <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -125,6 +144,7 @@ export function TrackSection() {
                     <Link
                       href={`/profile/${track.artistResponseDto.uuid}`}
                       className="hover:underline truncate"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       {track.artistResponseDto.name}
                     </Link>
@@ -132,6 +152,7 @@ export function TrackSection() {
                     <Link
                       href={`/albums/${track.albumResponseDto.uuid}`}
                       className="hover:underline truncate"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       {track.albumResponseDto.title}
                     </Link>
@@ -141,7 +162,7 @@ export function TrackSection() {
                   {formatDuration(track.trackResponseDto.duration)}
                 </div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       )}
