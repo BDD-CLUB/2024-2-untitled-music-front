@@ -138,6 +138,7 @@ export function TrackUpload() {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(form),
         credentials: "include",
