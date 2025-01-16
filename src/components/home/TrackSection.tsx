@@ -6,7 +6,6 @@ import { formatDuration } from "@/lib/format";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useAudio } from "@/contexts/audio/AudioContext";
 
 interface Track {
   trackResponseDto: {
@@ -32,7 +31,6 @@ export function TrackSection() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { currentTrack, isPlaying, play, pause } = useAudio();
 
   const fetchTracks = async () => {
     try {
@@ -68,18 +66,6 @@ export function TrackSection() {
     fetchTracks();
   }, []);
 
-  const handlePlayPause = (track: Track) => {
-    if (currentTrack?.trackResponseDto.uuid === track.trackResponseDto.uuid) {
-      if (isPlaying) {
-        pause();
-      } else {
-        play(track);
-      }
-    } else {
-      play(track);
-    }
-  };
-
   if (error) {
     return (
       <section className="p-6 border-t border-white/10">
@@ -110,7 +96,6 @@ export function TrackSection() {
           {tracks.map((track) => (
             <button
               key={track.trackResponseDto.uuid}
-              onClick={() => handlePlayPause(track)}
               className={cn(
                 "w-full px-4 py-3",
                 "flex items-center gap-4",
@@ -118,9 +103,7 @@ export function TrackSection() {
                 "transition-all duration-300",
                 "hover:bg-white/5",
                 "group relative",
-                "text-left",
-                currentTrack?.trackResponseDto.uuid === track.trackResponseDto.uuid &&
-                  "bg-white/5"
+                "text-left"
               )}
             >
               <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">

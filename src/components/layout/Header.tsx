@@ -12,21 +12,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { AudioPlayer } from "@/components/player/AudioPlayer";
-import { useAudio } from "@/contexts/audio/AudioContext";
 
 export function Header() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { isAuthenticated } = useAuth();
-  const { currentTrack } = useAudio();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      <div className="h-16 bg-muted-foreground backdrop-blur-lg">
+      <div className="h-16">
         <div className="container mx-auto h-full px-2 pl-32 flex items-center justify-between gap-4">
-          <div className="flex-1">
-            {currentTrack && <AudioPlayer />}
-          </div>
+          <div className="flex-1" />
+            
           {!isAuthenticated && (
             <TooltipProvider>
               <Tooltip delayDuration={0}>

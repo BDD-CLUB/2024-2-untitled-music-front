@@ -8,7 +8,6 @@ import { getAuthCookie } from "@/lib/server-auth";
 import { ThemeProvider } from "@/contexts/theme/ThemeContext";
 import { UserProvider } from "@/contexts/auth/UserContext";
 import { Toaster } from "@/components/ui/toaster"
-import { AudioProvider } from "@/contexts/audio/AudioContext";
 
 // getUser 함수 수정
 const getUser = async () => {
@@ -69,7 +68,7 @@ export default async function RootLayout({
         <ThemeProvider>
           <AuthProvider initialAuth={isAuthenticated}>
             <UserProvider initialUser={initialUser}>
-              <AudioProvider>
+             
                 <BackgroundImage />
                 <div className="relative min-h-screen w-full overflow-hidden">
                   <div className="fixed inset-0 backdrop-blur-[2px] bg-white/[0.01] dark:bg-transparent" />
@@ -77,7 +76,7 @@ export default async function RootLayout({
                 <Header />
                 <main className="relative pt-24">{children}</main>
                 </div>
-              </AudioProvider>
+            
             </UserProvider>
           </AuthProvider>
         </ThemeProvider>

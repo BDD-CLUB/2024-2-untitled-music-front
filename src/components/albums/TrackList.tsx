@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { cn } from "@/lib/utils";
 import { Play, Music, Loader2, Pause } from "lucide-react";
@@ -8,7 +8,6 @@ import { useInView } from "react-intersection-observer";
 import { TrackActions } from "@/components/albums/TrackActions";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useUser } from "@/contexts/auth/UserContext";
-import { useAudio } from "@/contexts/audio/AudioContext";
 
 interface Track {
   uuid: string;
@@ -31,12 +30,12 @@ interface TrackListProps {
   };
 }
 
-export function TrackList({ 
-  tracks: initialTracks, 
-  albumId, 
+export function TrackList({
+  tracks: initialTracks,
+  albumId,
   artistId,
   album,
-  artist 
+  artist,
 }: TrackListProps) {
   const { isAuthenticated } = useAuth();
   const { user } = useUser();
@@ -45,7 +44,6 @@ export function TrackList({
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
-  const { currentTrack, isPlaying, play, pause } = useAudio();
 
   const isOwner = isAuthenticated && user?.uuid === artistId;
 
@@ -58,12 +56,12 @@ export function TrackList({
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/${albumId}?trackPage=${nextPage}&trackPageSize=10`,
         {
-          credentials: 'include',
+          credentials: "include",
         }
       );
 
-      if (!response.ok) throw new Error('트랙 목록을 불러오는데 실패했습니다.');
-      
+      if (!response.ok) throw new Error("트랙 목록을 불러오는데 실패했습니다.");
+
       const data = await response.json();
       const newTracks = data.trackResponseDtos;
 
@@ -72,10 +70,10 @@ export function TrackList({
         return;
       }
 
-      setTracks(prev => [...prev, ...newTracks]);
+      setTracks((prev) => [...prev, ...newTracks]);
       setPage(nextPage);
     } catch (error) {
-      console.error('Failed to fetch more tracks:', error);
+      console.error("Failed to fetch more tracks:", error);
     } finally {
       setIsLoading(false);
     }
@@ -88,38 +86,6 @@ export function TrackList({
   }, [inView]);
 
   const hasNoTracks = !tracks || tracks.length === 0;
-
-  const handlePlayPause = (track: Track) => {
-    const fullTrack = {
-      trackResponseDto: {
-        uuid: track.uuid,
-        title: track.title,
-        duration: track.duration,
-        lyric: track.lyric,
-        artUrl: album.artImage,
-      },
-      albumResponseDto: {
-        uuid: albumId,
-        title: album.title,
-        artImage: album.artImage,
-      },
-      artistResponseDto: {
-        uuid: artistId,
-        name: artist.name,
-        artistImage: artist.artistImage,
-      },
-    };
-
-    if (currentTrack?.trackResponseDto.uuid === track.uuid) {
-      if (isPlaying) {
-        pause();
-      } else {
-        play(fullTrack);
-      }
-    } else {
-      play(fullTrack);
-    }
-  };
 
   return (
     <div className="p-8 pt-4">
@@ -141,8 +107,7 @@ export function TrackList({
                 "rounded-xl",
                 "transition-all duration-300",
                 "hover:bg-white/5",
-                "group relative",
-                currentTrack?.trackResponseDto.uuid === track.uuid && "bg-white/5"
+                "group relative"
               )}
             >
               <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -150,45 +115,44 @@ export function TrackList({
               </div>
 
               <div className="relative flex items-center gap-4 w-full">
-                <button
-                  onClick={() => handlePlayPause(track)}
-                  className="w-8 flex items-center justify-center"
-                >
+                <button className="w-8 flex items-center justify-center">
                   <div className="text-sm text-muted-foreground group-hover:opacity-0 transition-opacity">
-                    {String(index + 1).padStart(2, '0')}
+                    {String(index + 1).padStart(2, "0")}
                   </div>
-                  {currentTrack?.trackResponseDto.uuid === track.uuid && isPlaying ? (
-                    <Pause className="w-4 h-4 absolute opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                  ) : (
-                    <Play className="w-4 h-4 absolute opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                  )}
+                  <Play className="w-4 h-4 absolute opacity-0 group-hover:opacity-100 transition-all duration-300" />
                 </button>
-                
+
                 <div className="flex-1 text-left">{track.title}</div>
                 <div className="text-sm text-muted-foreground mr-4">
                   {formatDuration(track.duration)}
                 </div>
                 {isOwner && (
-                  <TrackActions 
-                    track={track} 
+                  <TrackActions
+                    track={track}
                     onUpdate={(updatedTrack) => {
-                      setTracks(prev => 
-                        prev.map(t => t.uuid === updatedTrack.uuid ? {
-                          ...t,
-                          title: updatedTrack.title,
-                          lyric: updatedTrack.lyric
-                        } : t)
+                      setTracks((prev) =>
+                        prev.map((t) =>
+                          t.uuid === updatedTrack.uuid
+                            ? {
+                                ...t,
+                                title: updatedTrack.title,
+                                lyric: updatedTrack.lyric,
+                              }
+                            : t
+                        )
                       );
-                    }} 
+                    }}
                     onDelete={(deletedTrackId) => {
-                      setTracks(prev => prev.filter(t => t.uuid !== deletedTrackId));
-                    }} 
+                      setTracks((prev) =>
+                        prev.filter((t) => t.uuid !== deletedTrackId)
+                      );
+                    }}
                   />
                 )}
               </div>
             </div>
           ))}
-          
+
           {hasMore && (
             <div ref={ref} className="py-4 flex justify-center">
               {isLoading && (
@@ -202,4 +166,4 @@ export function TrackList({
       )}
     </div>
   );
-} 
+}
