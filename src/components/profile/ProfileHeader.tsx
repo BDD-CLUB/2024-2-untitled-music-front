@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { User, MoreVertical, Edit2 } from "lucide-react";
+import { User, MoreVertical, Edit, UserPen } from "lucide-react";
 import { useState, useEffect } from "react";
 import { EditProfileModal } from "./EditProfileModal";
 import { useAuth } from "@/contexts/auth/AuthContext";
@@ -124,13 +124,13 @@ export function ProfileHeader({ userId }: ProfileHeaderProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-40">
-                    <DropdownMenuItem onClick={() => setShowEditModal(true)}>
-                      <Edit2 className="w-4 h-4 mr-2" />
-                      프로필 이미지 변경
+                    <DropdownMenuItem onClick={() => setShowEditModal(true)} className="text-sm">
+                      <Edit className="w-4 h-4 mr-2" />
+                      이미지 변경
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setShowEditInfoModal(true)}>
-                      <Edit2 className="w-4 h-4 mr-2" />
-                      프로필 정보 수정
+                    <DropdownMenuItem onClick={() => setShowEditInfoModal(true)} className="text-sm">
+                      <UserPen className="w-4 h-4 mr-2" />
+                      프로필 수정
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

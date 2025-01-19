@@ -113,8 +113,11 @@ export function EditProfileInfoModal({ isOpen, onClose }: EditProfileInfoModalPr
 
       if (!response.ok) throw new Error("프로필 수정에 실패했습니다.");
 
-      const updatedUser = await response.json();
-      updateUser(updatedUser);
+      // 204 응답은 성공이지만 응답 본문이 없음
+      if (response.status !== 204) {
+        const updatedUser = await response.json();
+        updateUser(updatedUser);
+      }
       
       toast({
         title: "프로필 수정 완료",
