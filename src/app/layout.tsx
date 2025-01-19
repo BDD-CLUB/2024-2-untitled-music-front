@@ -18,7 +18,7 @@ const getUser = async () => {
   }
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/my-profile`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,

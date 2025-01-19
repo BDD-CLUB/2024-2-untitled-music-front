@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { AlbumSection } from "@/components/home/AlbumSection";
 import { TrackSection } from "@/components/home/TrackSection";
+import { ArtistSection } from "@/components/home/ArtistSection";
 
 export default function Home() {
   return (
@@ -37,12 +38,7 @@ export default function Home() {
             )}
           >
             {/* 인기 아티스트 섹션 */}
-            <section className="p-6">
-              <h2 className="text-xl font-bold mb-4">인기 아티스트</h2>
-              <div className="space-y-4">
-                {/* 아티스트 리스트가 들어갈 자리 */}
-              </div>
-            </section>
+            <ArtistSection />
 
             {/* 인기 플레이리스트 섹션 */}
             <section className="p-6 border-t border-white/10">
