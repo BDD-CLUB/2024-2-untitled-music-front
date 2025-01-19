@@ -41,9 +41,9 @@ export function MobileNav() {
       label: "홈",
       href: "/"
     },
-    { icon: Search, label: "검색", href: "/search" },
+    { icon: Search, label: "검색", href: "" },
     { icon: Upload, label: "업로드", href: "/upload" },
-    { icon: Bell, label: "알림", href: "/notifications" },
+    { icon: Bell, label: "알림", href: "" },
     {
       icon: ({ className }: { className?: string }) =>
         isAuthenticated ? (
