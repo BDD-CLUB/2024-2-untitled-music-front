@@ -73,7 +73,7 @@ export function MobileNav() {
       <nav className={cn(
         "fixed bottom-0 left-0 right-0 z-50",
         "h-16 px-4",
-        "backdrop-blur-xl",
+        "backdrop-blur-md",
         "md:hidden" // 중간 크기 이상에서는 숨김
       )}>
         <div className="h-full max-w-lg mx-auto flex items-center justify-around">

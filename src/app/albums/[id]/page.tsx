@@ -31,7 +31,7 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
   const album = await getAlbum(params.id);
 
   return (
-    <div className="container mx-auto px-4 py-4 md:pl-32">
+    <div className="container mx-auto px-4 py-4">
       <div
         className={cn(
           "rounded-3xl",

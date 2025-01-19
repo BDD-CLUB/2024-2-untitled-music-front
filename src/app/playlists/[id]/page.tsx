@@ -37,7 +37,7 @@ export default async function PlaylistPage({ params }: PlaylistPageProps) {
   const playlist = await getPlaylist(params.id);
 
   return (
-    <div className="container mx-auto px-4 py-4 md:pl-32">
+    <div className="container mx-auto px-4 py-4">
       <div
         className={cn(
           "rounded-3xl",
