@@ -51,6 +51,8 @@ export function TrackSection() {
       const data = await response.json();
 
       setTracks(data);
+
+      console.log(data.trackResponseDto.artUrl);
     } catch (error) {
       setError(
         error instanceof Error

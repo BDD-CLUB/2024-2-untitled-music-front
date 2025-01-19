@@ -8,24 +8,12 @@ import { useInView } from "react-intersection-observer";
 import { TrackActions } from "@/components/albums/TrackActions";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useUser } from "@/contexts/auth/UserContext";
-import { useAudio } from "@/contexts/audio/AudioContext";
-
-interface Album {
-  uuid: string;
-  title: string;
-  description: string;
-  artImage: string;
-  releaseDate: string;
-}
 
 interface Track {
   uuid: string;
   title: string;
   duration: number;
   lyric: string;
-  artUrl: string;
-  album: Album;
-  artistName: string;
 }
 
 interface TrackListProps {
@@ -54,7 +42,6 @@ export function TrackList({
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
-  const { currentTrack, isPlaying, play, pause } = useAudio();
 
   const isOwner = isAuthenticated && user?.uuid === artistId;
 
@@ -98,14 +85,6 @@ export function TrackList({
 
   const hasNoTracks = !tracks || tracks.length === 0;
 
-  const handlePlayPause = (track: Track) => {
-    if (currentTrack?.uuid === track.uuid && isPlaying) {
-      pause();
-    } else {
-      play(track);
-    }
-  };
-
   return (
     <div className="p-8 pt-4">
       {hasNoTracks ? (
@@ -134,10 +113,7 @@ export function TrackList({
               </div>
 
               <div className="relative flex items-center gap-4 w-full">
-                <button
-                  onClick={() => handlePlayPause(track)}
-                  className="w-8 flex items-center justify-center"
-                >
+                <button className="w-8 flex items-center justify-center">
                   <div className="text-sm text-muted-foreground group-hover:opacity-0 transition-opacity">
                     {String(index + 1).padStart(2, "0")}
                   </div>

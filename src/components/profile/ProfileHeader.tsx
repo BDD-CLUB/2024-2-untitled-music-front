@@ -123,7 +123,7 @@ export function ProfileHeader({ userId }: ProfileHeaderProps) {
                       <MoreVertical className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuContent align="start" className="w-40">
                     <DropdownMenuItem onClick={() => setShowEditModal(true)} className="text-sm">
                       <Edit className="w-4 h-4 mr-2" />
                       이미지 변경

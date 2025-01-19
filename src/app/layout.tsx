@@ -7,29 +7,31 @@ import { BackgroundImage } from "@/components/layout/BackgroundImage";
 import { getAuthCookie } from "@/lib/server-auth";
 import { ThemeProvider } from "@/contexts/theme/ThemeContext";
 import { UserProvider } from "@/contexts/auth/UserContext";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 import { PageAnimation } from "@/components/layout/PageAnimation";
-import { AudioProvider } from "@/contexts/audio/AudioContext";
 
 // getUser 함수 수정
 const getUser = async () => {
   const accessToken = getAuthCookie();
-  
+
   if (!accessToken) {
     return null;
   }
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/my-profile`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/my-profile`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        credentials: "include",
+      }
+    );
 
     if (!response.ok) {
-      console.error('Failed to fetch user:', response.status);
+      console.error("Failed to fetch user:", response.status);
       return null;
     }
 
@@ -37,7 +39,7 @@ const getUser = async () => {
     const userData = await response.json();
     return userData;
   } catch (error) {
-    console.error('Failed to fetch user:', error);
+    console.error("Failed to fetch user:", error);
     return null;
   }
 };
@@ -51,7 +53,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
 };
 
@@ -70,22 +72,19 @@ export default async function RootLayout({
         <ThemeProvider>
           <AuthProvider initialAuth={isAuthenticated}>
             <UserProvider initialUser={initialUser}>
-              <AudioProvider>
-                <BackgroundImage />
-                <div className="relative min-h-screen w-full overflow-hidden">
-                  <Header />
-                  <Sidebar />
-                  <main>
-                    <PageAnimation>
-                      {children}
-                    </PageAnimation>
-                  </main>
-                  <Toaster />
-                </div>
-              </AudioProvider>
+              <BackgroundImage />
+              <div className="relative min-h-screen w-full overflow-hidden">
+                <div className="fixed inset-0 backdrop-blur-[2px] bg-white/[0.01] dark:bg-transparent" />
+                <Sidebar />
+                <Header />
+                <main className="relative pt-24">
+                  <PageAnimation>{children}</PageAnimation>
+                </main>
+              </div>
             </UserProvider>
           </AuthProvider>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );
