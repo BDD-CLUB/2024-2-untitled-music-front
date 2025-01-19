@@ -73,7 +73,7 @@ export function Sidebar() {
       <aside className="fixed left-8 top-1/2 -translate-y-1/2 z-50">
         <div
           className={cn(
-            "flex flex-col gap-3 p-4",
+            "hidden md:flex flex-col gap-3 p-4",
             "rounded-3xl",
             "bg-white/10 dark:bg-black/10",
             "backdrop-blur-2xl",

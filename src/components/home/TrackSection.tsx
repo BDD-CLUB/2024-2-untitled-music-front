@@ -49,7 +49,6 @@ export function TrackSection() {
       }
 
       const data = await response.json();
-      console.log(data);
 
       setTracks(data);
     } catch (error) {

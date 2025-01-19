@@ -100,7 +100,7 @@ export function ProfileHeader({ userId }: ProfileHeaderProps) {
           {/* 프로필 이미지 */}
           <div className="relative group">
             <div className="absolute -inset-4 rounded-full bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm" />
-            <Avatar className="w-32 h-32 border-2 border-white/10 relative transition-transform group-hover:scale-[1.02] duration-500">
+            <Avatar className="w-40 h-40 border-2 border-white/10 relative transition-transform group-hover:scale-[1.02] duration-500">
               <AvatarImage src={profileData.artistImage} />
               <AvatarFallback>
                 <User className="w-16 h-16" />

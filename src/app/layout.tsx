@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/contexts/theme/ThemeContext";
 import { UserProvider } from "@/contexts/auth/UserContext";
 import { Toaster } from "@/components/ui/toaster";
 import { PageAnimation } from "@/components/layout/PageAnimation";
+import { MobileNav } from "@/components/layout/MobileNav";
 
 // getUser 함수 수정
 const getUser = async () => {
@@ -80,6 +81,7 @@ export default async function RootLayout({
                 <main className="relative pt-24">
                   <PageAnimation>{children}</PageAnimation>
                 </main>
+                <MobileNav /> 
               </div>
             </UserProvider>
           </AuthProvider>

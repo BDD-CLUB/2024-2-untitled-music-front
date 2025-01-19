@@ -15,6 +15,7 @@ import { User, Upload } from "lucide-react";
 import { checkAuth } from "@/lib/auth";
 import { useUser } from "@/contexts/auth/UserContext";
 import { convertToWebP } from "@/lib/image";
+import { useRouter } from "next/navigation";
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
   const { user, updateUser } = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const router = useRouter();
 
   const validateFile = (file: File) => {
     if (!ALLOWED_FILE_TYPES.includes(file.type)) {
@@ -88,6 +90,7 @@ export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
       });
 
       onClose();
+      router.refresh();
     } catch (error) {
       toast({
         variant: "destructive",
