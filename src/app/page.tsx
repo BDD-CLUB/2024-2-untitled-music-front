@@ -5,7 +5,7 @@ import { ArtistSection } from "@/components/home/ArtistSection";
 
 export default function Home() {
   return (
-    <div className="container mx-auto px-4 py-8 pl-32">
+    <div className="container mx-auto px-4 py-8 md:pl-32">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* 메인 콘텐츠 영역 */}
         <div className="lg:col-span-8">

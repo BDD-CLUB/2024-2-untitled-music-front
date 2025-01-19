@@ -78,10 +78,10 @@ export default async function RootLayout({
                 <div className="fixed inset-0 backdrop-blur-[2px] bg-white/[0.01] dark:bg-transparent" />
                 <Sidebar />
                 <Header />
-                <main className="relative pt-24">
+                <main className="relative pt-24 pb-16 md:pb-0">
                   <PageAnimation>{children}</PageAnimation>
                 </main>
-                <MobileNav /> 
+                <MobileNav />
               </div>
             </UserProvider>
           </AuthProvider>

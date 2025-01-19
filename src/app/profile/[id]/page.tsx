@@ -10,7 +10,7 @@ interface ProfilePageProps {
 
 export default function ProfilePage({ params }: ProfilePageProps) {
   return (
-    <div className="container mx-auto px-4 py-8 pl-32">
+    <div className="container mx-auto px-4 py-8 md:pl-32">
       <div
         className={cn(
           "rounded-3xl",

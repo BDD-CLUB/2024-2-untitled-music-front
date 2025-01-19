@@ -10,6 +10,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import { useState } from "react";
 import { LoginModal } from "@/components/auth/LoginModal";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function MobileNav() {
   const pathname = usePathname();
@@ -35,9 +41,9 @@ export function MobileNav() {
       label: "홈",
       href: "/"
     },
-    { icon: Search, label: "검색", href: "" },
+    { icon: Search, label: "검색", href: "/search" },
     { icon: Upload, label: "업로드", href: "/upload" },
-    { icon: Bell, label: "알림", href: "" },
+    { icon: Bell, label: "알림", href: "/notifications" },
     {
       icon: ({ className }: { className?: string }) =>
         isAuthenticated ? (
@@ -63,13 +69,11 @@ export function MobileNav() {
   ];
 
   return (
-    <>
+    <TooltipProvider>
       <nav className={cn(
         "fixed bottom-0 left-0 right-0 z-50",
         "h-16 px-4",
-        "bg-white/10 dark:bg-black/10",
         "backdrop-blur-xl",
-        "border-t border-white/10",
         "md:hidden" // 중간 크기 이상에서는 숨김
       )}>
         <div className="h-full max-w-lg mx-auto flex items-center justify-around">
@@ -79,23 +83,31 @@ export function MobileNav() {
               (item.href !== "/" && pathname.startsWith(item.href));
 
             return (
-              <Link
-                key={index}
-                href={item.href}
-                onClick={item.onClick}
-                className={cn(
-                  "flex flex-col items-center gap-1",
-                  "p-2 rounded-lg",
-                  "text-sm",
-                  "transition-colors",
-                  isActive 
-                    ? "text-primary" 
-                    : "text-muted-foreground hover:text-primary"
-                )}
-              >
-                <Icon className="w-5 h-5" />
-                <span className="text-xs">{item.label}</span>
-              </Link>
+              <Tooltip key={index}>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={item.href}
+                    onClick={item.onClick}
+                    className={cn(
+                      "flex flex-col items-center gap-1",
+                      "p-2 rounded-lg",
+                      "text-sm",
+                      "transition-colors",
+                      isActive 
+                        ? "text-primary" 
+                        : "text-muted-foreground hover:text-primary"
+                    )}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent 
+                  side="top" 
+                  className="font-medium text-xs"
+                >
+                  {item.label}
+                </TooltipContent>
+              </Tooltip>
             );
           })}
         </div>
@@ -105,6 +117,6 @@ export function MobileNav() {
         isOpen={showLoginModal} 
         onClose={() => setShowLoginModal(false)} 
       />
-    </>
+    </TooltipProvider>
   );
 } 
