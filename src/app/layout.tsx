@@ -78,7 +78,7 @@ export default async function RootLayout({
                 <div className="fixed inset-0 backdrop-blur-[2px] bg-white/[0.01] dark:bg-transparent" />
                 <Sidebar />
                 <Header />
-                <main className="relative pt-24 pb-16 md:pb-0 pl-0 md:pl-24">
+                <main className="relative pt-24 pb-24 md:pb-0 pl-0 md:pl-24">
                   <PageAnimation>{children}</PageAnimation>
                 </main>
                 <MobileNav />
