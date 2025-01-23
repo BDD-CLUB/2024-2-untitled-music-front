@@ -114,13 +114,12 @@ export function EditPlaylistImageModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 flex flex-col items-center">
           {playlistImage ? (
             <Image
               src={playlistImage}
               alt="플레이리스트 이미지"
-              width={100}
-              height={100}
+              fill
               className="object-cover"
             />
           ) : (

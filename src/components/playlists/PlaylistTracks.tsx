@@ -45,11 +45,15 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
   const { user } = useUser();
   const isOwner = isAuthenticated && user?.uuid === artistId;
 
-  const [tracks, setTracks] = useState<Track[]>(initialTracks);
+  const [tracks, setTracks] = useState<Track[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
+
+  useEffect(() => {
+    setTracks(initialTracks);
+  }, [initialTracks]);
 
   const fetchMoreTracks = useCallback(async () => {
     if (isLoading || !hasMore) return;

@@ -78,4 +78,5 @@ export default async function PlaylistPage({ params, searchParams }: PlaylistPag
   );
 }
 
-export const revalidate = 0; // 동적 데이터를 위해 캐시 비활성화 
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;

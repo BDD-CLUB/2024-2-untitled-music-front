@@ -125,6 +125,7 @@ export function TrackActions({
       console.log('Track deleted successfully, calling onDelete callback');
       onDelete?.(track.uuid);
       router.refresh();
+      window.location.reload();
       
       toast({
         title: "플레이리스트에서 트랙 삭제 완료",
