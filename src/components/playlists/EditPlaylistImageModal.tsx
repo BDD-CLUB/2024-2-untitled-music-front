@@ -119,7 +119,8 @@ export function EditPlaylistImageModal({
             <Image
               src={playlistImage}
               alt="플레이리스트 이미지"
-              fill
+              width={128}
+              height={128}
               className="object-cover"
             />
           ) : (

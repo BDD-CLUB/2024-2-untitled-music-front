@@ -76,7 +76,4 @@ export default async function PlaylistPage({ params, searchParams }: PlaylistPag
       </div>
     </div>
   );
-}
-
-export const fetchCache = 'force-no-store';
-export const revalidate = 0;
+} 
