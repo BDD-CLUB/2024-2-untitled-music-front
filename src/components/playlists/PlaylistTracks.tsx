@@ -1,33 +1,89 @@
+"use client";
+
 import { cn } from "@/lib/utils";
-import { Play, Music2 } from "lucide-react";
+import { Play, Music2, Loader2 } from "lucide-react";
 import { formatDuration } from "@/lib/format";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
+import { checkAuth } from "@/lib/auth";
 
-interface PlaylistTracksProps {
-  tracks: Array<{
-    uuid: string;
-    trackGetResponseDto: {
-      trackResponseDto: {
-        uuid: string;
-        title: string;
-        duration: number;
-        artUrl: string;
-      };
-      albumResponseDto: {
-        uuid: string;
-        title: string;
-        artImage: string;
-      };
-      artistResponseDto: {
-        uuid: string;
-        name: string;
-      };
+interface Track {
+  uuid: string;
+  trackGetResponseDto: {
+    trackResponseDto: {
+      uuid: string;
+      title: string;
+      duration: number;
+      artUrl: string;
     };
-  }>;
+    albumResponseDto: {
+      uuid: string;
+      title: string;
+      artImage: string;
+    };
+    artistResponseDto: {
+      uuid: string;
+      name: string;
+    };
+  };
 }
 
-export function PlaylistTracks({ tracks }: PlaylistTracksProps) {
+interface PlaylistTracksProps {
+  playlistId: string;
+  initialTracks: Track[];
+}
+
+export function PlaylistTracks({ playlistId, initialTracks }: PlaylistTracksProps) {
+  const [tracks, setTracks] = useState<Track[]>(initialTracks);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const { ref, inView } = useInView();
+
+  const fetchMoreTracks = async () => {
+    if (isLoading || !hasMore) return;
+
+    try {
+      setIsLoading(true);
+      const nextPage = page + 1;
+      const { accessToken } = await checkAuth();
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}?itemPage=${nextPage}&itemPageSize=10`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("트랙 목록을 불러오는데 실패했습니다.");
+
+      const data = await response.json();
+      const newTracks = data.playlistItemResponseDtos;
+
+      if (newTracks.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      setTracks(prev => [...prev, ...newTracks]);
+      setPage(nextPage);
+    } catch (error) {
+      console.error("Failed to fetch more tracks:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (inView) {
+      fetchMoreTracks();
+    }
+  }, [inView]);
+
   const hasNoTracks = !tracks || tracks.length === 0;
 
   return (
@@ -109,6 +165,16 @@ export function PlaylistTracks({ tracks }: PlaylistTracksProps) {
               </button>
             );
           })}
+
+          {hasMore && (
+            <div ref={ref} className="py-4 flex justify-center">
+              {isLoading && (
+                <div className="text-sm text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

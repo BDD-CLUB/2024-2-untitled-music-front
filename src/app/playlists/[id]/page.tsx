@@ -2,7 +2,6 @@ import { PlaylistInfo } from "@/components/playlists/PlaylistInfo";
 import { PlaylistTracks } from "@/components/playlists/PlaylistTracks";
 import { cn } from "@/lib/utils";
 import { notFound } from "next/navigation";
-import { checkAuth } from "@/lib/auth";
 
 interface PlaylistPageProps {
   params: {
@@ -16,14 +15,13 @@ interface PlaylistPageProps {
 
 async function getPlaylist(id: string, itemPage = 0, itemPageSize = 10) {
   try {
-    const { accessToken } = await checkAuth();
-
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${id}?itemPage=${itemPage}&itemPageSize=${itemPageSize}`,
       {
         headers: {
-          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
+        credentials: 'include',
       }
     );
 
@@ -35,8 +33,15 @@ async function getPlaylist(id: string, itemPage = 0, itemPageSize = 10) {
       throw new Error('플레이리스트를 불러오는데 실패했습니다.');
     }
 
-    return response.json();
-  } catch {
+    const data = await response.json();
+    
+    if (!data || !data.playlistBasicResponseDto) {
+      throw new Error('잘못된 응답 데이터입니다.');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch playlist:', error);
     throw new Error('플레이리스트를 불러오는데 실패했습니다.');
   }
 }
@@ -62,7 +67,10 @@ export default async function PlaylistPage({ params, searchParams }: PlaylistPag
           playlist={playlist.playlistBasicResponseDto} 
           artist={playlist.artistResponseDto}
         />
-        <PlaylistTracks tracks={playlist.playlistItemResponseDtos} />
+        <PlaylistTracks 
+          playlistId={params.id}
+          initialTracks={playlist.playlistItemResponseDtos} 
+        />
       </div>
     </div>
   );

@@ -42,7 +42,7 @@ export function ArtistSection() {
   return (
     <section className="p-6">
       <h2 className="text-xl font-bold mb-4">인기 아티스트</h2>
-      <div className="space-y-4">
+      <div className="space-y-3">
         {artists.map((artist) => (
           <Link
             key={artist.uuid}
