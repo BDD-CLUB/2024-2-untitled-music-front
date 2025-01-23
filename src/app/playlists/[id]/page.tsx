@@ -3,21 +3,29 @@ import { PlaylistTracks } from "@/components/playlists/PlaylistTracks";
 import { cn } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { checkAuth } from "@/lib/auth";
+
 interface PlaylistPageProps {
   params: {
     id: string;
   };
+  searchParams: {
+    itemPage?: string;
+    itemPageSize?: string;
+  };
 }
 
-async function getPlaylist(id: string) {
+async function getPlaylist(id: string, itemPage = 0, itemPageSize = 10) {
   try {
     const { accessToken } = await checkAuth();
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${id}`, {
-      headers: {
-        "Authorization": `Bearer ${accessToken}`,
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${id}?itemPage=${itemPage}&itemPageSize=${itemPageSize}`,
+      {
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+        },
+      }
+    );
 
     if (response.status === 404) {
       notFound();
@@ -33,8 +41,10 @@ async function getPlaylist(id: string) {
   }
 }
 
-export default async function PlaylistPage({ params }: PlaylistPageProps) {
-  const playlist = await getPlaylist(params.id);
+export default async function PlaylistPage({ params, searchParams }: PlaylistPageProps) {
+  const itemPage = Number(searchParams.itemPage) || 0;
+  const itemPageSize = Number(searchParams.itemPageSize) || 10;
+  const playlist = await getPlaylist(params.id, itemPage, itemPageSize);
 
   return (
     <div className="container mx-auto px-4 py-4">
@@ -48,7 +58,10 @@ export default async function PlaylistPage({ params }: PlaylistPageProps) {
           "overflow-hidden"
         )}
       >
-        <PlaylistInfo playlist={playlist} />
+        <PlaylistInfo 
+          playlist={playlist.playlistBasicResponseDto} 
+          artist={playlist.artistResponseDto}
+        />
         <PlaylistTracks tracks={playlist.playlistItemResponseDtos} />
       </div>
     </div>
