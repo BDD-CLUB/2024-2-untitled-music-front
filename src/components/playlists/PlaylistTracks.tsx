@@ -5,7 +5,7 @@ import { Play, Music2, Loader2 } from "lucide-react";
 import { formatDuration } from "@/lib/format";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useInView } from "react-intersection-observer";
 import { checkAuth } from "@/lib/auth";
 import { TrackActions } from "@/components/albums/TrackActions";
@@ -45,7 +45,7 @@ export function PlaylistTracks({ playlistId, initialTracks, isOwner }: PlaylistT
   const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
 
-  const fetchMoreTracks = async () => {
+  const fetchMoreTracks = useCallback(async () => {
     if (isLoading || !hasMore) return;
 
     try {
@@ -79,13 +79,13 @@ export function PlaylistTracks({ playlistId, initialTracks, isOwner }: PlaylistT
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [playlistId, hasMore, isLoading, page]);
 
   useEffect(() => {
     if (inView) {
       fetchMoreTracks();
     }
-  }, [inView]);
+  }, [inView, fetchMoreTracks]);
 
   const hasNoTracks = !tracks || tracks.length === 0;
 

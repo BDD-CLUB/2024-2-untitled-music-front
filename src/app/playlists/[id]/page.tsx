@@ -49,7 +49,7 @@ async function getPlaylist(id: string, itemPage = 0, itemPageSize = 10) {
   }
 }
 
-export const CheckOwnerInPlaylist = (id: string) => {
+const CheckOwnerInPlaylist = (id: string) => {
   const { isAuthenticated } = useAuth();
   const { user } = useUser();
   const isOwner = isAuthenticated && user?.uuid === id;

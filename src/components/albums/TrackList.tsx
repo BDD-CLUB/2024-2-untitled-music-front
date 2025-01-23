@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Play, Music, Loader2 } from "lucide-react";
 import { formatDuration } from "@/lib/format";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useInView } from "react-intersection-observer";
 import { TrackActions } from "@/components/albums/TrackActions";
 import { useAuth } from "@/contexts/auth/AuthContext";
@@ -45,7 +45,7 @@ export function TrackList({
 
   const isOwner = isAuthenticated && user?.uuid === artistId;
 
-  const fetchMoreTracks = async () => {
+  const fetchMoreTracks = useCallback(async () => {
     if (isLoading || !hasMore) return;
 
     try {
@@ -75,13 +75,13 @@ export function TrackList({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [albumId, hasMore, isLoading, page]);
 
   useEffect(() => {
     if (inView) {
       fetchMoreTracks();
     }
-  }, [inView]);
+  }, [inView, fetchMoreTracks]);
 
   const hasNoTracks = !tracks || tracks.length === 0;
 
