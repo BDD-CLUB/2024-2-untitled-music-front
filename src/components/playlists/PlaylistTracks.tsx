@@ -55,6 +55,7 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
     if (isLoading || !hasMore) return;
 
     try {
+      console.log('Fetching more tracks:', { page, hasMore, isLoading });
       setIsLoading(true);
       const nextPage = page + 1;
       const { accessToken } = await checkAuth();
@@ -71,14 +72,18 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
       if (!response.ok) throw new Error("트랙 목록을 불러오는데 실패했습니다.");
 
       const data = await response.json();
-      const newTracks = data.playlistItemResponseDtos;
+      console.log('Fetched tracks data:', data);
 
+      const newTracks = data.playlistItemResponseDtos;
       if (newTracks.length === 0) {
         setHasMore(false);
         return;
       }
 
-      setTracks(prev => [...prev, ...newTracks]);
+      setTracks(prev => {
+        console.log('Updating tracks:', { prev, newTracks });
+        return [...prev, ...newTracks];
+      });
       setPage(nextPage);
     } catch (error) {
       console.error("Failed to fetch more tracks:", error);
@@ -89,12 +94,22 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
 
   useEffect(() => {
     if (inView && hasMore && !isLoading) {
+      console.log("Triggering fetchMoreTracks...");
       fetchMoreTracks();
-      console.log("fetchMoreTracks...");
     }
   }, [inView, hasMore, isLoading, fetchMoreTracks]);
 
   const hasNoTracks = !tracks || tracks.length === 0;
+
+  // TrackActions에 전달하는 onDelete 핸들러
+  const handleTrackDelete = useCallback((deletedTrackId: string) => {
+    console.log('Handling track deletion:', { deletedTrackId });
+    setTracks(prev => {
+      const filtered = prev.filter(t => t.uuid !== deletedTrackId);
+      console.log('Updated tracks after deletion:', { prev, filtered });
+      return filtered;
+    });
+  }, []);
 
   return (
     <div className="p-8 pt-4">
@@ -183,11 +198,7 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
                     }}
                     isOwner={isOwner}
                     playlistId={playlistId}
-                    onDelete={(deletedTrackId) => {
-                      setTracks((prev) =>
-                        prev.filter((t) => t.uuid !== deletedTrackId)
-                      );
-                    }}
+                    onDelete={handleTrackDelete}
                   />
                 </div>
               </div>

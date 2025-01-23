@@ -63,7 +63,7 @@ export function PlaylistInfo({ playlist, artist }: PlaylistInfoProps) {
                 {playlist.title}
               </h1>
               {isOwner && (
-                <PlaylistActions playlistId={playlist.uuid} />
+                <PlaylistActions playlistId={playlist.uuid} playlistImage={playlist.coverImageUrl} />
               )}
             </div>
             

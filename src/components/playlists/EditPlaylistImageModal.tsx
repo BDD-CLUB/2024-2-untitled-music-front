@@ -12,11 +12,13 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { checkAuth } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import { Upload } from "lucide-react";
+import { ListMusic, Upload } from "lucide-react";
 import { convertToWebP } from "@/lib/image";
+import Image from "next/image";
 
 interface EditPlaylistImageModalProps {
   playlistId: string;
+  playlistImage: string;
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => Promise<void>;
@@ -24,6 +26,7 @@ interface EditPlaylistImageModalProps {
 
 export function EditPlaylistImageModal({
   playlistId,
+  playlistImage,
   isOpen,
   onClose,
   onSuccess,
@@ -63,16 +66,21 @@ export function EditPlaylistImageModal({
 
       // 플레이리스트 이미지 업데이트
       const updateResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}/cover-image?coverImageLink=${encodeURIComponent(imageUrl)}`,
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL
+        }/playlists/${playlistId}/cover-image?coverImageLink=${encodeURIComponent(
+          imageUrl
+        )}`,
         {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${accessToken}`,
-          }
+          },
         }
       );
 
-      if (!updateResponse.ok) throw new Error("플레이리스트 이미지 변경에 실패했습니다.");
+      if (!updateResponse.ok)
+        throw new Error("플레이리스트 이미지 변경에 실패했습니다.");
 
       await onSuccess?.();
 
@@ -86,7 +94,10 @@ export function EditPlaylistImageModal({
     } catch (error) {
       toast({
         variant: "destructive",
-        description: error instanceof Error ? error.message : "이미지 변경에 실패했습니다.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "이미지 변경에 실패했습니다.",
       });
     } finally {
       setIsLoading(false);
@@ -98,16 +109,29 @@ export function EditPlaylistImageModal({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>플레이리스트 이미지 변경</DialogTitle>
-          <DialogDescription className="hidden">플레이리스트 이미지를 변경해주세요.</DialogDescription>
+          <DialogDescription className="hidden">
+            플레이리스트 이미지를 변경해주세요.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
+          {playlistImage ? (
+            <Image
+              src={playlistImage}
+              alt="플레이리스트 이미지"
+              width={100}
+              height={100}
+              className="object-cover"
+            />
+          ) : (
+            <ListMusic className="w-32 h-32 text-white/20" />
+          )}
           <div className="flex justify-center">
             <Button
               type="button"
               variant="outline"
               disabled={isLoading}
-              onClick={() => document.getElementById('playlist-image')?.click()}
+              onClick={() => document.getElementById("playlist-image")?.click()}
             >
               <Upload className="w-4 h-4 mr-2" />
               {isLoading ? "업로드 중..." : "이미지 선택"}
@@ -125,4 +149,4 @@ export function EditPlaylistImageModal({
       </DialogContent>
     </Dialog>
   );
-} 
+}

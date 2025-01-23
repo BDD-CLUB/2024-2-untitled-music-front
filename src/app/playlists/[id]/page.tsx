@@ -52,8 +52,6 @@ export default async function PlaylistPage({ params, searchParams }: PlaylistPag
   const itemPageSize = Number(searchParams.itemPageSize) || 10;
   const playlist = await getPlaylist(params.id, itemPage, itemPageSize);
 
-  console.log(playlist);
-
   return (
     <div className="container mx-auto px-4 py-4">
       <div
@@ -78,4 +76,6 @@ export default async function PlaylistPage({ params, searchParams }: PlaylistPag
       </div>
     </div>
   );
-} 
+}
+
+export const revalidate = 0; // 동적 데이터를 위해 캐시 비활성화 

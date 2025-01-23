@@ -26,9 +26,10 @@ import { useRouter, usePathname } from "next/navigation";
 
 interface PlaylistActionsProps {
   playlistId: string;
+  playlistImage: string;
 }
 
-export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
+export function PlaylistActions({ playlistId, playlistImage }: PlaylistActionsProps) {
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -145,6 +146,7 @@ export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
 
       <EditPlaylistImageModal
         playlistId={playlistId}
+        playlistImage={playlistImage}
         isOpen={showImageModal}
         onClose={() => setShowImageModal(false)}
         onSuccess={revalidateData}

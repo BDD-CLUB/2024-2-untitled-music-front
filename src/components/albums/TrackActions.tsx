@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { EditTrackModal } from "./EditTrackModal";
 import { AddToPlaylistModal } from "../tracks/AddToPlaylistModal";
+import { useRouter } from "next/navigation";
 
 interface Track {
   uuid: string;
@@ -56,6 +57,8 @@ export function TrackActions({
   const [showDeleteFromPlaylistDialog, setShowDeleteFromPlaylistDialog] =
     useState(false);
   const [isDeletingFromPlaylist, setIsDeletingFromPlaylist] = useState(false);
+
+  const router = useRouter();
 
   const handleDelete = async () => {
     try {
@@ -96,9 +99,11 @@ export function TrackActions({
 
   const handleDeleteFromPlaylist = async () => {
     try {
+      console.log('Deleting track from playlist:', { trackId: track.uuid, playlistId });
       setIsDeletingFromPlaylist(true);
+      
       const { accessToken } = await checkAuth();
-
+      
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}/tracks`,
         {
@@ -116,16 +121,18 @@ export function TrackActions({
       );
 
       if (!response.ok) throw new Error("플레이리스트 삭제에 실패했습니다.");
-
+      
+      console.log('Track deleted successfully, calling onDelete callback');
       onDelete?.(track.uuid);
-
-      console.log(`${track.uuid} 삭제 완료`);
+      router.refresh();
+      
       toast({
         title: "플레이리스트에서 트랙 삭제 완료",
         variant: "default",
         description: "플레이리스트에서 트랙이 삭제되었습니다.",
       });
     } catch (error) {
+      console.error('Failed to delete track:', error);
       toast({
         variant: "destructive",
         title: "플레이리스트에서 트랙 삭제 실패",
