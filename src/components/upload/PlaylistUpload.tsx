@@ -75,8 +75,6 @@ export function PlaylistUpload() {
         throw new Error('플레이리스트 생성에 실패했습니다.');
       }
 
-      await response.json();
-
       toast({
         title: "플레이리스트 생성 완료",
         variant: "default",
@@ -84,7 +82,6 @@ export function PlaylistUpload() {
       });
 
       router.push('/');
-      router.refresh();
     } catch (error) {
       toast({
         variant: "destructive",

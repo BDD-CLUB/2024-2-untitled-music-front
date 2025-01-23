@@ -1,10 +1,15 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Edit2, Trash2 } from "lucide-react";
+import { MoreVertical, Edit2, Trash2, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { checkAuth } from "@/lib/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,46 +21,44 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { EditPlaylistModal } from "./EditPlaylistModal";
-import { checkAuth } from "@/lib/auth";
+import { EditPlaylistImageModal } from "./EditPlaylistImageModal";
+import { useRouter } from "next/navigation";
 
 interface PlaylistActionsProps {
   playlistId: string;
 }
 
 export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
-  const router = useRouter();
-  const { toast } = useToast();
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { toast } = useToast();
+  const router = useRouter();
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
       const { accessToken } = await checkAuth();
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${accessToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('권한이 없습니다.');
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         }
-        throw new Error('플레이리스트 삭제에 실패했습니다.');
-      }
+      );
+
+      if (!response.ok) throw new Error("플레이리스트 삭제에 실패했습니다.");
 
       toast({
-        variant: "default",
         title: "플레이리스트 삭제 완료",
         description: "플레이리스트가 삭제되었습니다.",
       });
 
-      router.push('/');
-      router.refresh();
+      router.push("/");
     } catch (error) {
       toast({
         variant: "destructive",
@@ -64,42 +67,51 @@ export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
       });
     } finally {
       setIsDeleting(false);
-      setShowDeleteDialog(false);
+      setShowDeleteAlert(false);
     }
   };
 
   return (
     <>
-      <div className="flex gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hover:bg-white/10"
-          onClick={() => setShowEditModal(true)}
-        >
-          <Edit2 className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hover:bg-white/10"
-          onClick={() => setShowDeleteDialog(true)}
-          disabled={isDeleting}
-        >
-          <Trash2 className="w-4 h-4 text-red-500" />
-        </Button>
-      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            className={
+              "p-2 rounded-full hover:bg-white/5 transition-colors"
+            }
+          >
+            <MoreVertical className="w-5 h-5" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuItem onClick={() => setShowImageModal(true)}>
+            <ImageIcon className="w-4 h-4 mr-2" />
+            이미지 변경
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setShowEditModal(true)}>
+            <Edit2 className="w-4 h-4 mr-2" />
+            편집
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => setShowDeleteAlert(true)}
+            className="text-red-500 focus:text-red-500"
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            삭제
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>플레이리스트를 삭제하시겠습니까?</AlertDialogTitle>
             <AlertDialogDescription>
-              이 작업은 되돌릴 수 없습니다.
+              이 작업은 되돌릴 수 없습니다. 플레이리스트가 영구적으로 삭제됩니다.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
@@ -115,6 +127,12 @@ export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
         playlistId={playlistId}
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
+      />
+
+      <EditPlaylistImageModal
+        playlistId={playlistId}
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
       />
     </>
   );

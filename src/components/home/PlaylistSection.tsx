@@ -57,7 +57,7 @@ export function PlaylistSection() {
   return (
     <section className="p-6">
       <h2 className="text-xl font-bold mb-4">인기 플레이리스트</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-2">
         {playlists.map((playlist) => (
           <Link
             key={playlist.playlistBasicResponseDto.uuid}
@@ -90,7 +90,7 @@ export function PlaylistSection() {
 
             {/* 플레이리스트 정보 */}
             <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-              <h3 className="font-medium text-white text-sm mb-2 truncate">
+              <h3 className="font-medium text-white text-xs mb-2 truncate">
                 {playlist.playlistBasicResponseDto.title}
               </h3>
               <div className="flex items-center gap-2">
