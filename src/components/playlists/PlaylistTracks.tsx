@@ -114,10 +114,10 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
             const artist = item.trackGetResponseDto.artistResponseDto;
 
             return (
-              <button
+              <div
                 key={item.uuid}
                 className={cn(
-                  "w-full p-3",
+                  "w-full px-4 py-3",
                   "flex items-center gap-4",
                   "rounded-xl",
                   "transition-all duration-300",
@@ -125,19 +125,19 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
                   "group relative"
                 )}
               >
-                {/* 호버 효과 배경 */}
                 <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent" />
                 </div>
 
-                {/* 트랙 정보 */}
                 <div className="relative flex items-center gap-4 w-full">
-                  <div className="w-8 text-sm text-muted-foreground group-hover:opacity-0 transition-opacity">
-                    {String(index + 1).padStart(2, '0')}
-                  </div>
-                  <Play className="w-4 h-4 absolute left-2 opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                  
-                  <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
+                  <button className="w-8 flex items-center justify-center">
+                    <div className="text-sm text-muted-foreground group-hover:opacity-0 transition-opacity">
+                      {String(index + 1).padStart(2, "0")}
+                    </div>
+                    <Play className="w-4 h-4 absolute opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  </button>
+
+                  <div className="relative w-10 h-10 rounded-lg overflow-hidden">
                     <Image
                       src={album.artImage}
                       alt={album.title}
@@ -146,26 +146,28 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
                     />
                   </div>
 
-                  <div className="flex-1 flex flex-col items-start min-w-0">
-                    <span className="font-medium truncate w-full">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">
                       {track.title}
-                    </span>
-                    <Link
-                      href={`/profile/${artist.uuid}`}
-                      className="text-sm text-muted-foreground hover:underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {artist.name}
-                    </Link>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Link
+                        href={`/profile/${artist.uuid}`}
+                        className="hover:underline truncate"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {artist.name}
+                      </Link>
+                      <span>•</span>
+                      <Link
+                        href={`/albums/${album.uuid}`}
+                        className="hover:underline truncate"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {album.title}
+                      </Link>
+                    </div>
                   </div>
-
-                  <Link
-                    href={`/albums/${album.uuid}`}
-                    className="text-sm text-muted-foreground hover:underline mr-8"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {album.title}
-                  </Link>
 
                   <div className="text-sm text-muted-foreground mr-4">
                     {formatDuration(track.duration)}
@@ -182,7 +184,7 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
                     playlistId={playlistId}
                   />
                 </div>
-              </button>
+              </div>
             );
           })}
 

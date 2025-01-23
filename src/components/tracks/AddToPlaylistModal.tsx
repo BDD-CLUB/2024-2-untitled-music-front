@@ -9,10 +9,13 @@ import {
 import { useState, useCallback, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { checkAuth } from "@/lib/auth";
-import { ListMusic } from "lucide-react";
+import { ListMusic, Plus } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useUser } from "@/contexts/auth/UserContext";
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 interface Playlist {
   playlistBasicResponseDto: {
@@ -104,65 +107,93 @@ export function AddToPlaylistModal({ trackId, isOpen, onClose }: AddToPlaylistMo
     }
   }, [isOpen, isAuthenticated, fetchPlaylists]);
 
-  if (!isAuthenticated) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>로그인이 필요합니다</DialogTitle>
-          </DialogHeader>
-          <p className="text-muted-foreground">
-            플레이리스트에 트랙을 추가하려면 로그인이 필요합니다.
-          </p>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>플레이리스트에 추가</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">플레이리스트에 추가</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 max-h-[60vh] overflow-y-auto">
-          {playlists.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-              <ListMusic className="w-12 h-12 mb-4" />
-              <p>플레이리스트가 없습니다.</p>
+        {!isAuthenticated ? (
+          <div className="flex flex-col items-center justify-center py-8 px-4">
+            <div className="w-16 h-16 rounded-2xl bg-white/5 backdrop-blur-lg flex items-center justify-center mb-4">
+              <ListMusic className="w-8 h-8 text-white/40" />
             </div>
-          ) : (
-            playlists.map((playlist) => (
-              <button
-                key={playlist.playlistBasicResponseDto.uuid}
-                onClick={() => handleAddToPlaylist(playlist.playlistBasicResponseDto.uuid)}
-                disabled={isLoading}
-                className="w-full p-4 flex items-center gap-4 rounded-xl hover:bg-white/5 transition-colors"
-              >
-                <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-white/5">
-                  {playlist.playlistBasicResponseDto.coverImageUrl ? (
-                    <Image
-                      src={playlist.playlistBasicResponseDto.coverImageUrl}
-                      alt={playlist.playlistBasicResponseDto.title}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <ListMusic className="w-8 h-8 text-white/20" />
-                    </div>
+            <p className="text-muted-foreground text-center">
+              플레이리스트에 트랙을 추가하려면 로그인이 필요합니다.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
+            {playlists.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 px-4">
+                <div className="w-16 h-16 rounded-2xl bg-white/5 backdrop-blur-lg flex items-center justify-center mb-4">
+                  <ListMusic className="w-8 h-8 text-white/40" />
+                </div>
+                <p className="text-muted-foreground text-center">
+                  플레이리스트가 없습니다
+                </p>
+                <Button className="w-full mt-4">
+                  <Link href="/upload/playlist" className="w-full h-full flex items-center justify-center">
+                    <Plus className="w-4 h-4 mr-2" />
+                    플레이리스트 만들기
+                  </Link>
+                </Button>
+              </div>
+            ) : (
+              playlists.map((playlist) => (
+                <button
+                  key={playlist.playlistBasicResponseDto.uuid}
+                  onClick={() => handleAddToPlaylist(playlist.playlistBasicResponseDto.uuid)}
+                  disabled={isLoading}
+                  className={cn(
+                    "w-full group",
+                    "p-3",
+                    "flex items-center gap-4",
+                    "rounded-xl",
+                    "transition-all duration-300",
+                    "hover:bg-white/5",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
+                    "relative overflow-hidden"
                   )}
-                </div>
-                <div className="flex-1 text-left">
-                  <h3 className="font-medium truncate">
-                    {playlist.playlistBasicResponseDto.title}
-                  </h3>
-                </div>
-              </button>
-            ))
-          )}
-        </div>
+                >
+                  {/* 글래스모피즘 효과 */}
+                  <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent backdrop-blur-sm" />
+                  </div>
+
+                  {/* 플레이리스트 커버 */}
+                  <div className="relative shrink-0 w-14 h-14 rounded-lg overflow-hidden bg-white/5">
+                    {playlist.playlistBasicResponseDto.coverImageUrl ? (
+                      <Image
+                        src={playlist.playlistBasicResponseDto.coverImageUrl}
+                        alt={playlist.playlistBasicResponseDto.title}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <ListMusic className="w-6 h-6 text-white/20" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 플레이리스트 정보 */}
+                  <div className="flex-1 min-w-0 text-left">
+                    <h3 className="font-medium truncate pr-4">
+                      {playlist.playlistBasicResponseDto.title}
+                    </h3>
+                  </div>
+
+                  {/* 추가 아이콘 */}
+                  <div className="shrink-0 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+                    <Plus className="w-4 h-4" />
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -145,17 +145,17 @@ export function TrackActions({
           </button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuContent align="end" className="w-52">
           <DropdownMenuItem onClick={() => setShowAddToPlaylistModal(true)}>
             <Plus className="w-4 h-4 mr-2" />
             플레이리스트에 추가
           </DropdownMenuItem>
           {place === "playlist" && isOwner && playlistId && (
-            <DropdownMenuItem>
-              <Trash
-                className="w-4 h-4 mr-2"
-                onClick={() => setShowDeleteFromPlaylistDialog(true)}
-              />
+            <DropdownMenuItem
+              className="text-red-500 focus:text-red-500"
+              onClick={() => setShowDeleteFromPlaylistDialog(true)}
+            >
+              <Trash className="w-4 h-4 mr-2" />
               플레이리스트에서 삭제
             </DropdownMenuItem>
           )}
