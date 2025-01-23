@@ -9,6 +9,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useInView } from "react-intersection-observer";
 import { checkAuth } from "@/lib/auth";
 import { TrackActions } from "@/components/albums/TrackActions";
+import { useUser } from "@/contexts/auth/UserContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 
 interface Track {
   uuid: string;
@@ -35,10 +37,14 @@ interface Track {
 interface PlaylistTracksProps {
   playlistId: string;
   initialTracks: Track[];
-  isOwner: boolean;
+  artistId: string;
 }
 
-export function PlaylistTracks({ playlistId, initialTracks, isOwner }: PlaylistTracksProps) {
+export function PlaylistTracks({ playlistId, initialTracks, artistId }: PlaylistTracksProps) {
+  const { isAuthenticated } = useAuth();
+  const { user } = useUser();
+  const isOwner = isAuthenticated && user?.uuid === artistId;
+
   const [tracks, setTracks] = useState<Track[]>(initialTracks);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);

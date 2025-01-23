@@ -1,7 +1,5 @@
 import { PlaylistInfo } from "@/components/playlists/PlaylistInfo";
 import { PlaylistTracks } from "@/components/playlists/PlaylistTracks";
-import { useAuth } from "@/contexts/auth/AuthContext";
-import { useUser } from "@/contexts/auth/UserContext";
 import { cn } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
@@ -49,13 +47,6 @@ async function getPlaylist(id: string, itemPage = 0, itemPageSize = 10) {
   }
 }
 
-const CheckOwnerInPlaylist = (id: string) => {
-  const { isAuthenticated } = useAuth();
-  const { user } = useUser();
-  const isOwner = isAuthenticated && user?.uuid === id;
-  return isOwner;
-}
-
 export default async function PlaylistPage({ params, searchParams }: PlaylistPageProps) {
   const itemPage = Number(searchParams.itemPage) || 0;
   const itemPageSize = Number(searchParams.itemPageSize) || 10;
@@ -78,9 +69,9 @@ export default async function PlaylistPage({ params, searchParams }: PlaylistPag
           artist={playlist.artistResponseDto}
         />
         <PlaylistTracks 
-          isOwner={CheckOwnerInPlaylist(playlist.artistResponseDto.uuid)}
           playlistId={params.id}
-          initialTracks={playlist.playlistItemResponseDtos} 
+          initialTracks={playlist.playlistItemResponseDtos}
+          artistId={playlist.artistResponseDto.uuid}
         />
       </div>
     </div>
