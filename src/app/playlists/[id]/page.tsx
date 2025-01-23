@@ -52,6 +52,8 @@ export default async function PlaylistPage({ params, searchParams }: PlaylistPag
   const itemPageSize = Number(searchParams.itemPageSize) || 10;
   const playlist = await getPlaylist(params.id, itemPage, itemPageSize);
 
+  console.log(playlist);
+
   return (
     <div className="container mx-auto px-4 py-4">
       <div

@@ -90,6 +90,7 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
   useEffect(() => {
     if (inView && hasMore && !isLoading) {
       fetchMoreTracks();
+      console.log("fetchMoreTracks...");
     }
   }, [inView, hasMore, isLoading, fetchMoreTracks]);
 
