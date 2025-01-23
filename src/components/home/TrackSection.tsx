@@ -6,6 +6,7 @@ import { formatDuration } from "@/lib/format";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { TrackActions } from "@/components/albums/TrackActions";
 
 interface Track {
   trackResponseDto: {
@@ -141,9 +142,17 @@ export function TrackSection() {
                     </Link>
                   </div>
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-muted-foreground mr-4">
                   {formatDuration(track.trackResponseDto.duration)}
                 </div>
+                <TrackActions
+                  place="main"
+                  track={{
+                    uuid: track.trackResponseDto.uuid,
+                    title: track.trackResponseDto.title,
+                    lyric: track.trackResponseDto.lyric,
+                  }}
+                />
               </div>
             </button>
           ))}

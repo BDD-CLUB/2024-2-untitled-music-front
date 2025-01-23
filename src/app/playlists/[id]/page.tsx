@@ -1,5 +1,7 @@
 import { PlaylistInfo } from "@/components/playlists/PlaylistInfo";
 import { PlaylistTracks } from "@/components/playlists/PlaylistTracks";
+import { useAuth } from "@/contexts/auth/AuthContext";
+import { useUser } from "@/contexts/auth/UserContext";
 import { cn } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
@@ -52,6 +54,10 @@ export default async function PlaylistPage({ params, searchParams }: PlaylistPag
   const itemPageSize = Number(searchParams.itemPageSize) || 10;
   const playlist = await getPlaylist(params.id, itemPage, itemPageSize);
 
+  const { isAuthenticated } = useAuth();
+  const { user } = useUser();
+  const isOwner = isAuthenticated && user?.uuid === playlist.artistResponseDto.uuid;
+
   return (
     <div className="container mx-auto px-4 py-4">
       <div
@@ -69,6 +75,7 @@ export default async function PlaylistPage({ params, searchParams }: PlaylistPag
           artist={playlist.artistResponseDto}
         />
         <PlaylistTracks 
+          isOwner={isOwner}
           playlistId={params.id}
           initialTracks={playlist.playlistItemResponseDtos} 
         />

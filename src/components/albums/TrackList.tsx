@@ -124,29 +124,30 @@ export function TrackList({
                 <div className="text-sm text-muted-foreground mr-4">
                   {formatDuration(track.duration)}
                 </div>
-                {isOwner && (
-                  <TrackActions
-                    track={track}
-                    onUpdate={(updatedTrack) => {
-                      setTracks((prev) =>
-                        prev.map((t) =>
-                          t.uuid === updatedTrack.uuid
-                            ? {
-                                ...t,
-                                title: updatedTrack.title,
-                                lyric: updatedTrack.lyric,
-                              }
-                            : t
-                        )
-                      );
-                    }}
-                    onDelete={(deletedTrackId) => {
-                      setTracks((prev) =>
-                        prev.filter((t) => t.uuid !== deletedTrackId)
-                      );
-                    }}
-                  />
-                )}
+
+                <TrackActions
+                  place="album"
+                  track={track}
+                  isOwner={isOwner}
+                  onUpdate={(updatedTrack) => {
+                    setTracks((prev) =>
+                      prev.map((t) =>
+                        t.uuid === updatedTrack.uuid
+                          ? {
+                              ...t,
+                              title: updatedTrack.title,
+                              lyric: updatedTrack.lyric,
+                            }
+                          : t
+                      )
+                    );
+                  }}
+                  onDelete={(deletedTrackId) => {
+                    setTracks((prev) =>
+                      prev.filter((t) => t.uuid !== deletedTrackId)
+                    );
+                  }}
+                />
               </div>
             </div>
           ))}

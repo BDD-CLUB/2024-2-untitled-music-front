@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { checkAuth } from "@/lib/auth";
+import { TrackActions } from "@/components/albums/TrackActions";
 
 interface Track {
   uuid: string;
@@ -17,6 +18,7 @@ interface Track {
       title: string;
       duration: number;
       artUrl: string;
+      lyric: string;
     };
     albumResponseDto: {
       uuid: string;
@@ -33,9 +35,10 @@ interface Track {
 interface PlaylistTracksProps {
   playlistId: string;
   initialTracks: Track[];
+  isOwner: boolean;
 }
 
-export function PlaylistTracks({ playlistId, initialTracks }: PlaylistTracksProps) {
+export function PlaylistTracks({ playlistId, initialTracks, isOwner }: PlaylistTracksProps) {
   const [tracks, setTracks] = useState<Track[]>(initialTracks);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -158,9 +161,20 @@ export function PlaylistTracks({ playlistId, initialTracks }: PlaylistTracksProp
                     {album.title}
                   </Link>
 
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground mr-4">
                     {formatDuration(track.duration)}
                   </div>
+
+                  <TrackActions
+                    place="playlist"
+                    track={{
+                      uuid: track.uuid,
+                      title: track.title,
+                      lyric: track.lyric,
+                    }}
+                    isOwner={isOwner}
+                    playlistId={playlistId}
+                  />
                 </div>
               </button>
             );

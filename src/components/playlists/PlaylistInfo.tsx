@@ -59,7 +59,7 @@ export function PlaylistInfo({ playlist, artist }: PlaylistInfoProps) {
           {/* 플레이리스트 상세 정보 */}
           <div className="flex flex-col items-center md:items-start">
             <div className="flex items-center gap-4 mb-6">
-              <h1 className="text-4xl md:text-5xl font-bold">
+              <h1 className="text-2xl md:text-3xl font-bold">
                 {playlist.title}
               </h1>
               {isOwner && (
