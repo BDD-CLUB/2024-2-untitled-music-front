@@ -47,6 +47,7 @@ export function PlaylistInfo({ playlist, artist }: PlaylistInfoProps) {
                     alt={playlist.title}
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 50vw, 33vw"
                   />
                 ) : (
                   <ListMusic className="w-32 h-32 text-white/20" />

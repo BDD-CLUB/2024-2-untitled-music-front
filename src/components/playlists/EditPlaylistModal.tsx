@@ -19,9 +19,10 @@ interface EditPlaylistModalProps {
   playlistId: string;
   isOpen: boolean;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
-export function EditPlaylistModal({ playlistId, isOpen, onClose }: EditPlaylistModalProps) {
+export function EditPlaylistModal({ playlistId, isOpen, onClose, onSuccess }: EditPlaylistModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -82,6 +83,8 @@ export function EditPlaylistModal({ playlistId, isOpen, onClose }: EditPlaylistM
       );
 
       if (!response.ok) throw new Error("플레이리스트 수정에 실패했습니다.");
+
+      onSuccess();
 
       toast({
         title: "플레이리스트 수정 완료",

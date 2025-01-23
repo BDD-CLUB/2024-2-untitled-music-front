@@ -22,6 +22,7 @@ async function getPlaylist(id: string, itemPage = 0, itemPageSize = 10) {
           "Content-Type": "application/json",
         },
         credentials: 'include',
+        next: {revalidate: 0}
       }
     );
 

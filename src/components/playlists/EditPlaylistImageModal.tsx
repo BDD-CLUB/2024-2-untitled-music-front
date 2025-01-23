@@ -3,6 +3,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -18,12 +19,14 @@ interface EditPlaylistImageModalProps {
   playlistId: string;
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => Promise<void>;
 }
 
 export function EditPlaylistImageModal({
   playlistId,
   isOpen,
   onClose,
+  onSuccess,
 }: EditPlaylistImageModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -71,6 +74,8 @@ export function EditPlaylistImageModal({
 
       if (!updateResponse.ok) throw new Error("플레이리스트 이미지 변경에 실패했습니다.");
 
+      await onSuccess?.();
+
       toast({
         title: "이미지 변경 완료",
         description: "플레이리스트 이미지가 변경되었습니다.",
@@ -93,6 +98,7 @@ export function EditPlaylistImageModal({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>플레이리스트 이미지 변경</DialogTitle>
+          <DialogDescription className="hidden">플레이리스트 이미지를 변경해주세요.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">

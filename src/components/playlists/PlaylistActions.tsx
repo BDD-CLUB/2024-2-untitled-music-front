@@ -1,7 +1,7 @@
 "use client";
 
 import { MoreVertical, Edit2, Trash2, Image as ImageIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { checkAuth } from "@/lib/auth";
 import {
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { EditPlaylistModal } from "./EditPlaylistModal";
 import { EditPlaylistImageModal } from "./EditPlaylistImageModal";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 interface PlaylistActionsProps {
   playlistId: string;
@@ -35,6 +35,17 @@ export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const pathname = usePathname();
+
+  const revalidateData = useCallback(async () => {
+    try {
+      await fetch(`/api/revalidate?path=${pathname}`, {
+        method: 'POST',
+      });
+    } catch (error) {
+      console.error('Failed to revalidate:', error);
+    }
+  }, [pathname]);
 
   const handleDelete = async () => {
     try {
@@ -52,6 +63,8 @@ export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
       );
 
       if (!response.ok) throw new Error("플레이리스트 삭제에 실패했습니다.");
+
+      await revalidateData();
 
       toast({
         title: "플레이리스트 삭제 완료",
@@ -127,12 +140,14 @@ export function PlaylistActions({ playlistId }: PlaylistActionsProps) {
         playlistId={playlistId}
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
+        onSuccess={revalidateData}
       />
 
       <EditPlaylistImageModal
         playlistId={playlistId}
         isOpen={showImageModal}
         onClose={() => setShowImageModal(false)}
+        onSuccess={revalidateData}
       />
     </>
   );
