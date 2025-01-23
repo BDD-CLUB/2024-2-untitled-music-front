@@ -119,7 +119,7 @@ export function AddToPlaylistModal({ trackId, isOpen, onClose }: AddToPlaylistMo
             <div className="w-16 h-16 rounded-2xl bg-white/5 backdrop-blur-lg flex items-center justify-center mb-4">
               <ListMusic className="w-8 h-8 text-white/40" />
             </div>
-            <p className="text-muted-foreground text-center">
+            <p className="text-muted-foreground text-center text-sm">
               플레이리스트에 트랙을 추가하려면 로그인이 필요합니다.
             </p>
           </div>
@@ -130,13 +130,13 @@ export function AddToPlaylistModal({ trackId, isOpen, onClose }: AddToPlaylistMo
                 <div className="w-16 h-16 rounded-2xl bg-white/5 backdrop-blur-lg flex items-center justify-center mb-4">
                   <ListMusic className="w-8 h-8 text-white/40" />
                 </div>
-                <p className="text-muted-foreground text-center">
+                <p className="text-muted-foreground text-center text-sm">
                   플레이리스트가 없습니다
                 </p>
                 <Button className="w-full mt-4">
                   <Link href="/upload/playlist" className="w-full h-full flex items-center justify-center">
                     <Plus className="w-4 h-4 mr-2" />
-                    플레이리스트 만들기
+                    플레이리스트 생성
                   </Link>
                 </Button>
               </div>
@@ -157,10 +157,6 @@ export function AddToPlaylistModal({ trackId, isOpen, onClose }: AddToPlaylistMo
                     "relative overflow-hidden"
                   )}
                 >
-                  {/* 글래스모피즘 효과 */}
-                  <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent backdrop-blur-sm" />
-                  </div>
 
                   {/* 플레이리스트 커버 */}
                   <div className="relative shrink-0 w-14 h-14 rounded-lg overflow-hidden bg-white/5">
@@ -180,7 +176,7 @@ export function AddToPlaylistModal({ trackId, isOpen, onClose }: AddToPlaylistMo
 
                   {/* 플레이리스트 정보 */}
                   <div className="flex-1 min-w-0 text-left">
-                    <h3 className="font-medium truncate pr-4">
+                    <h3 className="font-medium text-sm truncate pr-4">
                       {playlist.playlistBasicResponseDto.title}
                     </h3>
                   </div>

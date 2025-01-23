@@ -88,10 +88,10 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
   }, [playlistId, hasMore, isLoading, page]);
 
   useEffect(() => {
-    if (inView) {
+    if (inView && hasMore && !isLoading) {
       fetchMoreTracks();
     }
-  }, [inView, fetchMoreTracks]);
+  }, [inView, hasMore, isLoading, fetchMoreTracks]);
 
   const hasNoTracks = !tracks || tracks.length === 0;
 
@@ -182,6 +182,11 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
                     }}
                     isOwner={isOwner}
                     playlistId={playlistId}
+                    onDelete={(deletedTrackId) => {
+                      setTracks((prev) =>
+                        prev.filter((t) => t.uuid !== deletedTrackId)
+                      );
+                    }}
                   />
                 </div>
               </div>

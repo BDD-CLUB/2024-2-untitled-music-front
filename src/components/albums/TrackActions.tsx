@@ -107,6 +107,7 @@ export function TrackActions({
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({
             removedItemUuids: [track.uuid],
             newTrackUuids: [],
@@ -116,6 +117,7 @@ export function TrackActions({
 
       if (!response.ok) throw new Error("플레이리스트 삭제에 실패했습니다.");
 
+      onDelete?.(track.uuid);
       toast({
         title: "플레이리스트에서 트랙 삭제 완료",
         variant: "default",
