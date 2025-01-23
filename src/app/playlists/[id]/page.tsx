@@ -49,14 +49,17 @@ async function getPlaylist(id: string, itemPage = 0, itemPageSize = 10) {
   }
 }
 
+export const CheckOwnerInPlaylist = (id: string) => {
+  const { isAuthenticated } = useAuth();
+  const { user } = useUser();
+  const isOwner = isAuthenticated && user?.uuid === id;
+  return isOwner;
+}
+
 export default async function PlaylistPage({ params, searchParams }: PlaylistPageProps) {
   const itemPage = Number(searchParams.itemPage) || 0;
   const itemPageSize = Number(searchParams.itemPageSize) || 10;
   const playlist = await getPlaylist(params.id, itemPage, itemPageSize);
-
-  const { isAuthenticated } = useAuth();
-  const { user } = useUser();
-  const isOwner = isAuthenticated && user?.uuid === playlist.artistResponseDto.uuid;
 
   return (
     <div className="container mx-auto px-4 py-4">
@@ -75,7 +78,7 @@ export default async function PlaylistPage({ params, searchParams }: PlaylistPag
           artist={playlist.artistResponseDto}
         />
         <PlaylistTracks 
-          isOwner={isOwner}
+          isOwner={CheckOwnerInPlaylist(playlist.artistResponseDto.uuid)}
           playlistId={params.id}
           initialTracks={playlist.playlistItemResponseDtos} 
         />
