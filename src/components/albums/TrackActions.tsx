@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { EditTrackModal } from "./EditTrackModal";
 import { AddToPlaylistModal } from "../tracks/AddToPlaylistModal";
+import { useRouter } from "next/navigation";
 
 interface Track {
   uuid: string;
@@ -46,6 +47,7 @@ export function TrackActions({
   onUpdate,
   onDelete,
 }: TrackActionsProps) {
+  const router = useRouter();
   const { toast } = useToast();
   const [showAddToPlaylistModal, setShowAddToPlaylistModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -118,6 +120,7 @@ export function TrackActions({
       if (!response.ok) throw new Error("플레이리스트 삭제에 실패했습니다.");
 
       onDelete?.(track.uuid);
+      router.refresh();
 
       toast({
         title: "플레이리스트에서 트랙 삭제 완료",

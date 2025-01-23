@@ -115,17 +115,18 @@ export function EditPlaylistImageModal({
         </DialogHeader>
 
         <div className="space-y-4 flex flex-col items-center">
-          {playlistImage ? (
-            <Image
-              src={playlistImage}
-              alt="플레이리스트 이미지"
-              width={128}
-              height={128}
-              className="object-cover"
-            />
-          ) : (
-            <ListMusic className="w-32 h-32 text-white/20" />
-          )}
+          <div className="relative aspect-square w-48 rounded-xl overflow-hidden">
+            {playlistImage ? (
+              <Image
+                src={playlistImage}
+                alt="플레이리스트 이미지"
+                fill
+                className="object-cover rounded-3xl"
+              />
+            ) : (
+              <ListMusic className="w-40 h-40 text-white/20" />
+            )}
+          </div>
           <div className="flex justify-center">
             <Button
               type="button"
