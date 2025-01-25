@@ -108,77 +108,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.shuffle, generateShuffledQueue]);
 
-  // 재생 관련 함수들을 먼저 선언
-  const play = async (trackId: string) => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${trackId}`
-      );
-      if (!response.ok) throw new Error("Failed to fetch track");
-      const track = await response.json();
-
-      // 오디오 로드 실패 시 처리
-      if (audioRef.current) {
-        audioRef.current.onerror = () => {
-          setState((prev) => ({ ...prev, isPlaying: false }));
-          console.error("Failed to load audio");
-        };
-      }
-
-      // 트랙을 재생 큐에 추가 (이미 있는 경우 제외)
-      if (!state.queue.find((t) => t.uuid === track.uuid)) {
-        setState((prev) => ({
-          ...prev,
-          queue: [
-            ...prev.queue,
-            {
-              uuid: track.uuid,
-              title: track.title,
-              trackUrl: track.trackUrl,
-              duration: track.duration,
-              artUrl: track.artUrl,
-              lyrics: track.lyrics,
-              artist: {
-                uuid: track.artist.uuid,
-                name: track.artist.name,
-              },
-              album: {
-                uuid: track.album.uuid,
-                title: track.album.title,
-              },
-            },
-          ],
-        }));
-      }
-
-      setState((prev) => ({ ...prev, currentTrack: track, isPlaying: true }));
-
-      if (audioRef.current) {
-        audioRef.current.src = track.trackUrl;
-        audioRef.current.play();
-      }
-    } catch (error) {
-      console.error("Failed to play track:", error);
-      setState((prev) => ({ ...prev, isPlaying: false }));
-    }
-  };
-
-  // 다른 재생 관련 함수들도 먼저 선언
-  const pause = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setState((prev) => ({ ...prev, isPlaying: false }));
-    }
-  };
-
-  const resume = () => {
-    if (audioRef.current) {
-      audioRef.current.play();
-      setState((prev) => ({ ...prev, isPlaying: true }));
-    }
-  };
-
-  // 그 다음 getNextTrack과 handleTrackEnd 선언
+  // 다음 트랙 가져오기 로직 개선
   const getNextTrack = useCallback(() => {
     if (state.repeat === "one") return state.currentTrack;
 
@@ -193,15 +123,6 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     if (state.repeat === "all") return currentQueue[0];
     return null;
   }, [state.currentTrack, state.queue, state.repeat, state.shuffle]);
-
-  const handleTrackEnd = useCallback(() => {
-    const nextTrack = getNextTrack();
-    if (nextTrack) {
-      play(nextTrack.uuid);
-    } else {
-      setState((prev) => ({ ...prev, isPlaying: false, progress: 0 }));
-    }
-  }, [getNextTrack, play]);
 
   // 큐 관리 함수들 추가
   const queueActions = {
@@ -287,6 +208,156 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
+  // 재생 관련 함수들
+  const play = useCallback(async (trackId: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${trackId}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch track");
+      const track = await response.json();
+
+      // 오디오 로드 실패 시 처리
+      if (audioRef.current) {
+        audioRef.current.onerror = () => {
+          setState((prev) => ({ ...prev, isPlaying: false }));
+          console.error("Failed to load audio");
+        };
+      }
+
+      // 트랙을 재생 큐에 추가 (이미 있는 경우 제외)
+      if (!state.queue.find((t) => t.uuid === track.uuid)) {
+        setState((prev) => ({
+          ...prev,
+          queue: [
+            ...prev.queue,
+            {
+              uuid: track.uuid,
+              title: track.title,
+              trackUrl: track.trackUrl,
+              duration: track.duration,
+              artUrl: track.artUrl,
+              lyrics: track.lyrics,
+              artist: {
+                uuid: track.artist.uuid,
+                name: track.artist.name,
+              },
+              album: {
+                uuid: track.album.uuid,
+                title: track.album.title,
+              },
+            },
+          ],
+        }));
+      }
+
+      setState((prev) => ({ ...prev, currentTrack: track, isPlaying: true }));
+
+      if (audioRef.current) {
+        audioRef.current.src = track.trackUrl;
+        audioRef.current.play();
+      }
+    } catch (error) {
+      console.error("Failed to play track:", error);
+      setState((prev) => ({ ...prev, isPlaying: false }));
+    }
+  }, [state.queue]);
+
+  // handleTrackEnd를 useCallback으로 감싸기
+  const handleTrackEnd = useCallback(() => {
+    const nextTrack = getNextTrack();
+    if (nextTrack) {
+      play(nextTrack.uuid);
+    } else {
+      setState((prev) => ({ ...prev, isPlaying: false, progress: 0 }));
+    }
+  }, [getNextTrack, play]);
+
+  const next = () => {
+    const nextTrack = getNextTrack();
+    if (nextTrack) play(nextTrack.uuid);
+  };
+
+  const previous = () => {
+    const currentIndex = state.queue.findIndex(
+      (t) => t.uuid === state.currentTrack?.uuid
+    );
+    if (currentIndex > 0) {
+      play(state.queue[currentIndex - 1].uuid);
+    }
+  };
+
+  const toggleRepeat = () => {
+    setState((prev) => {
+      const modes: ("none" | "one" | "all")[] = ["none", "one", "all"];
+      const currentIndex = modes.indexOf(prev.repeat);
+      const nextMode = modes[(currentIndex + 1) % modes.length];
+      return { ...prev, repeat: nextMode };
+    });
+  };
+
+  const toggleShuffle = () => {
+    setState((prev) => {
+      const newShuffle = !prev.shuffle;
+      if (newShuffle) {
+        const currentTrackIndex = prev.queue.findIndex(
+          (t) => t.uuid === prev.currentTrack?.uuid
+        );
+        const remainingTracks = [...prev.queue];
+        if (currentTrackIndex !== -1) {
+          remainingTracks.splice(currentTrackIndex, 1);
+        }
+        // 현재 트랙을 제외한 나머지 트랙들만 섞기
+        for (let i = remainingTracks.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [remainingTracks[i], remainingTracks[j]] = [
+            remainingTracks[j],
+            remainingTracks[i],
+          ];
+        }
+        // 현재 트랙을 맨 앞에 추가
+        if (prev.currentTrack) {
+          remainingTracks.unshift(prev.currentTrack);
+        }
+        shuffledQueueRef.current = remainingTracks;
+      }
+      return { ...prev, shuffle: newShuffle };
+    });
+  };
+
+  // 볼륨 변경 시 로컬 스토리지에 저장
+  const setVolume = (volume: number) => {
+    setState((prev) => ({ ...prev, volume }));
+    setSavedVolume(volume);
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  };
+
+  // 재생 일시 정지
+  const pause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setState((prev) => ({ ...prev, isPlaying: false }));
+    }
+  };
+
+  // 재생 재개
+  const resume = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setState((prev) => ({ ...prev, isPlaying: true }));
+    }
+  };
+
+  // 재생 위치 이동
+  const seek = (time: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+      setState((prev) => ({ ...prev, progress: time }));
+    }
+  };
+
   // 진행 상태 업데이트
   useEffect(() => {
     if (state.isPlaying) {
@@ -356,67 +427,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         play,
         pause,
         resume,
-        next: () => {
-          const nextTrack = getNextTrack();
-          if (nextTrack) play(nextTrack.uuid);
-        },
-        previous: () => {
-          const currentIndex = state.queue.findIndex(
-            (t) => t.uuid === state.currentTrack?.uuid
-          );
-          if (currentIndex > 0) {
-            play(state.queue[currentIndex - 1].uuid);
-          }
-        },
-        setVolume: (volume: number) => {
-          setState((prev) => ({ ...prev, volume }));
-          setSavedVolume(volume);
-          if (audioRef.current) {
-            audioRef.current.volume = volume;
-          }
-        },
-        seek: (time: number) => {
-          if (audioRef.current) {
-            audioRef.current.currentTime = time;
-            setState((prev) => ({ ...prev, progress: time }));
-          }
-        },
-        toggleRepeat: () => {
-          setState((prev) => {
-            const modes: ("none" | "one" | "all")[] = ["none", "one", "all"];
-            const currentIndex = modes.indexOf(prev.repeat);
-            const nextMode = modes[(currentIndex + 1) % modes.length];
-            return { ...prev, repeat: nextMode };
-          });
-        },
-        toggleShuffle: () => {
-          setState((prev) => {
-            const newShuffle = !prev.shuffle;
-            if (newShuffle) {
-              const currentTrackIndex = prev.queue.findIndex(
-                (t) => t.uuid === prev.currentTrack?.uuid
-              );
-              const remainingTracks = [...prev.queue];
-              if (currentTrackIndex !== -1) {
-                remainingTracks.splice(currentTrackIndex, 1);
-              }
-              // 현재 트랙을 제외한 나머지 트랙들만 섞기
-              for (let i = remainingTracks.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [remainingTracks[i], remainingTracks[j]] = [
-                  remainingTracks[j],
-                  remainingTracks[i],
-                ];
-              }
-              // 현재 트랙을 맨 앞에 추가
-              if (prev.currentTrack) {
-                remainingTracks.unshift(prev.currentTrack);
-              }
-              shuffledQueueRef.current = remainingTracks;
-            }
-            return { ...prev, shuffle: newShuffle };
-          });
-        },
+        next,
+        previous,
+        setVolume,
+        seek,
+        toggleRepeat,
+        toggleShuffle,
       }}
     >
       {children}
