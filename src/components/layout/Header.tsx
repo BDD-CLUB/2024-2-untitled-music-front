@@ -19,7 +19,7 @@ export function Header() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50">
+    <header className="fixed top-2 left-0 right-0 z-50">
       <div className="h-16 flex items-center justify-between px-8">
         <div className={cn(
           "flex-1",
