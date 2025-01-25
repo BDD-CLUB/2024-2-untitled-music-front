@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { TrackActions } from "@/components/albums/TrackActions";
+import { useAudio } from "@/contexts/audio/AudioContext";
 
 interface Track {
   trackResponseDto: {
@@ -33,6 +34,7 @@ export function TrackSection() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { play } = useAudio();
 
   const fetchTracks = async () => {
     try {
@@ -98,6 +100,7 @@ export function TrackSection() {
           {tracks.map((track) => (
             <button
               key={track.trackResponseDto.uuid}
+              onClick={() => play(track.trackResponseDto.uuid)}
               className={cn(
                 "w-full px-4 py-3",
                 "flex items-center gap-4",
@@ -146,14 +149,16 @@ export function TrackSection() {
                 <div className="text-sm text-muted-foreground mr-4">
                   {formatDuration(track.trackResponseDto.duration)}
                 </div>
-                <TrackActions
-                  place="main"
-                  track={{
-                    uuid: track.trackResponseDto.uuid,
-                    title: track.trackResponseDto.title,
-                    lyric: track.trackResponseDto.lyric,
-                  }}
-                />
+                <div onClick={(e) => e.stopPropagation()}>
+                  <TrackActions
+                    place="main"
+                    track={{
+                      uuid: track.trackResponseDto.uuid,
+                      title: track.trackResponseDto.title,
+                      lyric: track.trackResponseDto.lyric,
+                    }}
+                  />
+                </div>
               </div>
             </button>
           ))}
