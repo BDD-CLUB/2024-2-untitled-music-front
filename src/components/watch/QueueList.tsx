@@ -49,9 +49,13 @@ function QueueItem({ track }: QueueItemProps) {
       <button
         onClick={() => {
           if (currentTrack?.uuid === track.uuid) {
-            isPlaying ? pause() : resume();
+            if (isPlaying) {
+              pause(); // 명령문
+            } else {
+              resume(); // 명령문
+            }
           } else {
-            play(track.uuid);
+            play(track.uuid); // 명령문
           }
         }}
         className={cn(
