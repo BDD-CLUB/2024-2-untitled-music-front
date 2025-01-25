@@ -12,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 export function Header() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -19,12 +20,15 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      <div className="h-16 flex items-center justify-between px-4">
-        <div className="flex-1 max-w-[calc(100%-50px)]">
+      <div className="h-16 flex items-center justify-between px-8">
+        <div className={cn(
+          "flex-1",
+          isAuthenticated ? "w-full" : "max-w-[calc(100%-50px)]"
+        )}>
           <AudioPlayer />
         </div>
-        <div className="flex items-center justify-end w-[50px]">
-          {!isAuthenticated && (
+        {!isAuthenticated && (
+          <div className="flex items-center justify-end w-[50px]">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -42,8 +46,8 @@ export function Header() {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          )}
-        </div>
+          </div>
+        )}
       </div>
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </header>
