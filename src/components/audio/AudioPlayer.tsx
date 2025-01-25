@@ -89,7 +89,7 @@ export function AudioPlayer() {
       )}
     >
       {/* 컨텐츠 영역 */}
-      <div className="flex items-center justify-between h-full px-6 py-2">
+      <div className="flex items-center justify-between h-full px-4">
         {/* 트랙 정보 */}
         <div className="flex items-center gap-4 flex-1 min-w-0">
           <div
@@ -200,14 +200,14 @@ export function AudioPlayer() {
       </div>
 
       {/* 프로그레스 바를 하단으로 이동 */}
-      <div className="absolute bottom-0 left-0 right-0 px-0 py-2 mt-2">
+      <div className="absolute bottom-0 left-0 right-0 px-0 pt-2">
         <Slider
           value={[progress]}
           max={duration}
           step={1}
           onValueChange={([value]) => seek(value)}
           className={cn(
-            "h-1",
+            "h-1.5",
             "cursor-pointer",
             "[&_[role=slider]]:h-3 [&_[role=slider]]:w-3",
             "[&_[role=slider]]:hover:h-4 [&_[role=slider]]:hover:w-4",
