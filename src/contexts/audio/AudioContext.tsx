@@ -191,15 +191,15 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
-  // 트랙 재생 완료 시 처리
-  const handleTrackEnd = () => {
+  // handleTrackEnd를 useCallback으로 감싸기
+  const handleTrackEnd = useCallback(() => {
     const nextTrack = getNextTrack();
     if (nextTrack) {
       play(nextTrack.uuid);
     } else {
       setState(prev => ({ ...prev, isPlaying: false, progress: 0 }));
     }
-  };
+  }, [getNextTrack]);
 
   // 재생 관련 함수들
   const play = async (trackId: string) => {

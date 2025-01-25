@@ -36,19 +36,14 @@ function QueueItem({ track }: QueueItemProps) {
     isDragging,
   } = useSortable({ id: track.uuid });
 
-  const style = transform ? {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    zIndex: isDragging ? 1 : 0,
-  } : undefined;
-
   return (
     <div
       ref={setNodeRef}
-      style={style}
       className={cn(
         "touch-none",
-        isDragging && "opacity-50"
+        isDragging && "opacity-50",
+        transform && `transform-gpu ${CSS.Transform.toString(transform)}`,
+        transition && `transition-transform duration-200`
       )}
     >
       <button
