@@ -165,15 +165,16 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     state.progress,
     state.repeat,
     state.shuffle,
+    setSavedState,
   ]);
 
-  // 페이지 로드 시 이전 재생 위치로 이동
+  // 초기 재생 위치 설정
   useEffect(() => {
     if (audioRef.current && state.currentTrack) {
       audioRef.current.src = state.currentTrack.trackUrl;
       audioRef.current.currentTime = state.progress;
     }
-  }, []);
+  }, [state.currentTrack, state.progress]);
 
   // 페이지 언로드 시 현재 재생 위치 저장
   useEffect(() => {
@@ -348,25 +349,25 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.isPlaying]);
 
-  // 오디오 엘리먼트 생성
+  // 오디오 엘리먼트 생성 및 이벤트 리스너 설정
   useEffect(() => {
     audioRef.current = new Audio();
     audioRef.current.volume = savedVolume;
 
-    // 메타데이터 로드 완료 시 duration 업데이트
-    audioRef.current.addEventListener('loadedmetadata', () => {
+    const handleMetadataLoad = () => {
       setState(prev => ({
         ...prev,
         duration: audioRef.current?.duration || 0
       }));
-    });
+    };
 
-    // 재생 오류 처리
-    audioRef.current.addEventListener('error', () => {
+    const handleError = () => {
       console.error('Audio playback error');
       setState(prev => ({ ...prev, isPlaying: false }));
-    });
+    };
 
+    audioRef.current.addEventListener('loadedmetadata', handleMetadataLoad);
+    audioRef.current.addEventListener('error', handleError);
     audioRef.current.addEventListener('ended', handleTrackEnd);
     
     // 이전 재생 상태 복원
@@ -377,14 +378,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     
     return () => {
       if (audioRef.current) {
+        audioRef.current.removeEventListener('loadedmetadata', handleMetadataLoad);
+        audioRef.current.removeEventListener('error', handleError);
         audioRef.current.removeEventListener('ended', handleTrackEnd);
-        audioRef.current.removeEventListener('loadedmetadata', () => {});
-        audioRef.current.removeEventListener('error', () => {});
         audioRef.current.pause();
         audioRef.current = null;
       }
     };
-  }, []);
+  }, [savedVolume, state.currentTrack, state.progress, handleTrackEnd]);
 
   return (
     <AudioContext.Provider

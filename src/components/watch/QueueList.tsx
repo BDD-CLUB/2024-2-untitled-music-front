@@ -36,11 +36,11 @@ function QueueItem({ track }: QueueItemProps) {
     isDragging,
   } = useSortable({ id: track.uuid });
 
-  const style = {
+  const style = transform ? {
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 1 : 0,
-  };
+  } : undefined;
 
   return (
     <div
