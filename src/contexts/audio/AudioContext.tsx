@@ -211,6 +211,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   // 재생 관련 함수들
   const play = useCallback(async (trackId: string) => {
     try {
+      // 현재 재생 중인 오디오가 있다면 중지
+      if (audioRef.current) {
+        await audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${trackId}`
       );
@@ -219,29 +225,21 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
       // 서버 응답 데이터를 우리의 Track 인터페이스 형식으로 변환
       const track: Track = {
-        uuid: trackData.uuid || trackId, // uuid가 없으면 trackId 사용
-        title: trackData.title || "Unknown Title",
-        trackUrl: trackData.trackUrl || "",
-        duration: trackData.duration || 0,
-        artUrl: trackData.artUrl || "",
-        lyrics: trackData.lyrics || "",
+        uuid: trackData.trackResponseDto?.uuid || trackId,
+        title: trackData.trackResponseDto?.title || "Unknown Title",
+        trackUrl: trackData.trackResponseDto?.trackUrl || "",
+        duration: trackData.trackResponseDto?.duration || 0,
+        artUrl: trackData.trackResponseDto?.artUrl || "",
+        lyrics: trackData.trackResponseDto?.lyrics || "",
         artist: {
-          uuid: trackData.artist?.uuid || "",
-          name: trackData.artist?.name || "Unknown Artist",
+          uuid: trackData.artistResponseDto?.uuid || "",
+          name: trackData.artistResponseDto?.name || "Unknown Artist",
         },
         album: {
-          uuid: trackData.album?.uuid || "",
-          title: trackData.album?.title || "Unknown Album",
+          uuid: trackData.albumResponseDto?.uuid || "",
+          title: trackData.albumResponseDto?.title || "Unknown Album",
         },
       };
-
-      // 오디오 로드 실패 시 처리
-      if (audioRef.current) {
-        audioRef.current.onerror = () => {
-          setState((prev) => ({ ...prev, isPlaying: false }));
-          console.error("Failed to load audio");
-        };
-      }
 
       // 트랙을 재생 큐에 추가 (이미 있는 경우 제외)
       if (!state.queue.find((t) => t.uuid === track.uuid)) {
@@ -251,11 +249,28 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         }));
       }
 
-      setState((prev) => ({ ...prev, currentTrack: track, isPlaying: true }));
-
+      // 오디오 엘리먼트 설정
       if (audioRef.current) {
         audioRef.current.src = track.trackUrl;
-        audioRef.current.play();
+        
+        try {
+          // 상태 업데이트를 먼저 수행
+          setState((prev) => ({ ...prev, currentTrack: track }));
+          
+          // 재생 시도
+          await audioRef.current.play();
+          
+          // 재생 성공 시 isPlaying 상태 업데이트
+          setState((prev) => ({ ...prev, isPlaying: true }));
+        } catch (error) {
+          if (error instanceof DOMException && error.name === 'AbortError') {
+            // 재생이 의도적으로 중단된 경우 (pause 호출)
+            console.log('Playback aborted');
+          } else {
+            // 다른 오류 발생 시
+            throw error;
+          }
+        }
       }
     } catch (error) {
       console.error("Failed to play track:", error);
@@ -335,20 +350,25 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   };
 
   // 재생 일시 정지
-  const pause = () => {
+  const pause = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
       setState((prev) => ({ ...prev, isPlaying: false }));
     }
-  };
+  }, []);
 
   // 재생 재개
-  const resume = () => {
+  const resume = useCallback(async () => {
     if (audioRef.current) {
-      audioRef.current.play();
-      setState((prev) => ({ ...prev, isPlaying: true }));
+      try {
+        await audioRef.current.play();
+        setState((prev) => ({ ...prev, isPlaying: true }));
+      } catch (error) {
+        console.error("Failed to resume playback:", error);
+        setState((prev) => ({ ...prev, isPlaying: false }));
+      }
     }
-  };
+  }, []);
 
   // 재생 위치 이동
   const seek = (time: number) => {
