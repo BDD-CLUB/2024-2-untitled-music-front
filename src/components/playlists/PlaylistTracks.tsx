@@ -21,6 +21,7 @@ interface Track {
       duration: number;
       artUrl: string;
       lyric: string;
+      trackUrl: string;
     };
     albumResponseDto: {
       uuid: string;
@@ -182,6 +183,7 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
                     }}
                     isOwner={isOwner}
                     playlistId={playlistId}
+                    playlistItemId={item.uuid}
                     onDelete={(deletedTrackId) => {
                       setTracks((prev) =>
                         prev.filter((t) => t.uuid !== deletedTrackId)

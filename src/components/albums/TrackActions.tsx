@@ -35,6 +35,7 @@ interface TrackActionsProps {
   track: Track;
   isOwner?: boolean;
   playlistId?: string;
+  playlistItemId?: string;
   onUpdate?: (track: Track) => void;
   onDelete?: (trackId: string) => void;
 }
@@ -44,6 +45,7 @@ export function TrackActions({
   track,
   isOwner,
   playlistId,
+  playlistItemId,
   onUpdate,
   onDelete,
 }: TrackActionsProps) {
@@ -111,7 +113,7 @@ export function TrackActions({
           },
           credentials: "include",
           body: JSON.stringify({
-            removedItemUuids: [track.uuid],
+            removedItemUuids: [playlistItemId],
             newTrackUuids: [],
           }),
         }

@@ -23,8 +23,8 @@ export function BackgroundImage() {
       >
         <Image
           src={theme === 'dark' 
-            ? "/images/background-color-dark.webp" 
-            : "/images/background-color.webp"
+            ? "/images/background-color-dark.svg" 
+            : "/images/background-color.svg"
           }
           alt=""
           fill

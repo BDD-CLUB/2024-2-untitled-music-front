@@ -14,6 +14,7 @@ interface Track {
   title: string;
   duration: number;
   lyric: string;
+  trackUrl: string;
 }
 
 interface TrackListProps {

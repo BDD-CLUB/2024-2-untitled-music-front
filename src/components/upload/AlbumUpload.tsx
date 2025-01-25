@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { checkAuth } from "@/lib/auth";
+import { convertToWebP } from "@/lib/image";
 
 interface AlbumForm {
   title: string;
@@ -66,9 +67,12 @@ export function AlbumUpload() {
       validateFile(file);
       setIsUploading(true);
       setErrors(prev => ({ ...prev, albumArt: undefined }));
+
+      // WebP로 변환
+      const optimizedFile = await convertToWebP(file);
       
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", optimizedFile);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/images`, {
         method: "POST",

@@ -15,6 +15,7 @@ interface Track {
     duration: number;
     artUrl: string;
     lyric: string;
+    trackUrl: string;
   };
   albumResponseDto: {
     uuid: string;

@@ -26,27 +26,7 @@ const nextConfig = {
   },
   // 정적 이미지 최적화
   webpack(config) {
-    config.module.rules.push({
-      test: /\.(webp|avif)$/i,
-      use: [
-        {
-          loader: 'image-webpack-loader',
-          options: {
-            webp: {
-              quality: 50,
-              lossless: false,
-              progressive: true,
-              optimizationLevel: 3,
-            },
-            avif: {
-              quality: 50,
-              lossless: false,
-              speed: 5,
-            },
-          },
-        },
-      ],
-    });
+    
     return config;
   },
 };

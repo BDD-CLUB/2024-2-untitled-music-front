@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { User, MoreVertical, Edit, UserPen } from "lucide-react";
+import { User, MoreVertical, Edit, UserPen, Link as LinkIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { EditProfileModal } from "./EditProfileModal";
 import { useAuth } from "@/contexts/auth/AuthContext";
@@ -23,9 +23,23 @@ interface ProfileHeaderProps {
 interface ProfileData {
   uuid: string;
   name: string;
+  description?: string;
+  link1?: string;
+  link2?: string;
   role: "ROLE_USER";
   email: string;
   artistImage: string;
+}
+
+function formatUrl(url: string): string {
+  try {
+    const urlObject = new URL(url);
+    // 도메인에서 'www.' 제거
+    return urlObject.hostname.replace(/^www\./, '');
+  } catch {
+    // URL 파싱에 실패하면 원본 반환
+    return url;
+  }
 }
 
 export function ProfileHeader({ userId }: ProfileHeaderProps) {
@@ -108,7 +122,7 @@ export function ProfileHeader({ userId }: ProfileHeaderProps) {
             </Avatar>
           </div>
 
-          {/* 이름과 이메일 */}
+          {/* 이름과 설정 */}
           <div className="text-center">
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-2xl font-bold">{profileData.name}</h1>
@@ -136,6 +150,41 @@ export function ProfileHeader({ userId }: ProfileHeaderProps) {
                 </DropdownMenu>
               )}
             </div>
+
+            {/* 소개 */}
+            {profileData.description && (
+              <p className="text-sm text-muted-foreground max-w-lg mx-auto mb-4">
+                {profileData.description}
+              </p>
+            )}
+
+            {/* 링크 */}
+            {(profileData.link1 || profileData.link2) && (
+              <div className="flex items-center justify-center gap-4 mt-4">
+                {profileData.link1 && (
+                  <a
+                    href={profileData.link1}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline text-blue-500"
+                  >
+                    <LinkIcon className="w-4 h-4" />
+                    <span>{formatUrl(profileData.link1)}</span>
+                  </a>
+                )}
+                {profileData.link2 && (
+                  <a
+                    href={profileData.link2}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline text-blue-500"
+                  >
+                    <LinkIcon className="w-4 h-4" />
+                    <span>{formatUrl(profileData.link2)}</span>
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
