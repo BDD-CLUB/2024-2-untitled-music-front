@@ -215,7 +215,25 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${trackId}`
       );
       if (!response.ok) throw new Error("Failed to fetch track");
-      const track = await response.json();
+      const trackData = await response.json();
+
+      // 서버 응답 데이터를 우리의 Track 인터페이스 형식으로 변환
+      const track: Track = {
+        uuid: trackData.uuid || trackId, // uuid가 없으면 trackId 사용
+        title: trackData.title || "Unknown Title",
+        trackUrl: trackData.trackUrl || "",
+        duration: trackData.duration || 0,
+        artUrl: trackData.artUrl || "",
+        lyrics: trackData.lyrics || "",
+        artist: {
+          uuid: trackData.artist?.uuid || "",
+          name: trackData.artist?.name || "Unknown Artist",
+        },
+        album: {
+          uuid: trackData.album?.uuid || "",
+          title: trackData.album?.title || "Unknown Album",
+        },
+      };
 
       // 오디오 로드 실패 시 처리
       if (audioRef.current) {
@@ -229,25 +247,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       if (!state.queue.find((t) => t.uuid === track.uuid)) {
         setState((prev) => ({
           ...prev,
-          queue: [
-            ...prev.queue,
-            {
-              uuid: track.uuid,
-              title: track.title,
-              trackUrl: track.trackUrl,
-              duration: track.duration,
-              artUrl: track.artUrl,
-              lyrics: track.lyrics,
-              artist: {
-                uuid: track.artist.uuid,
-                name: track.artist.name,
-              },
-              album: {
-                uuid: track.album.uuid,
-                title: track.album.title,
-              },
-            },
-          ],
+          queue: [...prev.queue, track],
         }));
       }
 
