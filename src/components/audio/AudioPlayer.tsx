@@ -8,7 +8,7 @@ import { Volume2, VolumeX, SkipBack, SkipForward } from "lucide-react";
 import { Play, Pause } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 
 export function AudioPlayer() {
   const {
@@ -23,47 +23,52 @@ export function AudioPlayer() {
     seek,
   } = useAudio();
 
-  // 키보드 이벤트 리스너
+  // 키보드 이벤트 핸들러를 useCallback으로 분리
+  const handleKeyPress = useCallback((e: KeyboardEvent) => {
+    // 입력 필드에서는 키보드 이벤트를 무시
+    if (
+      document.activeElement?.tagName === "INPUT" ||
+      document.activeElement?.tagName === "TEXTAREA"
+    ) {
+      return;
+    }
+
+    switch (e.code) {
+      case "Space": // 스페이스바: 재생/일시정지
+        e.preventDefault();
+        if (isPlaying) {
+          pause();
+        } else {
+          resume();
+        }
+        break;
+      case "ArrowLeft": // 왼쪽 화살표: 뒤로 5초
+        e.preventDefault();
+        seek(Math.max(0, progress - 5));
+        break;
+      case "ArrowRight": // 오른쪽 화살표: 앞으로 5초
+        e.preventDefault();
+        seek(Math.min(duration, progress + 5));
+        break;
+      case "ArrowUp": // 위쪽 화살표: 볼륨 증가
+        e.preventDefault();
+        setVolume(Math.min(1, volume + 0.1));
+        break;
+      case "ArrowDown": // 아래쪽 화살표: 볼륨 감소
+        e.preventDefault();
+        setVolume(Math.max(0, volume - 0.1));
+        break;
+      case "KeyM": // M키: 음소거 토글
+        setVolume(volume === 0 ? 1 : 0);
+        break;
+    }
+  }, [isPlaying, pause, resume, seek, setVolume, volume, progress, duration]);
+
+  // 키보드 이벤트 리스너 등록
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      // 입력 필드에서는 키보드 이벤트를 무시
-      if (
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA"
-      ) {
-        return;
-      }
-
-      switch (e.code) {
-        case "Space": // 스페이스바: 재생/일시정지
-          e.preventDefault();
-          isPlaying ? pause() : resume();
-          break;
-        case "ArrowLeft": // 왼쪽 화살표: 뒤로 5초
-          e.preventDefault();
-          seek(Math.max(0, progress - 5));
-          break;
-        case "ArrowRight": // 오른쪽 화살표: 앞으로 5초
-          e.preventDefault();
-          seek(Math.min(duration, progress + 5));
-          break;
-        case "ArrowUp": // 위쪽 화살표: 볼륨 증가
-          e.preventDefault();
-          setVolume(Math.min(1, volume + 0.1));
-          break;
-        case "ArrowDown": // 아래쪽 화살표: 볼륨 감소
-          e.preventDefault();
-          setVolume(Math.max(0, volume - 0.1));
-          break;
-        case "KeyM": // M키: 음소거 토글
-          setVolume(volume === 0 ? 1 : 0);
-          break;
-      }
-    };
-
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [isPlaying, pause, resume, seek, setVolume, volume, progress, duration]);
+  }, [handleKeyPress]);
 
   if (!currentTrack) return null;
 
