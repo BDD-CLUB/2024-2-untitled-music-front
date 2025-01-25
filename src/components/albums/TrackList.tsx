@@ -8,6 +8,7 @@ import { useInView } from "react-intersection-observer";
 import { TrackActions } from "@/components/albums/TrackActions";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useUser } from "@/contexts/auth/UserContext";
+import { useAudio } from "@/contexts/audio/AudioContext";
 
 interface Track {
   uuid: string;
@@ -43,6 +44,7 @@ export function TrackList({
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
+  const { play } = useAudio();
 
   const isOwner = isAuthenticated && user?.uuid === artistId;
 
@@ -118,7 +120,10 @@ export function TrackList({
                   <div className="text-sm text-muted-foreground group-hover:opacity-0 transition-opacity">
                     {String(index + 1).padStart(2, "0")}
                   </div>
-                  <Play className="w-4 h-4 absolute opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  <Play
+                    className="w-4 h-4 absolute opacity-0 group-hover:opacity-100 transition-all duration-300"
+                    onClick={() => play(track.uuid)}
+                  />
                 </button>
 
                 <div className="flex-1 text-left">{track.title}</div>
