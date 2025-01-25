@@ -160,7 +160,7 @@ export function ProfileHeader({ userId }: ProfileHeaderProps) {
 
             {/* 링크 */}
             {(profileData.link1 || profileData.link2) && (
-              <div className="flex items-center justify-center gap-4 mt-4">
+              <div className="flex items-center justify-center gap-4">
                 {profileData.link1 && (
                   <a
                     href={profileData.link1}

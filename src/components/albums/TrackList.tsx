@@ -116,14 +116,11 @@ export function TrackList({
               </div>
 
               <div className="relative flex items-center gap-4 w-full">
-                <button className="w-8 flex items-center justify-center">
+                <button className="w-8 flex items-center justify-center" onClick={() => play(track.uuid)}>
                   <div className="text-sm text-muted-foreground group-hover:opacity-0 transition-opacity">
                     {String(index + 1).padStart(2, "0")}
                   </div>
-                  <Play
-                    className="w-4 h-4 absolute opacity-0 group-hover:opacity-100 transition-all duration-300"
-                    onClick={() => play(track.uuid)}
-                  />
+                  <Play className="w-4 h-4 absolute opacity-0 group-hover:opacity-100 transition-all duration-300" />
                 </button>
 
                 <div className="flex-1 text-left">{track.title}</div>
