@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 
 export interface Track {
@@ -52,14 +59,17 @@ const AudioContext = createContext<AudioContextType | null>(null);
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
   // 로컬 스토리지에서 상태 복원
-  const [savedState, setSavedState] = useLocalStorage<Partial<AudioState>>("audio-state", {
-    currentTrack: null,
-    queue: [],
-    queueHistory: [],
-    progress: 0,
-    repeat: "none",
-    shuffle: false,
-  });
+  const [savedState, setSavedState] = useLocalStorage<Partial<AudioState>>(
+    "audio-state",
+    {
+      currentTrack: null,
+      queue: [],
+      queueHistory: [],
+      progress: 0,
+      repeat: "none",
+      shuffle: false,
+    }
+  );
 
   const [savedVolume, setSavedVolume] = useLocalStorage("audio-volume", 1);
 
@@ -103,10 +113,13 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     if (state.repeat === "one") return state.currentTrack;
 
     const currentQueue = state.shuffle ? shuffledQueueRef.current : state.queue;
-    const currentIndex = currentQueue.findIndex(t => t.uuid === state.currentTrack?.uuid);
+    const currentIndex = currentQueue.findIndex(
+      (t) => t.uuid === state.currentTrack?.uuid
+    );
 
     if (currentIndex === -1) return currentQueue[0];
-    if (currentIndex < currentQueue.length - 1) return currentQueue[currentIndex + 1];
+    if (currentIndex < currentQueue.length - 1)
+      return currentQueue[currentIndex + 1];
     if (state.repeat === "all") return currentQueue[0];
     return null;
   }, [state.currentTrack, state.queue, state.repeat, state.shuffle]);
@@ -114,10 +127,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   // 큐 관리 함수들 추가
   const queueActions = {
     add: (track: Track) => {
-      setState(prev => {
+      setState((prev) => {
         const newQueue = [...prev.queue, track];
         if (prev.shuffle) {
-          const randomIndex = Math.floor(Math.random() * (shuffledQueueRef.current.length + 1));
+          const randomIndex = Math.floor(
+            Math.random() * (shuffledQueueRef.current.length + 1)
+          );
           shuffledQueueRef.current.splice(randomIndex, 0, track);
         } else {
           shuffledQueueRef.current = [...shuffledQueueRef.current, track];
@@ -126,20 +141,22 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       });
     },
     remove: (trackId: string) => {
-      setState(prev => {
-        const newQueue = prev.queue.filter(t => t.uuid !== trackId);
+      setState((prev) => {
+        const newQueue = prev.queue.filter((t) => t.uuid !== trackId);
         if (prev.shuffle) {
-          shuffledQueueRef.current = shuffledQueueRef.current.filter(t => t.uuid !== trackId);
+          shuffledQueueRef.current = shuffledQueueRef.current.filter(
+            (t) => t.uuid !== trackId
+          );
         }
         return { ...prev, queue: newQueue };
       });
     },
     clear: () => {
-      setState(prev => ({ ...prev, queue: [], queueHistory: [] }));
+      setState((prev) => ({ ...prev, queue: [], queueHistory: [] }));
       shuffledQueueRef.current = [];
     },
     reorder: (fromIndex: number, toIndex: number) => {
-      setState(prev => {
+      setState((prev) => {
         const newQueue = [...prev.queue];
         const [moved] = newQueue.splice(fromIndex, 1);
         newQueue.splice(toIndex, 0, moved);
@@ -180,16 +197,71 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const handleBeforeUnload = () => {
       if (audioRef.current) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          progress: audioRef.current?.currentTime || prev.progress
+          progress: audioRef.current?.currentTime || prev.progress,
         }));
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
+
+  // 재생 관련 함수들
+  const play = async (trackId: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${trackId}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch track");
+      const track = await response.json();
+
+      // 오디오 로드 실패 시 처리
+      if (audioRef.current) {
+        audioRef.current.onerror = () => {
+          setState((prev) => ({ ...prev, isPlaying: false }));
+          console.error("Failed to load audio");
+        };
+      }
+
+      // 트랙을 재생 큐에 추가 (이미 있는 경우 제외)
+      if (!state.queue.find((t) => t.uuid === track.uuid)) {
+        setState((prev) => ({
+          ...prev,
+          queue: [
+            ...prev.queue,
+            {
+              uuid: track.uuid,
+              title: track.title,
+              trackUrl: track.trackUrl,
+              duration: track.duration,
+              artUrl: track.artUrl,
+              lyrics: track.lyrics,
+              artist: {
+                uuid: track.artist.uuid,
+                name: track.artist.name,
+              },
+              album: {
+                uuid: track.album.uuid,
+                title: track.album.title,
+              },
+            },
+          ],
+        }));
+      }
+
+      setState((prev) => ({ ...prev, currentTrack: track, isPlaying: true }));
+
+      if (audioRef.current) {
+        audioRef.current.src = track.trackUrl;
+        audioRef.current.play();
+      }
+    } catch (error) {
+      console.error("Failed to play track:", error);
+      setState((prev) => ({ ...prev, isPlaying: false }));
+    }
+  };
 
   // handleTrackEnd를 useCallback으로 감싸기
   const handleTrackEnd = useCallback(() => {
@@ -197,59 +269,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     if (nextTrack) {
       play(nextTrack.uuid);
     } else {
-      setState(prev => ({ ...prev, isPlaying: false, progress: 0 }));
+      setState((prev) => ({ ...prev, isPlaying: false, progress: 0 }));
     }
-  }, [getNextTrack]);
-
-  // 재생 관련 함수들
-  const play = async (trackId: string) => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${trackId}`);
-      if (!response.ok) throw new Error('Failed to fetch track');
-      const track = await response.json();
-
-      // 오디오 로드 실패 시 처리
-      if (audioRef.current) {
-        audioRef.current.onerror = () => {
-          setState(prev => ({ ...prev, isPlaying: false }));
-          console.error('Failed to load audio');
-        };
-      }
-
-      // 트랙을 재생 큐에 추가 (이미 있는 경우 제외)
-      if (!state.queue.find(t => t.uuid === track.uuid)) {
-        setState(prev => ({
-          ...prev,
-          queue: [...prev.queue, {
-            uuid: track.uuid,
-            title: track.title,
-            trackUrl: track.trackUrl,
-            duration: track.duration,
-            artUrl: track.artUrl,
-            lyrics: track.lyrics,
-            artist: {
-              uuid: track.artist.uuid,
-              name: track.artist.name,
-            },
-            album: {
-              uuid: track.album.uuid,
-              title: track.album.title,
-            },
-          }],
-        }));
-      }
-
-      setState(prev => ({ ...prev, currentTrack: track, isPlaying: true }));
-      
-      if (audioRef.current) {
-        audioRef.current.src = track.trackUrl;
-        audioRef.current.play();
-      }
-    } catch (error) {
-      console.error('Failed to play track:', error);
-      setState(prev => ({ ...prev, isPlaying: false }));
-    }
-  };
+  }, [getNextTrack, play]);
 
   const next = () => {
     const nextTrack = getNextTrack();
@@ -257,14 +279,16 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   };
 
   const previous = () => {
-    const currentIndex = state.queue.findIndex(t => t.uuid === state.currentTrack?.uuid);
+    const currentIndex = state.queue.findIndex(
+      (t) => t.uuid === state.currentTrack?.uuid
+    );
     if (currentIndex > 0) {
       play(state.queue[currentIndex - 1].uuid);
     }
   };
 
   const toggleRepeat = () => {
-    setState(prev => {
+    setState((prev) => {
       const modes: ("none" | "one" | "all")[] = ["none", "one", "all"];
       const currentIndex = modes.indexOf(prev.repeat);
       const nextMode = modes[(currentIndex + 1) % modes.length];
@@ -273,10 +297,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleShuffle = () => {
-    setState(prev => {
+    setState((prev) => {
       const newShuffle = !prev.shuffle;
       if (newShuffle) {
-        const currentTrackIndex = prev.queue.findIndex(t => t.uuid === prev.currentTrack?.uuid);
+        const currentTrackIndex = prev.queue.findIndex(
+          (t) => t.uuid === prev.currentTrack?.uuid
+        );
         const remainingTracks = [...prev.queue];
         if (currentTrackIndex !== -1) {
           remainingTracks.splice(currentTrackIndex, 1);
@@ -284,7 +310,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         // 현재 트랙을 제외한 나머지 트랙들만 섞기
         for (let i = remainingTracks.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [remainingTracks[i], remainingTracks[j]] = [remainingTracks[j], remainingTracks[i]];
+          [remainingTracks[i], remainingTracks[j]] = [
+            remainingTracks[j],
+            remainingTracks[i],
+          ];
         }
         // 현재 트랙을 맨 앞에 추가
         if (prev.currentTrack) {
@@ -298,7 +327,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   // 볼륨 변경 시 로컬 스토리지에 저장
   const setVolume = (volume: number) => {
-    setState(prev => ({ ...prev, volume }));
+    setState((prev) => ({ ...prev, volume }));
     setSavedVolume(volume);
     if (audioRef.current) {
       audioRef.current.volume = volume;
@@ -309,7 +338,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const pause = () => {
     if (audioRef.current) {
       audioRef.current.pause();
-      setState(prev => ({ ...prev, isPlaying: false }));
+      setState((prev) => ({ ...prev, isPlaying: false }));
     }
   };
 
@@ -317,7 +346,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const resume = () => {
     if (audioRef.current) {
       audioRef.current.play();
-      setState(prev => ({ ...prev, isPlaying: true }));
+      setState((prev) => ({ ...prev, isPlaying: true }));
     }
   };
 
@@ -325,7 +354,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const seek = (time: number) => {
     if (audioRef.current) {
       audioRef.current.currentTime = time;
-      setState(prev => ({ ...prev, progress: time }));
+      setState((prev) => ({ ...prev, progress: time }));
     }
   };
 
@@ -334,10 +363,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     if (state.isPlaying) {
       const updateProgress = () => {
         if (audioRef.current) {
-          setState(prev => {
+          setState((prev) => {
             const newProgress = audioRef.current?.currentTime || 0;
             // 이전 progress와 같으면 업데이트 하지 않음
-            return newProgress !== prev.progress 
+            return newProgress !== prev.progress
               ? { ...prev, progress: newProgress }
               : prev;
           });
@@ -355,32 +384,35 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     audioRef.current.volume = savedVolume;
 
     const handleMetadataLoad = () => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        duration: audioRef.current?.duration || 0
+        duration: audioRef.current?.duration || 0,
       }));
     };
 
     const handleError = () => {
-      console.error('Audio playback error');
-      setState(prev => ({ ...prev, isPlaying: false }));
+      console.error("Audio playback error");
+      setState((prev) => ({ ...prev, isPlaying: false }));
     };
 
-    audioRef.current.addEventListener('loadedmetadata', handleMetadataLoad);
-    audioRef.current.addEventListener('error', handleError);
-    audioRef.current.addEventListener('ended', handleTrackEnd);
-    
+    audioRef.current.addEventListener("loadedmetadata", handleMetadataLoad);
+    audioRef.current.addEventListener("error", handleError);
+    audioRef.current.addEventListener("ended", handleTrackEnd);
+
     // 이전 재생 상태 복원
     if (state.currentTrack) {
       audioRef.current.src = state.currentTrack.trackUrl;
       audioRef.current.currentTime = state.progress;
     }
-    
+
     return () => {
       if (audioRef.current) {
-        audioRef.current.removeEventListener('loadedmetadata', handleMetadataLoad);
-        audioRef.current.removeEventListener('error', handleError);
-        audioRef.current.removeEventListener('ended', handleTrackEnd);
+        audioRef.current.removeEventListener(
+          "loadedmetadata",
+          handleMetadataLoad
+        );
+        audioRef.current.removeEventListener("error", handleError);
+        audioRef.current.removeEventListener("ended", handleTrackEnd);
         audioRef.current.pause();
         audioRef.current = null;
       }
@@ -414,4 +446,4 @@ export const useAudio = () => {
     throw new Error("useAudio must be used within an AudioProvider");
   }
   return context;
-}; 
+};
