@@ -10,6 +10,7 @@ import { UserProvider } from "@/contexts/auth/UserContext";
 import { Toaster } from "@/components/ui/toaster";
 import { PageAnimation } from "@/components/layout/PageAnimation";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { AudioProvider } from "@/contexts/audio/AudioContext";
 
 // getUser 함수 수정
 const getUser = async () => {
@@ -73,16 +74,18 @@ export default async function RootLayout({
         <ThemeProvider>
           <AuthProvider initialAuth={isAuthenticated}>
             <UserProvider initialUser={initialUser}>
-              <BackgroundImage />
-              <div className="relative min-h-screen w-full overflow-hidden">
-                <div className="fixed inset-0 backdrop-blur-[2px] bg-white/[0.01] dark:bg-transparent" />
-                <Sidebar />
-                <Header />
-                <main className="relative pt-24 pb-20 md:pb-0 pl-0 md:pl-24">
-                  <PageAnimation>{children}</PageAnimation>
-                </main>
-                <MobileNav />
-              </div>
+              <AudioProvider>
+                <BackgroundImage />
+                <div className="relative min-h-screen w-full overflow-hidden">
+                  <div className="fixed inset-0 backdrop-blur-[2px] bg-white/[0.01] dark:bg-transparent" />
+                  <Sidebar />
+                  <Header />
+                  <main className="relative pt-24 pb-20 md:pb-0 pl-0 md:pl-24">
+                    <PageAnimation>{children}</PageAnimation>
+                  </main>
+                  <MobileNav />
+                </div>
+              </AudioProvider>
             </UserProvider>
           </AuthProvider>
         </ThemeProvider>

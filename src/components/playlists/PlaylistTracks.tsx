@@ -7,7 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 import { useInView } from "react-intersection-observer";
-import { checkAuth } from "@/lib/auth";
 import { TrackActions } from "@/components/albums/TrackActions";
 import { useUser } from "@/contexts/auth/UserContext";
 import { useAuth } from "@/contexts/auth/AuthContext";
@@ -41,7 +40,11 @@ interface PlaylistTracksProps {
   artistId: string;
 }
 
-export function PlaylistTracks({ playlistId, initialTracks, artistId }: PlaylistTracksProps) {
+export function PlaylistTracks({
+  playlistId,
+  initialTracks,
+  artistId,
+}: PlaylistTracksProps) {
   const { isAuthenticated } = useAuth();
   const { user } = useUser();
   const isOwner = isAuthenticated && user?.uuid === artistId;
@@ -58,15 +61,9 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
     try {
       setIsLoading(true);
       const nextPage = page + 1;
-      const { accessToken } = await checkAuth();
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}?itemPage=${nextPage}&itemPageSize=10`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}?itemPage=${nextPage}&itemPageSize=10`
       );
 
       if (!response.ok) throw new Error("트랙 목록을 불러오는데 실패했습니다.");
@@ -79,10 +76,11 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
         return;
       }
 
-      setTracks(prev => [...prev, ...newTracks]);
+      setTracks((prev) => [...prev, ...newTracks]);
       setPage(nextPage);
     } catch (error) {
-      console.error("Failed to fetch more tracks:", error);
+      console.error("Error fetching more tracks:", error);
+      setHasMore(false);
     } finally {
       setIsLoading(false);
     }
@@ -93,6 +91,10 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
       fetchMoreTracks();
     }
   }, [inView, hasMore, isLoading, fetchMoreTracks]);
+
+  const handleTrackDelete = useCallback((deletedTrackId: string) => {
+    setTracks((prev) => prev.filter((t) => t.uuid !== deletedTrackId));
+  }, []);
 
   const hasNoTracks = !tracks || tracks.length === 0;
 
@@ -184,11 +186,7 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
                     isOwner={isOwner}
                     playlistId={playlistId}
                     playlistItemId={item.uuid}
-                    onDelete={(deletedTrackId) => {
-                      setTracks((prev) =>
-                        prev.filter((t) => t.uuid !== deletedTrackId)
-                      );
-                    }}
+                    onDelete={handleTrackDelete}
                   />
                 </div>
               </div>
@@ -208,4 +206,4 @@ export function PlaylistTracks({ playlistId, initialTracks, artistId }: Playlist
       )}
     </div>
   );
-} 
+}

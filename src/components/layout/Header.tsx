@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
+import { AudioPlayer } from "@/components/audio/AudioPlayer";
 import {
   Tooltip,
   TooltipContent,
@@ -21,7 +22,9 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-50">
       <div className="h-16">
         <div className="container mx-auto h-full px-2 pl-32 flex items-center justify-between gap-4">
-          <div className="flex-1" />
+          <div className="flex-1">
+            <AudioPlayer />
+          </div>
             
           {!isAuthenticated && (
             <TooltipProvider>

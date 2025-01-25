@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { checkAuth } from "@/lib/auth";
 import { useUser } from "@/contexts/auth/UserContext";
+import { useRouter } from "next/navigation";
 
 interface EditProfileInfoModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ interface ProfileForm {
 }
 
 export function EditProfileInfoModal({ isOpen, onClose }: EditProfileInfoModalProps) {
+  const router = useRouter();
   const { toast } = useToast();
   const { user, updateUser } = useUser();
   const [isLoading, setIsLoading] = useState(false);
@@ -124,6 +126,7 @@ export function EditProfileInfoModal({ isOpen, onClose }: EditProfileInfoModalPr
         description: "프로필이 성공적으로 수정되었습니다.",
       });
       
+      router.refresh();
       onClose();
     } catch (error) {
       toast({

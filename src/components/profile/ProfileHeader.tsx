@@ -123,8 +123,8 @@ export function ProfileHeader({ userId }: ProfileHeaderProps) {
           </div>
 
           {/* 이름과 설정 */}
-          <div className="text-center">
-            <div className="flex items-center gap-3 mb-2">
+          <div className="text-center flex flex-col items-center">
+            <div className="flex items-center gap-2 mb-2">
               <h1 className="text-2xl font-bold">{profileData.name}</h1>
               {isOwner && (
                 <DropdownMenu>
