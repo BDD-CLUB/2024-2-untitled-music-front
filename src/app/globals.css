@@ -80,3 +80,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* 슬라이더 스타일링 */
+.range-track {
+  @apply bg-white/20 rounded-full;
+  height: 100%;
+}
+
+.range-track-progress {
+  @apply bg-white/40 rounded-full;
+  height: 100%;
+}
+
+/* 슬라이더 호버 효과 */
+.slider-hover:hover .range-track-progress {
+  @apply bg-white/60;
+}

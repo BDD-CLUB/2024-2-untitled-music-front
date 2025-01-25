@@ -20,27 +20,20 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      <div className="h-16">
-        <div className="container mx-auto h-full px-2 pl-32 flex items-center justify-between gap-4">
-          <div className="flex-1">
-            <AudioPlayer />
-          </div>
-            
+      <div className="h-16 flex items-center justify-between px-4">
+        <div className="flex-1 max-w-[calc(100%-50px)]">
+          <AudioPlayer />
+        </div>
+        <div className="flex items-center justify-end w-[50px]">
           {!isAuthenticated && (
             <TooltipProvider>
-              <Tooltip delayDuration={0}>
+              <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    size="icon"
                     variant="ghost"
-                    className={cn(
-                      "w-10 h-10 rounded-2xl",
-                      "bg-white/5",
-                      "hover:bg-white/10",
-                      "hover:scale-105",
-                      "transition-all duration-300"
-                    )}
+                    size="icon"
                     onClick={() => setShowLoginModal(true)}
+                    className="hover:bg-white/10"
                   >
                     <LogIn className="w-5 h-5" />
                   </Button>

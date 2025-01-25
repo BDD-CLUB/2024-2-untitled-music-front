@@ -74,36 +74,42 @@ export function AudioPlayer() {
 
   return (
     <div className={cn(
-      "fixed top-0 left-1/2 -translate-x-1/2",  // 위치를 상단으로 변경
-      "w-[calc(100%-2rem)] max-w-7xl h-16",
+      "w-full h-16",
       "bg-background/30 dark:bg-black/20",
       "backdrop-blur-2xl",
       "border border-white/20",
       "rounded-3xl",
       "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
       "overflow-hidden",
+      "relative"
     )}>
-      {/* 프로그레스 바 - 상단에 위치 */}
-      <div className="absolute top-16 left-0 right-0 px-0">
+      {/* 프로그레스 바 위치 수정 */}
+      <div className="absolute top-0 left-0 right-0 px-0">
         <Slider
           value={[progress]}
           max={duration}
           step={1}
           onValueChange={([value]) => seek(value)}
           className={cn(
-            "h-1 rounded-none",
+            "h-1.5",
             "cursor-pointer",
-            "[&_[role=slider]]:h-0 [&_[role=slider]]:w-0",
-            "[&_[role=slider]]:opacity-0",
-            "hover:[&_[role=slider]]:opacity-100",
-            "hover:[&_[role=slider]]:h-4 hover:[&_[role=slider]]:w-4",
+            "hover:h-2 transition-all",
+            "[&_[role=slider]]:h-3 [&_[role=slider]]:w-3",
+            "[&_[role=slider]]:hover:h-4 [&_[role=slider]]:hover:w-4",
             "[&_[role=slider]]:transition-all",
-            "[&_[role=slider]]:duration-200"
+            "[&_[role=slider]]:border-2",
+            "[&_[role=slider]]:border-white",
+            "[&_[role=slider]]:bg-white",
+            "[&_[role=slider]]:shadow-md",
+            "[&_[data-disabled]]:opacity-50",
+            "[&_[data-orientation=horizontal]]:h-full",
+            "[&_.range-track]:bg-white/20",
+            "[&_.range-track-progress]:bg-white/40",
           )}
         />
       </div>
 
-      <div className="flex items-center justify-between h-full px-6">
+      <div className="flex items-center justify-between h-full px-6 pt-2">
         {/* 트랙 정보 */}
         <div className="flex items-center gap-4 flex-1 min-w-0">
           <div className={cn(
@@ -123,13 +129,13 @@ export function AudioPlayer() {
           <div className="flex-1 min-w-0">
             <Link 
               href={`/albums/${currentTrack.album.uuid}`}
-              className="text-xs font-medium hover:underline truncate block"
+              className="text-sm font-medium hover:underline truncate block"
             >
               {currentTrack.title}
             </Link>
             <Link
               href={`/profile/${currentTrack.artist.uuid}`}
-              className="text-xs text-muted-foreground hover:underline truncate block"
+              className="text-sm text-muted-foreground hover:underline truncate block"
             >
               {currentTrack.artist.name}
             </Link>
@@ -192,7 +198,21 @@ export function AudioPlayer() {
             max={100}
             step={1}
             onValueChange={([value]) => setVolume(value / 100)}
-            className="w-20"
+            className={cn(
+              "w-20",
+              "h-1.5",
+              "[&_[role=slider]]:h-3 [&_[role=slider]]:w-3",
+              "[&_[role=slider]]:hover:h-4 [&_[role=slider]]:hover:w-4",
+              "[&_[role=slider]]:transition-all",
+              "[&_[role=slider]]:border-2",
+              "[&_[role=slider]]:border-white",
+              "[&_[role=slider]]:bg-white",
+              "[&_[role=slider]]:shadow-md",
+              "[&_[data-disabled]]:opacity-50",
+              "[&_[data-orientation=horizontal]]:h-full",
+              "[&_.range-track]:bg-white/20",
+              "[&_.range-track-progress]:bg-white/40",
+            )}
           />
         </div>
       </div>

@@ -106,7 +106,7 @@ export function TrackSection() {
                 "flex items-center gap-4",
                 "rounded-xl",
                 "transition-all duration-300",
-                "hover:bg-white/5",
+                "hover:bg-black/5 dark:hover:bg-white/5 hover:opacity-75",
                 "group relative",
                 "text-left"
               )}
