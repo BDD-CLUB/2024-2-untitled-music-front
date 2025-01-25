@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { useState } from "react";
 import { useAuth } from "@/contexts/auth/AuthContext";
