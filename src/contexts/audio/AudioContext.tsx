@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
-interface Track {
+export interface Track {
   uuid: string;
   title: string;
   trackUrl: string;

@@ -24,45 +24,48 @@ export function AudioPlayer() {
   } = useAudio();
 
   // 키보드 이벤트 핸들러를 useCallback으로 분리
-  const handleKeyPress = useCallback((e: KeyboardEvent) => {
-    // 입력 필드에서는 키보드 이벤트를 무시
-    if (
-      document.activeElement?.tagName === "INPUT" ||
-      document.activeElement?.tagName === "TEXTAREA"
-    ) {
-      return;
-    }
+  const handleKeyPress = useCallback(
+    (e: KeyboardEvent) => {
+      // 입력 필드에서는 키보드 이벤트를 무시
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA"
+      ) {
+        return;
+      }
 
-    switch (e.code) {
-      case "Space": // 스페이스바: 재생/일시정지
-        e.preventDefault();
-        if (isPlaying) {
-          pause();
-        } else {
-          resume();
-        }
-        break;
-      case "ArrowLeft": // 왼쪽 화살표: 뒤로 5초
-        e.preventDefault();
-        seek(Math.max(0, progress - 5));
-        break;
-      case "ArrowRight": // 오른쪽 화살표: 앞으로 5초
-        e.preventDefault();
-        seek(Math.min(duration, progress + 5));
-        break;
-      case "ArrowUp": // 위쪽 화살표: 볼륨 증가
-        e.preventDefault();
-        setVolume(Math.min(1, volume + 0.1));
-        break;
-      case "ArrowDown": // 아래쪽 화살표: 볼륨 감소
-        e.preventDefault();
-        setVolume(Math.max(0, volume - 0.1));
-        break;
-      case "KeyM": // M키: 음소거 토글
-        setVolume(volume === 0 ? 1 : 0);
-        break;
-    }
-  }, [isPlaying, pause, resume, seek, setVolume, volume, progress, duration]);
+      switch (e.code) {
+        case "Space": // 스페이스바: 재생/일시정지
+          e.preventDefault();
+          if (isPlaying) {
+            pause();
+          } else {
+            resume();
+          }
+          break;
+        case "ArrowLeft": // 왼쪽 화살표: 뒤로 5초
+          e.preventDefault();
+          seek(Math.max(0, progress - 5));
+          break;
+        case "ArrowRight": // 오른쪽 화살표: 앞으로 5초
+          e.preventDefault();
+          seek(Math.min(duration, progress + 5));
+          break;
+        case "ArrowUp": // 위쪽 화살표: 볼륨 증가
+          e.preventDefault();
+          setVolume(Math.min(1, volume + 0.1));
+          break;
+        case "ArrowDown": // 아래쪽 화살표: 볼륨 감소
+          e.preventDefault();
+          setVolume(Math.max(0, volume - 0.1));
+          break;
+        case "KeyM": // M키: 음소거 토글
+          setVolume(volume === 0 ? 1 : 0);
+          break;
+      }
+    },
+    [isPlaying, pause, resume, seek, setVolume, volume, progress, duration]
+  );
 
   // 키보드 이벤트 리스너 등록
   useEffect(() => {
@@ -73,27 +76,31 @@ export function AudioPlayer() {
   if (!currentTrack) return null;
 
   return (
-    <div className={cn(
-      "w-full h-16",
-      "bg-background/30 dark:bg-black/20",
-      "backdrop-blur-2xl",
-      "border border-white/20",
-      "rounded-3xl",
-      "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
-      "overflow-hidden",
-      "relative"
-    )}>
+    <div
+      className={cn(
+        "w-full h-16",
+        "bg-background/30 dark:bg-black/20",
+        "backdrop-blur-2xl",
+        "border border-white/20",
+        "rounded-xl",
+        "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+        "overflow-hidden",
+        "relative"
+      )}
+    >
       {/* 컨텐츠 영역 */}
-      <div className="flex items-center justify-between h-full px-6">
+      <div className="flex items-center justify-between h-full px-6 py-2">
         {/* 트랙 정보 */}
         <div className="flex items-center gap-4 flex-1 min-w-0">
-          <div className={cn(
-            "relative w-10 h-10",
-            "rounded-xl overflow-hidden",
-            "bg-white/5",
-            "ring-1 ring-white/10",
-            "shadow-lg"
-          )}>
+          <div
+            className={cn(
+              "relative w-10 h-10",
+              "rounded-xl overflow-hidden",
+              "bg-white/5",
+              "ring-1 ring-white/10",
+              "shadow-lg"
+            )}
+          >
             <Image
               src={currentTrack.artUrl}
               alt={currentTrack.title}
@@ -102,7 +109,7 @@ export function AudioPlayer() {
             />
           </div>
           <div className="flex-1 min-w-0">
-            <Link 
+            <Link
               href={`/albums/${currentTrack.album.uuid}`}
               className="text-sm font-medium hover:underline truncate block"
             >
@@ -186,23 +193,22 @@ export function AudioPlayer() {
               "[&_[data-disabled]]:opacity-50",
               "[&_[data-orientation=horizontal]]:h-full",
               "[&_.range-track]:bg-white/20",
-              "[&_.range-track-progress]:bg-white/40",
+              "[&_.range-track-progress]:bg-white/40"
             )}
           />
         </div>
       </div>
 
       {/* 프로그레스 바를 하단으로 이동 */}
-      <div className="absolute bottom-0 left-0 right-0 px-0">
+      <div className="absolute bottom-0 left-0 right-0 px-0 py-2 mt-2">
         <Slider
           value={[progress]}
           max={duration}
           step={1}
           onValueChange={([value]) => seek(value)}
           className={cn(
-            "h-1.5",
+            "h-1",
             "cursor-pointer",
-            "hover:h-2 transition-all",
             "[&_[role=slider]]:h-3 [&_[role=slider]]:w-3",
             "[&_[role=slider]]:hover:h-4 [&_[role=slider]]:hover:w-4",
             "[&_[role=slider]]:transition-all",
@@ -213,10 +219,10 @@ export function AudioPlayer() {
             "[&_[data-disabled]]:opacity-50",
             "[&_[data-orientation=horizontal]]:h-full",
             "[&_.range-track]:bg-white/20",
-            "[&_.range-track-progress]:bg-white/40",
+            "[&_.range-track-progress]:bg-white/40"
           )}
         />
       </div>
     </div>
   );
-} 
+}
