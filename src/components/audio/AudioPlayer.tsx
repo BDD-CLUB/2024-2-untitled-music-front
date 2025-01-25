@@ -182,7 +182,7 @@ export function AudioPlayer() {
             onValueChange={([value]) => setVolume(value / 100)}
             className={cn(
               "w-20",
-              "h-1.5",
+              "h-1",
               "[&_[role=slider]]:h-3 [&_[role=slider]]:w-3",
               "[&_[role=slider]]:hover:h-4 [&_[role=slider]]:hover:w-4",
               "[&_[role=slider]]:transition-all",
@@ -200,7 +200,7 @@ export function AudioPlayer() {
       </div>
 
       {/* 프로그레스 바를 하단으로 이동 */}
-      <div className="absolute bottom-0 left-0 right-0 px-0 pt-2">
+      <div className="absolute bottom-0 left-0 right-0 px-4">
         <Slider
           value={[progress]}
           max={duration}
