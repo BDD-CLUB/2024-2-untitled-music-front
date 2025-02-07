@@ -64,6 +64,7 @@ export function TrackList({
       if (!response.ok) throw new Error("트랙 목록을 불러오는데 실패했습니다.");
 
       const data = await response.json();
+      console.log(data);
       const newTracks = data.trackResponseDtos;
 
       if (newTracks.length === 0) {
