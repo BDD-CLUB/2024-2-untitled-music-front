@@ -46,7 +46,7 @@ export function TrackList({
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
-  const { updateQueue, playFromQueue } = useAudio();
+  const { updateQueueAndPlay } = useAudio();
 
   const isOwner = isAuthenticated && user?.uuid === artistId;
 
@@ -91,8 +91,6 @@ export function TrackList({
   const hasNoTracks = !tracks || tracks.length === 0;
 
   const handlePlay = async (trackId: string) => {
-    console.log('0. handlePlay called with trackId:', trackId);
-    
     const queueTracks = tracks.map((track) => ({
       uuid: track.uuid,
       title: track.title,
@@ -109,22 +107,12 @@ export function TrackList({
       },
     }));
 
-    console.log('0.1. Mapped queue tracks:', {
-      length: queueTracks.length,
-      selectedTrack: queueTracks.find(t => t.uuid === trackId)?.title
-    });
-
     const selectedIndex = queueTracks.findIndex(
       (track) => track.uuid === trackId
     );
 
-    console.log('0.2. Selected index:', selectedIndex);
-
     try {
-      await updateQueue(queueTracks);
-      console.log('0.3. Queue updated');
-      await playFromQueue(selectedIndex);
-      console.log('0.4. PlayFromQueue completed');
+      await updateQueueAndPlay(queueTracks, selectedIndex);
     } catch (error) {
       console.error('Failed to play track:', error);
     }

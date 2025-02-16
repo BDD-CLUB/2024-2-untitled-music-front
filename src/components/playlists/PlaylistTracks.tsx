@@ -55,7 +55,7 @@ export function PlaylistTracks({
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
-  const { updateQueue, playFromQueue } = useAudio();
+  const { updateQueueAndPlay } = useAudio();
 
   const fetchMoreTracks = useCallback(async () => {
     if (isLoading || !hasMore) return;
@@ -116,8 +116,7 @@ export function PlaylistTracks({
     );
 
     try {
-      await updateQueue(queueTracks);
-      await playFromQueue(selectedIndex);
+      await updateQueueAndPlay(queueTracks, selectedIndex);
     } catch (error) {
       console.error('Failed to play track:', error);
     }

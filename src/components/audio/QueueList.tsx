@@ -56,7 +56,7 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
     transition,
     isDragging,
   } = useSortable({ id });
-  const { playFromQueue, removeFromQueue } = useAudio();
+  const { play, removeFromQueue } = useAudio();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -94,7 +94,7 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
         />
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
           <button
-            onClick={() => playFromQueue(Number(id))}
+            onClick={() => play(track.uuid)}
             className="text-white hover:scale-110 transition-transform"
           >
             <Play className="w-5 h-5 fill-current" />
@@ -138,7 +138,7 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
 };
 
 export function QueueList() {
-  const { queue, queueIndex, updateQueue, clearQueue } = useAudio();
+  const { queue, queueIndex, updateQueueAndPlay, clearQueue } = useAudio();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -154,7 +154,7 @@ export function QueueList() {
       const newIndex = Number(over?.id);
 
       const newQueue = arrayMove(queue, oldIndex, newIndex);
-      updateQueue(newQueue);
+      updateQueueAndPlay(newQueue, newIndex);
     }
   };
 

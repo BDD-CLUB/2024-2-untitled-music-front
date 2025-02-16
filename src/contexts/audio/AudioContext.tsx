@@ -49,15 +49,14 @@ interface AudioContextType extends AudioState {
   resume: () => void;
   setVolume: (volume: number) => void;
   seek: (time: number) => void;
-  queue: QueueTrack[];          // 재생 큐
-  queueIndex: number;           // 현재 재생 중인 트랙의 큐 인덱스
+  queue: QueueTrack[];
+  queueIndex: number;
   addToQueue: (track: QueueTrack) => void;
   removeFromQueue: (index: number) => void;
   clearQueue: () => void;
   playNext: () => void;
   playPrevious: () => void;
-  playFromQueue: (index: number) => Promise<void>;
-  updateQueue: (newQueue: QueueTrack[]) => Promise<void>;
+  updateQueueAndPlay: (newQueue: QueueTrack[], index: number) => Promise<void>;
 }
 
 const AudioContext = createContext<AudioContextType | null>(null);
@@ -252,54 +251,13 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, [queueIndex, queue, play]);
 
-  const updateQueue = useCallback(async (newQueue: QueueTrack[]) => {
-    console.log('1. updateQueue called with:', {
-      newQueueLength: newQueue.length,
-      firstTrack: newQueue[0]?.title,
-      lastTrack: newQueue[newQueue.length - 1]?.title
-    });
-    
-    return new Promise<void>((resolve) => {
+  const updateQueueAndPlay = useCallback(async (newQueue: QueueTrack[], index: number) => {
+    if (index >= 0 && index < newQueue.length) {
       setQueue(newQueue);
-      setState(prev => {
-        console.log('2. Queue state updated');
-        resolve();
-        return prev;
-      });
-    });
-  }, []);
-
-  const playFromQueue = useCallback(async (index: number) => {
-    const playFromNewQueue = async (currentQueue: QueueTrack[], idx: number) => {
-      console.log('3. playFromQueue called with index:', idx, {
-        currentQueueLength: currentQueue.length,
-        requestedTrack: currentQueue[idx]?.title
-      });
-
-      if (idx >= 0 && idx < currentQueue.length) {
-        setQueueIndex(idx);
-        try {
-          console.log('4. About to play track:', currentQueue[idx].title);
-          await play(currentQueue[idx].uuid);
-        } catch (error) {
-          console.error('Failed to play from queue:', error);
-        }
-      }
-    };
-
-    await playFromNewQueue(queue, index);
-  }, [queue, play]);
-
-  // 트랙 재생 완료 시 다음 트랙 자동 재생
-  useEffect(() => {
-    if (audioRef.current) {
-      const handleEnded = () => {
-        playNext();
-      };
-      audioRef.current.addEventListener('ended', handleEnded);
-      return () => audioRef.current?.removeEventListener('ended', handleEnded);
+      setQueueIndex(index);
+      await play(newQueue[index].uuid);
     }
-  }, [playNext]);
+  }, [play]);
 
   const value = {
     ...state,
@@ -315,8 +273,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     clearQueue,
     playNext,
     playPrevious,
-    playFromQueue,
-    updateQueue,
+    updateQueueAndPlay,
   };
 
   return <AudioContext.Provider value={value}>{children}</AudioContext.Provider>;

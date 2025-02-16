@@ -74,7 +74,7 @@ export function TrackActions({
     useState(false);
   const [isDeletingFromPlaylist, setIsDeletingFromPlaylist] = useState(false);
 
-  const { addToQueue, queue, queueIndex, updateQueue } = useAudio();
+  const { addToQueue, queue, queueIndex, updateQueueAndPlay } = useAudio();
 
   const [showTrackInfo, setShowTrackInfo] = useState(false);
 
@@ -190,7 +190,7 @@ export function TrackActions({
       addToQueue(queueTrack);
     } else {
       newQueue.splice(queueIndex + 1, 0, queueTrack);
-      updateQueue(newQueue);
+      updateQueueAndPlay(newQueue, queueIndex + 1);
     }
   };
 
@@ -206,7 +206,7 @@ export function TrackActions({
     };
     
     const newQueue = [...queue, queueTrack];
-    updateQueue(newQueue);
+    updateQueueAndPlay(newQueue, queueIndex + 1);
   };
 
   return (

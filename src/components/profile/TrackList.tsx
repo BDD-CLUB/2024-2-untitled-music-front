@@ -43,7 +43,7 @@ export function TrackList({ artistId }: TrackListProps) {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const { ref, inView } = useInView();
-  const { updateQueue, playFromQueue } = useAudio();
+  const { updateQueueAndPlay } = useAudio();
 
   const { user } = useUser();
   const isOwner = user?.uuid === artistId;
@@ -117,8 +117,7 @@ export function TrackList({ artistId }: TrackListProps) {
     );
 
     try {
-      await updateQueue(queueTracks);
-      await playFromQueue(selectedIndex);
+      await updateQueueAndPlay(queueTracks, selectedIndex);
     } catch (error) {
       console.error('Failed to play track:', error);
     }
