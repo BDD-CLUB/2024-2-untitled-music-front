@@ -27,7 +27,7 @@ export default function WatchPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* 모바일 토글 버튼 */}
-      <div className="flex justify-center mb-4 md:hidden">
+      <div className="flex justify-center mb-4 lg:hidden">
         <div className="inline-flex rounded-lg bg-black/5 dark:bg-white/5 p-1 border border-black/10 dark:border-white/10 backdrop-blur-sm shadow-sm">
           <button
             onClick={() => setShowQueue(false)}
