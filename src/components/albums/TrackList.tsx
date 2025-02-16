@@ -32,18 +32,6 @@ interface TrackListProps {
     artistImage: string;
   };
 }
-
-interface Track extends initialTrack {
-  artist: {
-    uuid: string;
-    name: string;
-  };
-  album: {
-    uuid: string;
-    title: string;
-  };
-}
-
 export function TrackList({
   tracks: initialTracks,
   albumId,
@@ -127,6 +115,18 @@ export function TrackList({
     playFromQueue(selectedIndex);
   };
 
+  const enrichTrack = (track: initialTrack) => ({
+    ...track,
+    artist: {
+      uuid: artistId,
+      name: artist.name
+    },
+    album: {
+      uuid: albumId,
+      title: album.title
+    }
+  });
+
   return (
     <div className="p-8 pt-4">
       {hasNoTracks ? (
@@ -172,7 +172,7 @@ export function TrackList({
 
                 <TrackActions
                   place="album"
-                  track={track as Track}
+                  track={enrichTrack(track)}
                   isOwner={isOwner}
                   onUpdate={(updatedTrack) => {
                     setTracks((prev) =>
