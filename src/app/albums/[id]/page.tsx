@@ -30,6 +30,8 @@ async function getAlbum(id: string) {
 export default async function AlbumPage({ params }: AlbumPageProps) {
   const album = await getAlbum(params.id);
 
+  console.log(album);
+
   return (
     <div className="container mx-auto px-4 py-4">
       <div

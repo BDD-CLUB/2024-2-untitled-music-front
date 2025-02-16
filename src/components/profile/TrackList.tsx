@@ -49,9 +49,6 @@ export function TrackList({ artistId }: TrackListProps) {
   const isOwner = user?.uuid === artistId;
 
   const fetchTracks = useCallback(async () => {
-    const currentIsLoading = isLoading;
-    if (currentIsLoading || !hasMore) return;
-
     try {
       setIsLoading(true);
       setError(null);
