@@ -1,4 +1,5 @@
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { ProfileStatus } from "@/components/profile/ProfileStatus";
 import { ProfileTabs } from "@/components/profile/ProfileTabs";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
         )}
       >
         <ProfileHeader userId={params.id} />
+        <ProfileStatus userId={params.id} />
         <ProfileTabs userId={params.id} />
       </div>
     </div>
