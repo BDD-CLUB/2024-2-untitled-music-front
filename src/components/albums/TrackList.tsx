@@ -90,7 +90,7 @@ export function TrackList({
 
   const hasNoTracks = !tracks || tracks.length === 0;
 
-  const handlePlay = (trackId: string) => {
+  const handlePlay = async (trackId: string) => {
     const queueTracks = tracks.map((track) => ({
       uuid: track.uuid,
       title: track.title,
@@ -111,8 +111,12 @@ export function TrackList({
       (track) => track.uuid === trackId
     );
 
-    updateQueue(queueTracks);
-    playFromQueue(selectedIndex);
+    try {
+      await updateQueue(queueTracks);
+      await playFromQueue(selectedIndex);
+    } catch (error) {
+      console.error('Failed to play track:', error);
+    }
   };
 
   const enrichTrack = (track: initialTrack) => ({

@@ -101,8 +101,8 @@ export function TrackList({ artistId }: TrackListProps) {
     }
   }, [fetchTracks, inView, hasMore, isLoading, page]);
 
-  const handlePlay = (trackId: string) => {
-    const queueTracks = tracks.map(track => ({
+  const handlePlay = async (trackId: string) => {
+    const queueTracks = tracks.map((track) => ({
       uuid: track.trackResponseDto.uuid,
       title: track.trackResponseDto.title,
       artUrl: track.trackResponseDto.artUrl,
@@ -112,10 +112,16 @@ export function TrackList({ artistId }: TrackListProps) {
       album: track.albumResponseDto,
     }));
 
-    const selectedIndex = queueTracks.findIndex(track => track.uuid === trackId);
-    
-    updateQueue(queueTracks);
-    playFromQueue(selectedIndex);
+    const selectedIndex = queueTracks.findIndex(
+      (track) => track.uuid === trackId
+    );
+
+    try {
+      await updateQueue(queueTracks);
+      await playFromQueue(selectedIndex);
+    } catch (error) {
+      console.error('Failed to play track:', error);
+    }
   };
 
   if (error) {

@@ -100,21 +100,27 @@ export function PlaylistTracks({
 
   const hasNoTracks = !tracks || tracks.length === 0;
 
-  const handlePlay = (trackId: string) => {
-    const queueTracks = tracks.map(item => ({
-      uuid: item.trackGetResponseDto.trackResponseDto.uuid,
-      title: item.trackGetResponseDto.trackResponseDto.title,
-      artUrl: item.trackGetResponseDto.trackResponseDto.artUrl,
-      trackUrl: item.trackGetResponseDto.trackResponseDto.trackUrl,
-      duration: item.trackGetResponseDto.trackResponseDto.duration,
-      artist: item.trackGetResponseDto.artistResponseDto,
-      album: item.trackGetResponseDto.albumResponseDto,
+  const handlePlay = async (trackId: string) => {
+    const queueTracks = tracks.map((track) => ({
+      uuid: track.uuid,
+      title: track.trackGetResponseDto.trackResponseDto.title,
+      artUrl: track.trackGetResponseDto.trackResponseDto.artUrl,
+      trackUrl: track.trackGetResponseDto.trackResponseDto.trackUrl,
+      duration: track.trackGetResponseDto.trackResponseDto.duration,
+      artist: track.trackGetResponseDto.artistResponseDto,
+      album: track.trackGetResponseDto.albumResponseDto,
     }));
 
-    const selectedIndex = queueTracks.findIndex(track => track.uuid === trackId);
-    
-    updateQueue(queueTracks);
-    playFromQueue(selectedIndex);
+    const selectedIndex = queueTracks.findIndex(
+      (track) => track.uuid === trackId
+    );
+
+    try {
+      await updateQueue(queueTracks);
+      await playFromQueue(selectedIndex);
+    } catch (error) {
+      console.error('Failed to play track:', error);
+    }
   };
 
   return (
