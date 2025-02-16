@@ -34,7 +34,7 @@ export function TrackSection() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { play, updateQueue } = useAudio();
+  const { updateQueue, playFromQueue } = useAudio();
 
   const fetchTracks = async () => {
     try {
@@ -84,7 +84,7 @@ export function TrackSection() {
     const selectedIndex = queueTracks.findIndex(track => track.uuid === trackId);
     
     updateQueue(queueTracks);
-    play(trackId);
+    playFromQueue(selectedIndex);
   };
 
   if (error) {

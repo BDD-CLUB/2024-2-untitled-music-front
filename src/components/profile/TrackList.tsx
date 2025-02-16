@@ -84,7 +84,7 @@ export function TrackList({ artistId }: TrackListProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [artistId, page, hasMore]);
+  }, [artistId, page, hasMore, isLoading]);
 
   // 초기 데이터 로드
   useEffect(() => {
