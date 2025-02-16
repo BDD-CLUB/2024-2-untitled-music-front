@@ -49,6 +49,8 @@ export function TrackList({ artistId }: TrackListProps) {
   const isOwner = user?.uuid === artistId;
 
   const fetchTracks = useCallback(async () => {
+    if (isLoading) return;
+
     try {
       setIsLoading(true);
       setError(null);
@@ -82,7 +84,7 @@ export function TrackList({ artistId }: TrackListProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [artistId, page, hasMore]);
+  }, [artistId, page]);
 
   // 초기 데이터 로드
   useEffect(() => {
