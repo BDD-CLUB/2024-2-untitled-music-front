@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { useAudio } from "@/contexts/audio/AudioContext";
 import { formatDuration } from "@/lib/format";
 import { Slider } from "@/components/ui/slider";
-import { Volume2, VolumeX, SkipBack, SkipForward, List } from "lucide-react";
+import { Volume2, VolumeX, SkipBack, SkipForward, List, Repeat, Repeat1, RepeatIcon, Shuffle } from "lucide-react";
 import { Play, Pause } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,7 +23,11 @@ export function AudioPlayer() {
     setVolume,
     seek,
     playNext,
-    playPrevious
+    playPrevious,
+    repeat,
+    shuffle,
+    toggleRepeat,
+    toggleShuffle,
   } = useAudio();
 
   const router = useRouter();
@@ -89,6 +93,18 @@ export function AudioPlayer() {
     }
   };
 
+  // 반복 모드에 따른 아이콘 렌더링
+  const renderRepeatIcon = () => {
+    switch (repeat) {
+      case 'one':
+        return <Repeat1 className="w-4 h-4" />;
+      case 'all':
+        return <RepeatIcon className="w-4 h-4" />;
+      default:
+        return <Repeat className="w-4 h-4" />;
+    }
+  };
+
   return (
     <div className={cn(
       "w-full h-16",
@@ -136,7 +152,16 @@ export function AudioPlayer() {
 
         {/* 데스크톱 전용 컨트롤 */}
         <div className="hidden md:flex items-center gap-4">
-          <button 
+          <button
+            onClick={toggleShuffle}
+            className={cn(
+              "text-muted-foreground hover:text-foreground transition-colors",
+              shuffle && "text-primary"
+            )}
+          >
+            <Shuffle className="w-4 h-4" />
+          </button>
+          <button
             onClick={playPrevious}
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
@@ -161,11 +186,21 @@ export function AudioPlayer() {
               <Play className="w-5 h-5 ml-0.5" />
             )}
           </button>
-          <button 
+          <button
             onClick={playNext}
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <SkipForward className="w-4 h-4" />
+          </button>
+          <button
+            onClick={toggleRepeat}
+            className={cn(
+              "text-muted-foreground hover:text-foreground transition-colors",
+              repeat !== 'none' && "text-primary",
+              "relative"
+            )}
+          >
+            {renderRepeatIcon()}
           </button>
         </div>
 
@@ -215,7 +250,7 @@ export function AudioPlayer() {
         </div>
 
         {/* 모바일 전용 컨트롤 */}
-        <div className="flex md:hidden items-center gap-4">
+        <div className="flex items-center gap-4">
           <button
             onClick={isPlaying ? pause : resume}
             className={cn(
@@ -225,7 +260,7 @@ export function AudioPlayer() {
               "hover:bg-white/20",
               "ring-1 ring-white/20",
               "transition-all duration-300",
-              "shadow-lg"
+              "shadow-lg md:hidden"
             )}
           >
             {isPlaying ? (

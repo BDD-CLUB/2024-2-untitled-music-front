@@ -32,6 +32,8 @@ interface AudioState {
   volume: number;
   progress: number;
   duration: number;
+  repeat: 'none' | 'all' | 'one';
+  shuffle: boolean;
 }
 
 interface QueueTrack {
@@ -66,6 +68,8 @@ interface AudioContextType extends AudioState {
   playPrevious: () => void;
   updateQueueAndPlay: (newQueue: QueueTrack[], index: number) => Promise<void>;
   updateQueueAndIndex: (newQueue: QueueTrack[], newIndex: number) => void;
+  toggleRepeat: () => void;
+  toggleShuffle: () => void;
 }
 
 const AudioContext = createContext<AudioContextType | null>(null);
@@ -77,6 +81,8 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     volume: 1,
     progress: 0,
     duration: 0,
+    repeat: 'none',
+    shuffle: false,
   });
 
   const [queue, setQueue] = useState<QueueTrack[]>([]);
@@ -84,6 +90,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout>();
+
+  // 셔플된 큐 인덱스 배열 저장
+  const [shuffledIndices, setShuffledIndices] = useState<number[]>([]);
 
   // 트랙 정보 가져오기
   const fetchTrack = useCallback(async (trackId: string) => {
@@ -200,17 +209,33 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
     // 트랙 종료 시 다음 트랙 재생
     const handleTrackEnd = () => {
-      if (queue.length > queueIndex + 1) {
-        // 다음 트랙이 있으면 재생
-        const nextTrack = queue[queueIndex + 1];
-        setQueueIndex(prev => prev + 1);
-        play(nextTrack.uuid);
+      if (state.repeat === 'one') {
+        // 한 곡 반복
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play();
+        }
       } else {
-        // 마지막 트랙이면 재생 중지
-        setState(prev => ({
-          ...prev,
-          isPlaying: false,
-        }));
+        const hasNextTrack = state.shuffle 
+          ? shuffledIndices.indexOf(queueIndex) < shuffledIndices.length - 1
+          : queueIndex < queue.length - 1;
+
+        if (hasNextTrack) {
+          // 다음 트랙 재생
+          const nextIndex = state.shuffle
+            ? shuffledIndices[shuffledIndices.indexOf(queueIndex) + 1]
+            : queueIndex + 1;
+          setQueueIndex(nextIndex);
+          play(queue[nextIndex].uuid);
+        } else if (state.repeat === 'all') {
+          // 전체 반복
+          const newIndex = state.shuffle ? shuffledIndices[0] : 0;
+          setQueueIndex(newIndex);
+          play(queue[newIndex].uuid);
+        } else {
+          // 재생 중지
+          setState(prev => ({ ...prev, isPlaying: false }));
+        }
       }
     };
 
@@ -225,7 +250,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         audioRef.current = null;
       }
     };
-  }, [queue, queueIndex, play]);
+  }, [state.repeat, state.shuffle, queue, queueIndex, shuffledIndices, play]);
 
   // 큐 관리 함수들
   const addToQueue = useCallback(
@@ -322,6 +347,33 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     setQueueIndex(newIndex);
   }, []);
 
+  // 반복 모드 토글
+  const toggleRepeat = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      repeat: prev.repeat === 'none' ? 'all' : prev.repeat === 'all' ? 'one' : 'none'
+    }));
+  }, []);
+
+  // 셔플 모드 토글
+  const toggleShuffle = useCallback(() => {
+    setState(prev => {
+      const newShuffle = !prev.shuffle;
+      if (newShuffle) {
+        // 셔플 활성화 시 현재 곡을 제외한 나머지 곡들을 셔플
+        const indices = Array.from({ length: queue.length }, (_, i) => i);
+        const currentIndex = indices.splice(queueIndex, 1)[0];
+        for (let i = indices.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+        indices.unshift(currentIndex); // 현재 곡을 맨 앞에 추가
+        setShuffledIndices(indices);
+      }
+      return { ...prev, shuffle: newShuffle };
+    });
+  }, [queue.length, queueIndex]);
+
   const value = {
     ...state,
     play,
@@ -339,6 +391,8 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     playPrevious,
     updateQueueAndPlay,
     updateQueueAndIndex,
+    toggleRepeat,
+    toggleShuffle,
   };
 
   return (

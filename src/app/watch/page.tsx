@@ -27,15 +27,15 @@ export default function WatchPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* 모바일 토글 버튼 */}
-      <div className="flex justify-center mb-6 md:hidden">
-        <div className="inline-flex rounded-lg bg-white/10 p-1">
+      <div className="flex justify-center mb-2 md:hidden">
+        <div className="inline-flex rounded-lg bg-white/5 p-1 border border-white/10 backdrop-blur-sm">
           <button
             onClick={() => setShowQueue(false)}
             className={cn(
-              "p-2 rounded-md transition-colors",
-              !showQueue
-                ? "bg-white/10 text-white"
-                : "text-white/60 hover:text-white"
+              "px-4 py-2 rounded-md text-sm font-medium transition-all",
+              !showQueue 
+                ? "bg-white/10 text-white shadow-md" 
+                : "text-white/80 hover:text-white hover:bg-white/5"
             )}
           >
             <ImageIcon className="w-5 h-5" />
@@ -43,10 +43,10 @@ export default function WatchPage() {
           <button
             onClick={() => setShowQueue(true)}
             className={cn(
-              "p-2 rounded-md transition-colors",
-              showQueue
-                ? "bg-white/10 text-white"
-                : "text-white/60 hover:text-white"
+              "px-4 py-2 rounded-md text-sm font-medium transition-all",
+              showQueue 
+                ? "bg-white/10 text-white shadow-md" 
+                : "text-white/80 hover:text-white hover:bg-white/5"
             )}
           >
             <List className="w-5 h-5" />
