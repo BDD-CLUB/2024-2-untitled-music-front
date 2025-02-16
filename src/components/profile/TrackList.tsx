@@ -3,13 +3,14 @@
 import { cn } from "@/lib/utils";
 import { Music, Loader2 } from "lucide-react";
 import { formatDuration } from "@/lib/format";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { TrackActions } from "@/components/albums/TrackActions";
 import { useAudio } from "@/contexts/audio/AudioContext";
 import { useUser } from "@/contexts/auth/UserContext";
 import { useInView } from "react-intersection-observer";
+import { useToast } from "@/hooks/use-toast";
 
 interface Track {
   trackResponseDto: {
@@ -48,7 +49,7 @@ export function TrackList({ artistId }: TrackListProps) {
   const { user } = useUser();
   const isOwner = user?.uuid === artistId;
 
-  const fetchTracks = async () => {
+  const fetchTracks = useCallback(async () => {
     if (isLoading || !hasMore) return;
 
     try {
@@ -84,7 +85,7 @@ export function TrackList({ artistId }: TrackListProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [artistId, page, hasMore]);
 
   // 초기 데이터 로드
   useEffect(() => {
@@ -92,14 +93,14 @@ export function TrackList({ artistId }: TrackListProps) {
     setPage(0);
     setHasMore(true);
     fetchTracks();
-  }, [artistId]);
+  }, [fetchTracks]);
 
   // 스크롤 감지하여 추가 데이터 로드
   useEffect(() => {
-    if (inView) {
+    if (inView && hasMore && !isLoading) {
       fetchTracks();
     }
-  }, [inView]);
+  }, [inView, hasMore, isLoading, fetchTracks]);
 
   if (error) {
     return (

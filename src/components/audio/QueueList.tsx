@@ -11,6 +11,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -124,12 +125,12 @@ export function QueueList() {
     })
   );
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
+    if (active.id !== over?.id) {
       const oldIndex = Number(active.id);
-      const newIndex = Number(over.id);
+      const newIndex = Number(over?.id);
 
       const newQueue = arrayMove(queue, oldIndex, newIndex);
       updateQueue(newQueue);

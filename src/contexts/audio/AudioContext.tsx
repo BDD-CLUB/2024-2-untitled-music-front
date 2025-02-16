@@ -78,7 +78,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const intervalRef = useRef<NodeJS.Timeout>();
 
   // 트랙 정보 가져오기
-  const fetchTrack = async (trackId: string) => {
+  const fetchTrack = useCallback(async (trackId: string) => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${trackId}`
@@ -107,10 +107,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       console.error("Failed to fetch track:", error);
       throw error;
     }
-  };
+  }, []);
 
   // 재생 시작
-  const play = async (trackId: string) => {
+  const play = useCallback(async (trackId: string) => {
     try {
       const track = await fetchTrack(trackId);
       
@@ -129,23 +129,23 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error("Failed to play track:", error);
     }
-  };
+  }, [fetchTrack, state.volume]);
 
   // 일시 정지
-  const pause = () => {
+  const pause = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
       setState(prev => ({ ...prev, isPlaying: false }));
     }
-  };
+  }, []);
 
   // 재생 재개
-  const resume = () => {
+  const resume = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.play();
       setState(prev => ({ ...prev, isPlaying: true }));
     }
-  };
+  }, []);
 
   // 볼륨 조절
   const setVolume = (volume: number) => {
@@ -198,7 +198,6 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   // 큐 관리 함수들
   const addToQueue = useCallback((track: QueueTrack) => {
     setQueue(prev => {
-      // 큐가 비어있으면 바로 재생 시작
       if (prev.length === 0) {
         play(track.uuid);
       }
@@ -211,7 +210,6 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       const newQueue = [...prev];
       newQueue.splice(index, 1);
       
-      // 현재 재생 중인 트랙이 제거되면 다음 트랙 재생
       if (index === queueIndex && newQueue.length > 0) {
         const nextTrack = newQueue[index] || newQueue[0];
         play(nextTrack.uuid);
