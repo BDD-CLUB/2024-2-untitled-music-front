@@ -9,7 +9,8 @@ import { Play, Pause } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+
 export function AudioPlayer() {
   const {
     currentTrack,
@@ -26,6 +27,7 @@ export function AudioPlayer() {
   } = useAudio();
 
   const router = useRouter();
+  const pathname = usePathname();
 
   // 키보드 이벤트 핸들러를 useCallback으로 분리
   const handleKeyPress = useCallback(
@@ -80,7 +82,11 @@ export function AudioPlayer() {
   if (!currentTrack) return null;
 
   const handleNavigateToWatch = () => {
-    router.push('/watch');
+    if(pathname === '/watch') {
+      router.back();
+    } else {
+      router.push('/watch');
+    }
   };
 
   return (
