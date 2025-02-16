@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 
 export interface Track {
   uuid: string;
@@ -51,6 +58,7 @@ interface AudioContextType extends AudioState {
   seek: (time: number) => void;
   queue: QueueTrack[];
   queueIndex: number;
+  setQueue: (newQueue: QueueTrack[]) => void;
   addToQueue: (track: QueueTrack) => void;
   removeFromQueue: (index: number) => void;
   clearQueue: () => void;
@@ -82,9 +90,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/${trackId}`
       );
-      
+
       if (!response.ok) throw new Error("트랙을 불러오는데 실패했습니다.");
-      
+
       const data = await response.json();
       return {
         uuid: data.trackResponseDto.uuid,
@@ -109,35 +117,35 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // 재생 시작
-  const play = useCallback(async (trackId: string) => {
-    console.log('5. play called with trackId:', trackId);
-    try {
-      const track = await fetchTrack(trackId);
-      console.log('6. Track fetched:', track.title);
-      
-      if (audioRef.current) {
-        audioRef.current.src = track.trackUrl;
-        audioRef.current.volume = state.volume;
-        await audioRef.current.play();
-        
-        console.log('7. Audio started playing');
-        setState(prev => ({
-          ...prev,
-          currentTrack: track,
-          isPlaying: true,
-          duration: track.duration,
-        }));
+  const play = useCallback(
+    async (trackId: string) => {
+      try {
+        const track = await fetchTrack(trackId);
+
+        if (audioRef.current) {
+          audioRef.current.src = track.trackUrl;
+          audioRef.current.volume = state.volume;
+          await audioRef.current.play();
+
+          setState((prev) => ({
+            ...prev,
+            currentTrack: track,
+            isPlaying: true,
+            duration: track.duration,
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to play track:", error);
       }
-    } catch (error) {
-      console.error("Failed to play track:", error);
-    }
-  }, [fetchTrack, state.volume]);
+    },
+    [fetchTrack, state.volume]
+  );
 
   // 일시 정지
   const pause = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
-      setState(prev => ({ ...prev, isPlaying: false }));
+      setState((prev) => ({ ...prev, isPlaying: false }));
     }
   }, []);
 
@@ -145,7 +153,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const resume = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.play();
-      setState(prev => ({ ...prev, isPlaying: true }));
+      setState((prev) => ({ ...prev, isPlaying: true }));
     }
   }, []);
 
@@ -153,7 +161,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const setVolume = (volume: number) => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
-      setState(prev => ({ ...prev, volume }));
+      setState((prev) => ({ ...prev, volume }));
     }
   };
 
@@ -161,7 +169,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const seek = (time: number) => {
     if (audioRef.current) {
       audioRef.current.currentTime = time;
-      setState(prev => ({ ...prev, progress: time }));
+      setState((prev) => ({ ...prev, progress: time }));
     }
   };
 
@@ -170,7 +178,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     if (state.isPlaying) {
       intervalRef.current = setInterval(() => {
         if (audioRef.current) {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             progress: audioRef.current?.currentTime || 0,
           }));
@@ -188,7 +196,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   // 오디오 엘리먼트 생성
   useEffect(() => {
     audioRef.current = new Audio();
-    
+
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -198,47 +206,53 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // 큐 관리 함수들
-  const addToQueue = useCallback((track: QueueTrack) => {
-    setQueue(prev => {
-      if (prev.length === 0) {
-        play(track.uuid);
-      }
-      return [...prev, track];
-    });
-  }, [play]);
+  const addToQueue = useCallback(
+    (track: QueueTrack) => {
+      setQueue((prev) => {
+        if (prev.length === 0) {
+          play(track.uuid);
+        }
+        return [...prev, track];
+      });
+    },
+    [play]
+  );
 
-  const removeFromQueue = useCallback((index: number) => {
-    setQueue(prev => {
-      const newQueue = [...prev];
-      newQueue.splice(index, 1);
-      
-      if (index === queueIndex && newQueue.length > 0) {
-        const nextTrack = newQueue[index] || newQueue[0];
-        play(nextTrack.uuid);
-      }
-      
-      return newQueue;
-    });
-  }, [queueIndex, play]);
+  const removeFromQueue = useCallback(
+    (index: number) => {
+      setQueue((prev) => {
+        const newQueue = [...prev];
+        newQueue.splice(index, 1);
+
+        if (index === queueIndex && newQueue.length > 0) {
+          const nextTrack = newQueue[index] || newQueue[0];
+          play(nextTrack.uuid);
+        }
+
+        return newQueue;
+      });
+    },
+    [queueIndex, play]
+  );
 
   const clearQueue = useCallback(() => {
     setQueue([]);
     setQueueIndex(0);
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       currentTrack: null,
       isPlaying: false,
     }));
     if (audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.src = '';
+      audioRef.current.src = "";
     }
   }, []);
 
   const playNext = useCallback(() => {
     if (queue.length > queueIndex + 1) {
       const nextTrack = queue[queueIndex + 1];
-      setQueueIndex(prev => prev + 1);
+      setQueueIndex((prev) => prev + 1);
       play(nextTrack.uuid);
     }
   }, [queue, queueIndex, play]);
@@ -246,18 +260,21 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const playPrevious = useCallback(() => {
     if (queueIndex > 0) {
       const prevTrack = queue[queueIndex - 1];
-      setQueueIndex(prev => prev - 1);
+      setQueueIndex((prev) => prev - 1);
       play(prevTrack.uuid);
     }
   }, [queueIndex, queue, play]);
 
-  const updateQueueAndPlay = useCallback(async (newQueue: QueueTrack[], index: number) => {
-    if (index >= 0 && index < newQueue.length) {
-      setQueue(newQueue);
-      setQueueIndex(index);
-      await play(newQueue[index].uuid);
-    }
-  }, [play]);
+  const updateQueueAndPlay = useCallback(
+    async (newQueue: QueueTrack[], index: number) => {
+      if (index >= 0 && index < newQueue.length) {
+        setQueue(newQueue);
+        setQueueIndex(index);
+        await play(newQueue[index].uuid);
+      }
+    },
+    [play]
+  );
 
   const value = {
     ...state,
@@ -268,6 +285,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     seek,
     queue,
     queueIndex,
+    setQueue,
     addToQueue,
     removeFromQueue,
     clearQueue,
@@ -276,7 +294,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     updateQueueAndPlay,
   };
 
-  return <AudioContext.Provider value={value}>{children}</AudioContext.Provider>;
+  return (
+    <AudioContext.Provider value={value}>{children}</AudioContext.Provider>
+  );
 }
 
 export const useAudio = () => {
@@ -285,4 +305,4 @@ export const useAudio = () => {
     throw new Error("useAudio must be used within an AudioProvider");
   }
   return context;
-}; 
+};

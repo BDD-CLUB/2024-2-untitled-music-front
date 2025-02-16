@@ -74,7 +74,7 @@ export function TrackActions({
     useState(false);
   const [isDeletingFromPlaylist, setIsDeletingFromPlaylist] = useState(false);
 
-  const { addToQueue, queue, queueIndex, updateQueueAndPlay } = useAudio();
+  const { queue, queueIndex, updateQueueAndPlay, setQueue } = useAudio();
 
   const [showTrackInfo, setShowTrackInfo] = useState(false);
 
@@ -171,7 +171,8 @@ export function TrackActions({
       artist: track.artist,
       album: track.album,
     };
-    addToQueue(queueTrack);
+
+    updateQueueAndPlay([queueTrack], 0);
   };
 
   const handlePlayNext = () => {
@@ -187,10 +188,10 @@ export function TrackActions({
 
     const newQueue = [...queue];
     if (queue.length === 0) {
-      addToQueue(queueTrack);
+      updateQueueAndPlay([queueTrack], 0);
     } else {
       newQueue.splice(queueIndex + 1, 0, queueTrack);
-      updateQueueAndPlay(newQueue, queueIndex + 1);
+      setQueue(newQueue);
     }
   };
 
@@ -205,8 +206,7 @@ export function TrackActions({
       album: track.album,
     };
     
-    const newQueue = [...queue, queueTrack];
-    updateQueueAndPlay(newQueue, queueIndex + 1);
+    setQueue([...queue, queueTrack]);
   };
 
   return (

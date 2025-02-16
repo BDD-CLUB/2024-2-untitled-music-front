@@ -7,11 +7,13 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { QueueList } from "@/components/audio/QueueList";
+import { List, Image as ImageIcon } from "lucide-react";
 
 export default function WatchPage() {
   const { currentTrack } = useAudio();
   const router = useRouter();
   const [showLyrics, setShowLyrics] = useState(false);
+  const [showQueue, setShowQueue] = useState(false);
 
   // 현재 재생 중인 트랙이 없으면 홈으로 리다이렉트
   useEffect(() => {
@@ -24,9 +26,12 @@ export default function WatchPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex gap-6">
-        {/* 좌측: 현재 트랙 정보 (2/3) */}
-        <div className="flex-[2] min-w-0">
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* 좌측: 현재 트랙 정보 */}
+        <div className={cn(
+          "flex-[2] min-w-0",
+          showQueue ? "hidden lg:block" : "block"
+        )}>
           <div
             className={cn(
               "rounded-3xl",
@@ -83,22 +88,38 @@ export default function WatchPage() {
                 </div>
               </div>
             </div>
+
+            {/* 모바일 재생목록 토글 버튼 추가 */}
+            <button 
+              onClick={() => setShowQueue(true)}
+              className="lg:hidden absolute bottom-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20"
+            >
+              <List className="w-6 h-6" />
+            </button>
           </div>
         </div>
 
-        {/* 우측: 재생 목록 (1/3) */}
-        <div className="flex-1 min-w-0">
-          <div
-            className={cn(
-              "rounded-3xl",
-              "bg-white/10 dark:bg-black/10",
-              "backdrop-blur-2xl",
-              "border border-white/20 dark:border-white/10",
-              "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
-              "overflow-hidden",
-              "h-full"
-            )}
-          >
+        {/* 우측: 재생 목록 */}
+        <div className={cn(
+          "flex-1 min-w-0",
+          showQueue ? "block" : "hidden lg:block"
+        )}>
+          <div className={cn(
+            "rounded-3xl",
+            "bg-white/10 dark:bg-black/10",
+            "backdrop-blur-2xl",
+            "border border-white/20 dark:border-white/10",
+            "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+            "overflow-hidden",
+            "h-full"
+          )}>
+            {/* 모바일 아트워크 보기 토글 버튼 추가 */}
+            <button 
+              onClick={() => setShowQueue(false)}
+              className="lg:hidden p-4 w-full flex items-center gap-2 text-muted-foreground hover:bg-white/5"
+            >
+              <ImageIcon className="w-5 h-5" />
+            </button>
             <div className="p-6">
               <QueueList />
             </div>

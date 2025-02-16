@@ -56,11 +56,18 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
     transition,
     isDragging,
   } = useSortable({ id });
-  const { play, removeFromQueue } = useAudio();
+  const { removeFromQueue, updateQueueAndPlay, queue } = useAudio();
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+  };
+
+  const handlePlay = () => {
+    const index = queue.findIndex(t => t.uuid === track.uuid);
+    if (index !== -1) {
+      updateQueueAndPlay(queue, index);
+    }
   };
 
   return (
@@ -94,7 +101,7 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
         />
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
           <button
-            onClick={() => play(track.uuid)}
+            onClick={handlePlay}
             className="text-white hover:scale-110 transition-transform"
           >
             <Play className="w-5 h-5 fill-current" />
@@ -138,7 +145,7 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
 };
 
 export function QueueList() {
-  const { queue, queueIndex, updateQueueAndPlay, clearQueue } = useAudio();
+  const { queue, queueIndex, setQueue } = useAudio();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -148,14 +155,13 @@ export function QueueList() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-    if (active.id !== over?.id) {
-      const oldIndex = Number(active.id);
-      const newIndex = Number(over?.id);
+    const oldIndex = Number(active.id);
+    const newIndex = Number(over.id);
 
-      const newQueue = arrayMove(queue, oldIndex, newIndex);
-      updateQueueAndPlay(newQueue, newIndex);
-    }
+    const newQueue = arrayMove(queue, oldIndex, newIndex);
+    setQueue(newQueue);
   };
 
   if (queue.length === 0) {
@@ -171,7 +177,7 @@ export function QueueList() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">재생 목록</h2>
         <button
-          onClick={clearQueue}
+          onClick={() => setQueue([])}
           className="text-muted-foreground hover:text-destructive transition-colors"
           title="재생 목록 비우기"
         >
