@@ -31,7 +31,7 @@ interface Track {
 }
 
 interface TrackActionsProps {
-  place: "main" | "album" | "playlist";
+  place: "main" | "album" | "playlist" | "profile";
   track: Track;
   isOwner?: boolean;
   playlistId?: string;
@@ -158,6 +158,7 @@ export function TrackActions({
             <Plus className="w-4 h-4 mr-2" />
             플레이리스트에 추가
           </DropdownMenuItem>
+          
           {place === "playlist" && isOwner && playlistId && (
             <DropdownMenuItem
               className="text-red-500 focus:text-red-500"
@@ -168,7 +169,7 @@ export function TrackActions({
             </DropdownMenuItem>
           )}
 
-          {place === "album" && isOwner && (
+          {place === "album" || place === "profile" && isOwner && (
             <>
               <DropdownMenuItem onClick={() => setShowEditModal(true)}>
                 <Edit2 className="w-4 h-4 mr-2" />

@@ -2,11 +2,12 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Disc3, ListMusic, Loader2 } from "lucide-react";
+import { Disc3, ListMusic, Music, Loader2 } from "lucide-react";
 import { AlbumList } from "./AlbumList";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { PlaylistList } from "./PlaylistList";
+import { TrackList } from "./TrackList";
 
 interface ProfileTabsProps {
   userId: string;
@@ -71,6 +72,20 @@ export function ProfileTabs({ userId }: ProfileTabsProps) {
           <span>앨범</span>
         </TabsTrigger>
         <TabsTrigger
+          value="tracks"
+          className={cn(
+            "h-8 px-6",
+            "data-[state=active]:bg-white/10",
+            "data-[state=active]:backdrop-blur-xl",
+            "rounded-xl",
+            "transition-all duration-300",
+            "gap-2"
+          )}
+        >
+          <Music className="w-4 h-4" />
+          <span>트랙</span>
+        </TabsTrigger>
+        <TabsTrigger
           value="playlists"
           className={cn(
             "h-8 px-6",
@@ -96,8 +111,18 @@ export function ProfileTabs({ userId }: ProfileTabsProps) {
         )}
       </TabsContent>
 
+      <TabsContent value="tracks" className="mt-8">
+        {isLoading ? (
+          <div className="flex justify-center py-16">
+            <div className="animate-spin"><Loader2 className="w-4 h-4" /></div>
+          </div>
+        ) : (
+          <TrackList artistId={userId} />
+        )}
+      </TabsContent>
+
       <TabsContent value="playlists" className="mt-8">
-      {isLoading ? (
+        {isLoading ? (
           <div className="flex justify-center py-16">
             <div className="animate-spin"><Loader2 className="w-4 h-4" /></div>
           </div>
