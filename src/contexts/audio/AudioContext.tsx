@@ -111,14 +111,17 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   // 재생 시작
   const play = useCallback(async (trackId: string) => {
+    console.log('5. play called with trackId:', trackId);
     try {
       const track = await fetchTrack(trackId);
+      console.log('6. Track fetched:', track.title);
       
       if (audioRef.current) {
         audioRef.current.src = track.trackUrl;
         audioRef.current.volume = state.volume;
         await audioRef.current.play();
         
+        console.log('7. Audio started playing');
         setState(prev => ({
           ...prev,
           currentTrack: track,
@@ -250,9 +253,15 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }, [queueIndex, queue, play]);
 
   const playFromQueue = useCallback(async (index: number) => {
+    console.log('3. playFromQueue called with index:', index, {
+      currentQueueLength: queue.length,
+      requestedTrack: queue[index]?.title
+    });
+
     if (index >= 0 && index < queue.length) {
       setQueueIndex(index);
       try {
+        console.log('4. About to play track:', queue[index].title);
         await play(queue[index].uuid);
       } catch (error) {
         console.error('Failed to play from queue:', error);
@@ -272,7 +281,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }, [playNext]);
 
   const updateQueue = useCallback(async (newQueue: QueueTrack[]) => {
+    console.log('1. updateQueue called with:', {
+      newQueueLength: newQueue.length,
+      firstTrack: newQueue[0]?.title,
+      lastTrack: newQueue[newQueue.length - 1]?.title
+    });
+    
     setQueue(newQueue);
+    console.log('2. Queue state updated');
     return Promise.resolve();
   }, []);
 
