@@ -9,6 +9,8 @@ import Image from "next/image";
 import { TrackActions } from "@/components/albums/TrackActions";
 import { useAudio } from "@/contexts/audio/AudioContext";
 import { useUser } from "@/contexts/auth/UserContext";
+import { useInView } from "react-intersection-observer";
+
 interface Track {
   trackResponseDto: {
     uuid: string;
@@ -38,56 +40,71 @@ export function TrackList({ artistId }: TrackListProps) {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const { ref, inView } = useInView();
   const { play } = useAudio();
 
   const { user } = useUser();
   const isOwner = user?.uuid === artistId;
 
-  useEffect(() => {
-    const fetchTracks = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
+  const fetchTracks = async () => {
+    if (isLoading || !hasMore) return;
 
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${artistId}/tracks?page=0&pageSize=10&sortBy=createdAt&direction=desc`,
-          {
-            credentials: "include",
-          }
-        );
+    try {
+      setIsLoading(true);
+      setError(null);
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${artistId}/tracks?page=${page}&pageSize=10&sortBy=createdAt&direction=desc`,
+        {
+          credentials: "include",
         }
+      );
 
-        const data = await response.json();
-        setTracks(data);
-      } catch (error) {
-        setError(
-          error instanceof Error
-            ? error.message
-            : "트랙 목록을 불러오는데 실패했습니다."
-        );
-      } finally {
-        setIsLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
 
+      const data = await response.json();
+      
+      if (data.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      setTracks(prev => [...prev, ...data]);
+      setPage(prev => prev + 1);
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "트랙 목록을 불러오는데 실패했습니다."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 초기 데이터 로드
+  useEffect(() => {
+    setTracks([]);
+    setPage(0);
+    setHasMore(true);
     fetchTracks();
   }, [artistId]);
+
+  // 스크롤 감지하여 추가 데이터 로드
+  useEffect(() => {
+    if (inView) {
+      fetchTracks();
+    }
+  }, [inView]);
 
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-8">
         <p className="text-red-500 text-center">{error}</p>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin" />
       </div>
     );
   }
@@ -163,6 +180,17 @@ export function TrackList({ artistId }: TrackListProps) {
           </div>
         </button>
       ))}
+
+      {/* 무한 스크롤 감지 요소 */}
+      {hasMore && (
+        <div ref={ref} className="py-4 flex justify-center">
+          {isLoading && (
+            <div className="text-sm text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
