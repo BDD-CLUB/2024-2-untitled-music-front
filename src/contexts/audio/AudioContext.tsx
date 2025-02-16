@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 
 export interface Track {
   uuid: string;
@@ -27,12 +27,37 @@ interface AudioState {
   duration: number;
 }
 
+interface QueueTrack {
+  uuid: string;
+  title: string;
+  artUrl: string;
+  trackUrl: string;
+  duration: number;
+  artist: {
+    uuid: string;
+    name: string;
+  };
+  album: {
+    uuid: string;
+    title: string;
+  };
+}
+
 interface AudioContextType extends AudioState {
   play: (trackId: string) => Promise<void>;
   pause: () => void;
   resume: () => void;
   setVolume: (volume: number) => void;
   seek: (time: number) => void;
+  queue: QueueTrack[];          // 재생 큐
+  queueIndex: number;           // 현재 재생 중인 트랙의 큐 인덱스
+  addToQueue: (track: QueueTrack) => void;
+  removeFromQueue: (index: number) => void;
+  clearQueue: () => void;
+  playNext: () => void;
+  playPrevious: () => void;
+  playFromQueue: (index: number) => void;
+  updateQueue: (newQueue: QueueTrack[]) => void;
 }
 
 const AudioContext = createContext<AudioContextType | null>(null);
@@ -45,6 +70,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     progress: 0,
     duration: 0,
   });
+
+  const [queue, setQueue] = useState<QueueTrack[]>([]);
+  const [queueIndex, setQueueIndex] = useState(0);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout>();
@@ -167,20 +195,95 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  return (
-    <AudioContext.Provider
-      value={{
-        ...state,
-        play,
-        pause,
-        resume,
-        setVolume,
-        seek,
-      }}
-    >
-      {children}
-    </AudioContext.Provider>
-  );
+  // 큐 관리 함수들
+  const addToQueue = useCallback((track: QueueTrack) => {
+    setQueue(prev => {
+      // 큐가 비어있으면 바로 재생 시작
+      if (prev.length === 0) {
+        play(track.uuid);
+      }
+      return [...prev, track];
+    });
+  }, [play]);
+
+  const removeFromQueue = useCallback((index: number) => {
+    setQueue(prev => {
+      const newQueue = [...prev];
+      newQueue.splice(index, 1);
+      
+      // 현재 재생 중인 트랙이 제거되면 다음 트랙 재생
+      if (index === queueIndex && newQueue.length > 0) {
+        const nextTrack = newQueue[index] || newQueue[0];
+        play(nextTrack.uuid);
+      }
+      
+      return newQueue;
+    });
+  }, [queueIndex, play]);
+
+  const clearQueue = useCallback(() => {
+    setQueue([]);
+    setQueueIndex(0);
+    pause();
+  }, [pause]);
+
+  const playNext = useCallback(() => {
+    if (queue.length > queueIndex + 1) {
+      const nextTrack = queue[queueIndex + 1];
+      setQueueIndex(prev => prev + 1);
+      play(nextTrack.uuid);
+    }
+  }, [queue, queueIndex, play]);
+
+  const playPrevious = useCallback(() => {
+    if (queueIndex > 0) {
+      const prevTrack = queue[queueIndex - 1];
+      setQueueIndex(prev => prev - 1);
+      play(prevTrack.uuid);
+    }
+  }, [queueIndex, queue, play]);
+
+  const playFromQueue = useCallback((index: number) => {
+    if (index >= 0 && index < queue.length) {
+      setQueueIndex(index);
+      play(queue[index].uuid);
+    }
+  }, [queue, play]);
+
+  // 트랙 재생 완료 시 다음 트랙 자동 재생
+  useEffect(() => {
+    if (audioRef.current) {
+      const handleEnded = () => {
+        playNext();
+      };
+      audioRef.current.addEventListener('ended', handleEnded);
+      return () => audioRef.current?.removeEventListener('ended', handleEnded);
+    }
+  }, [playNext]);
+
+  const updateQueue = useCallback((newQueue: QueueTrack[]) => {
+    setQueue(newQueue);
+  }, []);
+
+  const value = {
+    ...state,
+    play,
+    pause,
+    resume,
+    setVolume,
+    seek,
+    queue,
+    queueIndex,
+    addToQueue,
+    removeFromQueue,
+    clearQueue,
+    playNext,
+    playPrevious,
+    playFromQueue,
+    updateQueue,
+  };
+
+  return <AudioContext.Provider value={value}>{children}</AudioContext.Provider>;
 }
 
 export const useAudio = () => {

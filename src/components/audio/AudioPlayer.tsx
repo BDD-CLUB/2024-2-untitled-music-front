@@ -21,6 +21,8 @@ export function AudioPlayer() {
     resume,
     setVolume,
     seek,
+    playNext,
+    playPrevious
   } = useAudio();
 
   const router = useRouter();
@@ -132,7 +134,10 @@ export function AudioPlayer() {
 
         {/* 재생 컨트롤 */}
         <div className="flex items-center gap-4">
-          <button className="text-muted-foreground hover:text-foreground transition-colors">
+          <button 
+            onClick={playPrevious}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             <SkipBack className="w-4 h-4" />
           </button>
           <button
@@ -154,7 +159,10 @@ export function AudioPlayer() {
               <Play className="w-5 h-5 ml-0.5" />
             )}
           </button>
-          <button className="text-muted-foreground hover:text-foreground transition-colors">
+          <button 
+            onClick={playNext}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             <SkipForward className="w-4 h-4" />
           </button>
         </div>
