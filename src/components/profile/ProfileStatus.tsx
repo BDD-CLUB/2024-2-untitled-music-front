@@ -39,7 +39,7 @@ const AnimatedNumber = ({ value }: { value: number }) => {
 };
 
 const StatusItem = ({ label, count }: StatusItemProps) => (
-  <div className="group flex flex-col items-center p-4 rounded-2xl backdrop-blur-md 
+  <div className="flex-1 flex flex-col items-center p-4 rounded-2xl backdrop-blur-md 
                   bg-white/5 hover:bg-white/10 dark:bg-black/5 dark:hover:bg-black/10 
                   transition-all duration-300 ease-in-out
                   border border-white/10 hover:border-white/20
@@ -81,11 +81,11 @@ export function ProfileStatus({ userId }: ProfileStatusProps) {
         
         // 트랙 수 가져오기
         const tracksResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${userId}/tracks?page=0&pageSize=1`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${userId}/tracks`,
           { credentials: 'include' }
         );
         const tracksData = await tracksResponse.json();
-        const totalTracks = tracksData.totalElements || tracksData.length || 0;
+        const totalTracks = Array.isArray(tracksData) ? tracksData.length : 0;
 
         // 플레이리스트 수 가져오기
         const playlistsResponse = await fetch(
@@ -118,7 +118,7 @@ export function ProfileStatus({ userId }: ProfileStatusProps) {
   if (isLoading) {
     return (
       <div className="py-8 px-8">
-        <div className="flex justify-center gap-6 flex-wrap opacity-50">
+        <div className="flex gap-4 w-full">
           <StatusItem label="앨범" count={0} />
           <StatusItem label="트랙" count={0} />
           <StatusItem label="플레이리스트" count={0} />
@@ -135,7 +135,7 @@ export function ProfileStatus({ userId }: ProfileStatusProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex justify-center gap-6 flex-wrap"
+        className="flex gap-4 w-full"
       >
         <StatusItem label="앨범" count={stats.albums} />
         <StatusItem label="트랙" count={stats.tracks} />
