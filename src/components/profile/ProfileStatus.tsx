@@ -79,13 +79,12 @@ export function ProfileStatus({ userId }: ProfileStatusProps) {
         );
         const albumsData = await albumsResponse.json();
         
-        // 트랙 수 가져오기 - API 문서에 맞게 수정
+        // 트랙 수 가져오기
         const tracksResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${userId}/tracks`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${userId}/tracks?page=0&pageSize=1000&sortBy=createdAt&direction=desc`,
           { credentials: 'include' }
         );
         const tracksData = await tracksResponse.json();
-        // 트랙 데이터는 배열로 반환되므로 length를 사용
         const totalTracks = Array.isArray(tracksData) ? tracksData.length : 0;
 
         // 플레이리스트 수 가져오기
