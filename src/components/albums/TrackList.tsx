@@ -53,7 +53,7 @@ export function TrackList({
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
-  const { play } = useAudio();
+  const { updateQueue, playFromQueue } = useAudio();
 
   const isOwner = isAuthenticated && user?.uuid === artistId;
 
@@ -97,6 +97,23 @@ export function TrackList({
 
   const hasNoTracks = !tracks || tracks.length === 0;
 
+  const handlePlay = (trackId: string) => {
+    const queueTracks = tracks.map(track => ({
+      uuid: track.uuid,
+      title: track.title,
+      artUrl: track.artUrl,
+      trackUrl: track.trackUrl,
+      duration: track.duration,
+      artist: track.artist,
+      album: track.album,
+    }));
+
+    const selectedIndex = queueTracks.findIndex(track => track.uuid === trackId);
+    
+    updateQueue(queueTracks);
+    playFromQueue(selectedIndex);
+  };
+
   return (
     <div className="p-8 pt-4">
       {hasNoTracks ? (
@@ -127,7 +144,7 @@ export function TrackList({
               <div className="relative flex items-center gap-4 w-full">
                 <button
                   className="w-8 flex items-center justify-center"
-                  onClick={() => play(track.uuid)}
+                  onClick={() => handlePlay(track.uuid)}
                 >
                   <div className="text-sm text-muted-foreground group-hover:opacity-0 transition-opacity">
                     {String(index + 1).padStart(2, "0")}

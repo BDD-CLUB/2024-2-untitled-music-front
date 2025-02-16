@@ -55,7 +55,7 @@ export function PlaylistTracks({
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { ref, inView } = useInView();
-  const { play } = useAudio();  
+  const { updateQueue, playFromQueue } = useAudio();
 
   const fetchMoreTracks = useCallback(async () => {
     if (isLoading || !hasMore) return;
@@ -100,6 +100,23 @@ export function PlaylistTracks({
 
   const hasNoTracks = !tracks || tracks.length === 0;
 
+  const handlePlay = (trackId: string) => {
+    const queueTracks = tracks.map(item => ({
+      uuid: item.trackGetResponseDto.trackResponseDto.uuid,
+      title: item.trackGetResponseDto.trackResponseDto.title,
+      artUrl: item.trackGetResponseDto.trackResponseDto.artUrl,
+      trackUrl: item.trackGetResponseDto.trackResponseDto.trackUrl,
+      duration: item.trackGetResponseDto.trackResponseDto.duration,
+      artist: item.trackGetResponseDto.artistResponseDto,
+      album: item.trackGetResponseDto.albumResponseDto,
+    }));
+
+    const selectedIndex = queueTracks.findIndex(track => track.uuid === trackId);
+    
+    updateQueue(queueTracks);
+    playFromQueue(selectedIndex);
+  };
+
   return (
     <div className="p-8 pt-4">
       {/* 트랙이 없는 경우 */}
@@ -135,7 +152,7 @@ export function PlaylistTracks({
                 </div>
 
                 <div className="relative flex items-center gap-4 w-full">
-                  <button className="w-8 flex items-center justify-center" onClick={() => play(track.uuid)}>
+                  <button className="w-8 flex items-center justify-center" onClick={() => handlePlay(track.uuid)}>
                     <div className="text-sm text-muted-foreground group-hover:opacity-0 transition-opacity">
                       {String(index + 1).padStart(2, "0")}
                     </div>

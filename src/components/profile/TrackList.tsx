@@ -43,13 +43,14 @@ export function TrackList({ artistId }: TrackListProps) {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const { ref, inView } = useInView();
-  const { play } = useAudio();
+  const { updateQueue, playFromQueue } = useAudio();
 
   const { user } = useUser();
   const isOwner = user?.uuid === artistId;
 
   const fetchTracks = useCallback(async () => {
-    if (isLoading || !hasMore) return;
+    const currentIsLoading = isLoading;
+    if (currentIsLoading || !hasMore) return;
 
     try {
       setIsLoading(true);
@@ -84,7 +85,7 @@ export function TrackList({ artistId }: TrackListProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [artistId, page, hasMore, isLoading]);
+  }, [artistId, page, hasMore]);
 
   // 초기 데이터 로드
   useEffect(() => {
@@ -100,6 +101,23 @@ export function TrackList({ artistId }: TrackListProps) {
       fetchTracks();
     }
   }, [inView, hasMore, isLoading, fetchTracks]);
+
+  const handlePlay = (trackId: string) => {
+    const queueTracks = tracks.map(track => ({
+      uuid: track.trackResponseDto.uuid,
+      title: track.trackResponseDto.title,
+      artUrl: track.trackResponseDto.artUrl,
+      trackUrl: track.trackResponseDto.trackUrl,
+      duration: track.trackResponseDto.duration,
+      artist: track.artistResponseDto,
+      album: track.albumResponseDto,
+    }));
+
+    const selectedIndex = queueTracks.findIndex(track => track.uuid === trackId);
+    
+    updateQueue(queueTracks);
+    playFromQueue(selectedIndex);
+  };
 
   if (error) {
     return (
@@ -125,7 +143,7 @@ export function TrackList({ artistId }: TrackListProps) {
       {tracks.map((track) => (
         <button
           key={track.trackResponseDto.uuid}
-          onClick={() => play(track.trackResponseDto.uuid)}
+          onClick={() => handlePlay(track.trackResponseDto.uuid)}
           className={cn(
             "w-full px-4 py-3",
             "flex items-center gap-4",

@@ -222,8 +222,16 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const clearQueue = useCallback(() => {
     setQueue([]);
     setQueueIndex(0);
-    pause();
-  }, [pause]);
+    setState(prev => ({
+      ...prev,
+      currentTrack: null,
+      isPlaying: false,
+    }));
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+    }
+  }, []);
 
   const playNext = useCallback(() => {
     if (queue.length > queueIndex + 1) {

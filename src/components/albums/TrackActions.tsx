@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreVertical, Edit2, Trash2, Plus, Trash, PlayCircle, ListPlus, Forward } from "lucide-react";
+import { MoreVertical, Edit2, Trash2, Plus, Trash, PlayCircle, ListPlus, Forward, Info } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { checkAuth } from "@/lib/auth";
@@ -24,6 +24,7 @@ import { EditTrackModal } from "./EditTrackModal";
 import { AddToPlaylistModal } from "../tracks/AddToPlaylistModal";
 import { useRouter } from "next/navigation";
 import { useAudio } from "@/contexts/audio/AudioContext";
+import { TrackInfo } from "../tracks/TrackInfo";
 
 interface Track {
   uuid: string;
@@ -74,6 +75,8 @@ export function TrackActions({
   const [isDeletingFromPlaylist, setIsDeletingFromPlaylist] = useState(false);
 
   const { addToQueue, queue, queueIndex, updateQueue } = useAudio();
+
+  const [showTrackInfo, setShowTrackInfo] = useState(false);
 
   const handleDelete = async () => {
     try {
@@ -233,7 +236,12 @@ export function TrackActions({
             <Plus className="w-4 h-4 mr-2" />
             플레이리스트에 추가
           </DropdownMenuItem>
-          
+
+          <DropdownMenuItem onClick={() => setShowTrackInfo(true)}>
+            <Info className="w-4 h-4 mr-2" />
+            트랙 정보
+          </DropdownMenuItem>
+
           {place === "playlist" && isOwner && playlistId && (
             <DropdownMenuItem
               className="text-red-500 focus:text-red-500"
@@ -322,6 +330,12 @@ export function TrackActions({
         trackId={track.uuid}
         isOpen={showAddToPlaylistModal}
         onClose={() => setShowAddToPlaylistModal(false)}
+      />
+
+      <TrackInfo
+        track={track}
+        isOpen={showTrackInfo}
+        onClose={() => setShowTrackInfo(false)}
       />
     </>
   );

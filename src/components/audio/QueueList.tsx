@@ -1,6 +1,6 @@
 "use client";
 
-import { useAudio } from "@/contexts/audio/AudioContext";
+import { Track, useAudio } from "@/contexts/audio/AudioContext";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { formatDuration } from "@/lib/format";
@@ -22,6 +22,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Play, X, XCircle } from "lucide-react";
+import { TrackActions } from "@/components/albums/TrackActions";
 
 interface QueueTrack {
   uuid: string;
@@ -69,8 +70,10 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
       className={cn(
         "flex items-center gap-3 p-3 rounded-xl",
         "transition-colors duration-200",
-        "hover:bg-white/5",
-        isActive && "bg-white/5",
+        {
+          "bg-primary/20": isActive,
+          "hover:bg-white/5": !isActive,
+        },
         isDragging && "opacity-50"
       )}
     >
@@ -109,7 +112,6 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
           >
             {track.title}
           </span>
-          {isActive && <Play className="w-3 h-3 fill-current" />}
         </div>
         <div className="text-sm text-muted-foreground truncate">
           {track.artist.name}
@@ -126,6 +128,10 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
         >
           <X className="w-4 h-4" />
         </button>
+        <TrackActions
+          place="main"
+          track={track as Track}
+        />
       </div>
     </div>
   );
