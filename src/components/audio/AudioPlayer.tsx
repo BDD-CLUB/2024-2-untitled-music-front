@@ -135,7 +135,7 @@ export function AudioPlayer() {
         </div>
 
         {/* 데스크톱 전용 컨트롤 */}
-        <div className="hidden lg:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4">
           <button 
             onClick={playPrevious}
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -170,7 +170,7 @@ export function AudioPlayer() {
         </div>
 
         {/* 데스크톱 전용 볼륨 컨트롤 */}
-        <div className="hidden lg:flex items-center gap-2 flex-1 justify-end">
+        <div className="hidden md:flex items-center gap-2 flex-1 justify-end">
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground min-w-[40px] text-right">
               {formatDuration(Math.floor(progress))}
@@ -215,7 +215,7 @@ export function AudioPlayer() {
         </div>
 
         {/* 모바일 전용 컨트롤 */}
-        <div className="flex lg:hidden items-center gap-2">
+        <div className="flex md:hidden items-center gap-4">
           <button
             onClick={isPlaying ? pause : resume}
             className={cn(
@@ -244,7 +244,7 @@ export function AudioPlayer() {
       </div>
 
       {/* 프로그레스 바 - 데스크톱에서만 표시 */}
-      <div className="absolute bottom-0 left-0 right-0 px-2 hidden lg:block">
+      <div className="absolute bottom-0 left-0 right-0 px-2 hidden md:block">
         <Slider
           value={[progress]}
           max={duration}

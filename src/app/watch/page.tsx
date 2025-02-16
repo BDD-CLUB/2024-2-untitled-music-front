@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { QueueList } from "@/components/audio/QueueList";
-import { List, Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon, List } from "lucide-react";
 
 export default function WatchPage() {
   const { currentTrack } = useAudio();
@@ -26,28 +26,53 @@ export default function WatchPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* 모바일 토글 버튼 */}
+      <div className="flex justify-center mb-6 md:hidden">
+        <div className="inline-flex rounded-lg bg-white/10 p-1">
+          <button
+            onClick={() => setShowQueue(false)}
+            className={cn(
+              "p-2 rounded-md transition-colors",
+              !showQueue
+                ? "bg-white/10 text-white"
+                : "text-white/60 hover:text-white"
+            )}
+          >
+            <ImageIcon className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => setShowQueue(true)}
+            className={cn(
+              "p-2 rounded-md transition-colors",
+              showQueue
+                ? "bg-white/10 text-white"
+                : "text-white/60 hover:text-white"
+            )}
+          >
+            <List className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
       <div className="flex flex-col lg:flex-row gap-6">
         {/* 좌측: 현재 트랙 정보 */}
-        <div className={cn(
-          "flex-[2] min-w-0",
-          showQueue ? "hidden lg:block" : "block"
-        )}>
-          <div className={cn(
-            "rounded-3xl",
-            "bg-white/10 dark:bg-black/10",
-            "backdrop-blur-2xl",
-            "border border-white/20 dark:border-white/10",
-            "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
-            "overflow-hidden",
-            "relative"
-          )}>
-            <button 
-              onClick={() => setShowQueue(true)}
-              className="lg:hidden absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 z-10"
-            >
-              <List className="w-6 h-6" />
-            </button>
-
+        <div
+          className={cn(
+            "flex-[2] min-w-0",
+            showQueue ? "hidden lg:block" : "block"
+          )}
+        >
+          <div
+            className={cn(
+              "rounded-3xl",
+              "bg-white/10 dark:bg-black/10",
+              "backdrop-blur-2xl",
+              "border border-white/20 dark:border-white/10",
+              "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+              "overflow-hidden",
+              "relative"
+            )}
+          >
             <div className="p-8">
               {/* 앨범 아트워크/가사 토글 */}
               <div
@@ -98,28 +123,23 @@ export default function WatchPage() {
         </div>
 
         {/* 우측: 재생 목록 */}
-        <div className={cn(
-          "flex-1 min-w-0",
-          showQueue ? "block" : "hidden lg:block"
-        )}>
-          <div className={cn(
-            "rounded-3xl",
-            "bg-white/10 dark:bg-black/10",
-            "backdrop-blur-2xl",
-            "border border-white/20 dark:border-white/10",
-            "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
-            "overflow-hidden",
-            "h-full"
-          )}>
-            <div className="relative border-b border-white/10">
-              <h2 className="p-4 text-xl font-semibold">재생 목록</h2>
-              <button 
-                onClick={() => setShowQueue(false)}
-                className="lg:hidden absolute top-1/2 right-4 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white/20"
-              >
-                <ImageIcon className="w-6 h-6" />
-              </button>
-            </div>
+        <div
+          className={cn(
+            "flex-1 min-w-0",
+            showQueue ? "block" : "hidden lg:block"
+          )}
+        >
+          <div
+            className={cn(
+              "rounded-3xl",
+              "bg-white/10 dark:bg-black/10",
+              "backdrop-blur-2xl",
+              "border border-white/20 dark:border-white/10",
+              "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+              "overflow-hidden",
+              "h-full"
+            )}
+          >
             <div className="p-6">
               <QueueList />
             </div>
