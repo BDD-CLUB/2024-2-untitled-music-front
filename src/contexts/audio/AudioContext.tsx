@@ -6,6 +6,7 @@ export interface Track {
   uuid: string;
   title: string;
   trackUrl: string;
+  lyric: string;
   duration: number;
   artUrl: string;
   artist: {
@@ -62,6 +63,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         uuid: data.trackResponseDto.uuid,
         title: data.trackResponseDto.title,
         trackUrl: data.trackResponseDto.trackUrl,
+        lyric: data.trackResponseDto.lyric,
         duration: data.trackResponseDto.duration,
         artUrl: data.trackResponseDto.artUrl,
         artist: {

@@ -3,6 +3,9 @@
 import { useAudio } from "@/contexts/audio/AudioContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function WatchPage() {
   const { currentTrack } = useAudio();
@@ -19,16 +22,77 @@ export default function WatchPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        {/* 임시 레이아웃 - 추후 확장 예정 */}
-        <div className="rounded-3xl overflow-hidden bg-white/10 dark:bg-black/10 backdrop-blur-2xl border border-white/20 dark:border-white/10">
-          <div className="p-8">
-            <h1 className="text-2xl font-bold mb-4">현재 재생 중</h1>
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold">{currentTrack.title}</h2>
-                {/* 추가 정보는 나중에 구현 */}
+      <div className="flex gap-6">
+        {/* 좌측: 현재 트랙 정보 (2/3) */}
+        <div className="flex-[2] min-w-0">
+          <div className={cn(
+            "rounded-3xl",
+            "bg-white/10 dark:bg-black/10",
+            "backdrop-blur-2xl",
+            "border border-white/20 dark:border-white/10",
+            "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+            "overflow-hidden"
+          )}>
+            <div className="p-8">
+              {/* 앨범 아트워크 */}
+              <div className="relative aspect-square w-full max-w-2xl mx-auto mb-8 rounded-2xl overflow-hidden">
+                <Image
+                  src={currentTrack.artUrl}
+                  alt={currentTrack.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" />
               </div>
+
+              {/* 트랙 정보 */}
+              <div className="space-y-4">
+                <h1 className="text-4xl font-bold">{currentTrack.title}</h1>
+                <div className="flex items-center gap-4">
+                  <Link
+                    href={`/profile/${currentTrack.artist.uuid}`}
+                    className="text-xl text-muted-foreground hover:underline"
+                  >
+                    {currentTrack.artist.name}
+                  </Link>
+                  <span className="text-muted-foreground">•</span>
+                  <Link
+                    href={`/albums/${currentTrack.album.uuid}`}
+                    className="text-xl text-muted-foreground hover:underline"
+                  >
+                    {currentTrack.album.title}
+                  </Link>
+                </div>
+
+                {/* 가사 섹션 (추후 구현) */}
+                <div className="mt-8 p-6 rounded-2xl bg-white/5 border border-white/10">
+                  <h2 className="text-xl font-semibold mb-4">가사</h2>
+                  <p className="text-muted-foreground whitespace-pre-line">
+                    {currentTrack.lyric || "가사 정보가 없습니다."}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 우측: 재생 목록 (1/3) */}
+        <div className="flex-1 min-w-0">
+          <div className={cn(
+            "rounded-3xl",
+            "bg-white/10 dark:bg-black/10",
+            "backdrop-blur-2xl",
+            "border border-white/20 dark:border-white/10",
+            "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+            "overflow-hidden",
+            "h-full"
+          )}>
+            <div className="p-6">
+              <h2 className="text-xl font-semibold mb-4">재생 목록</h2>
+              <p className="text-muted-foreground text-sm">
+                재생 목록 기능은 곧 구현될 예정입니다.
+              </p>
             </div>
           </div>
         </div>

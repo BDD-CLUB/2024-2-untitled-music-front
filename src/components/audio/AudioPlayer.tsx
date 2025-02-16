@@ -10,7 +10,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-
 export function AudioPlayer() {
   const {
     currentTrack,
@@ -23,6 +22,7 @@ export function AudioPlayer() {
     setVolume,
     seek,
   } = useAudio();
+
   const router = useRouter();
 
   // 키보드 이벤트 핸들러를 useCallback으로 분리
@@ -75,135 +75,164 @@ export function AudioPlayer() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleKeyPress]);
 
+  if (!currentTrack) return null;
+
   const handleNavigateToWatch = () => {
     router.push('/watch');
   };
 
-  if (!currentTrack) return null;
-
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-white/10">
-      <div className="container mx-auto px-4">
-        <div className="h-20 flex items-center gap-4">
-          {/* 트랙 정보 영역 - 클릭 가능하도록 수정 */}
-          <div 
-            className="flex-1 flex items-center gap-4 cursor-pointer"
-            onClick={handleNavigateToWatch}
+    <div
+      className={cn(
+        "w-full h-16",
+        "bg-background/30 dark:bg-black/20",
+        "backdrop-blur-2xl",
+        "border border-white/20",
+        "rounded-xl",
+        "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+        "overflow-hidden",
+        "relative"
+      )}
+    >
+      {/* 컨텐츠 영역 */}
+      <div className="flex items-center justify-between h-full px-4">
+        {/* 트랙 정보 */}
+        <div className="flex items-center gap-4 flex-1 min-w-0">
+          <div
+            className={cn(
+              "relative w-10 h-10",
+              "rounded-xl overflow-hidden",
+              "bg-white/5",
+              "ring-1 ring-white/10",
+              "shadow-lg"
+            )}
           >
-            <div
-              className={cn(
-                "relative w-10 h-10",
-                "rounded-xl overflow-hidden",
-                "bg-white/5",
-                "ring-1 ring-white/10",
-                "shadow-lg"
-              )}
-            >
-              <Image
-                src={currentTrack.artUrl}
-                alt={currentTrack.title}
-                fill
-                className="object-cover rounded-xl"
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <Link
-                href={`/albums/${currentTrack.album.uuid}`}
-                className="text-sm font-medium hover:underline truncate block"
-              >
-                {currentTrack.title}
-              </Link>
-              <Link
-                href={`/profile/${currentTrack.artist.uuid}`}
-                className="text-sm text-muted-foreground hover:underline truncate block"
-              >
-                {currentTrack.artist.name}
-              </Link>
-            </div>
-          </div>
-
-          {/* 재생 컨트롤 */}
-          <div className="flex items-center gap-4">
-            <button className="text-muted-foreground hover:text-foreground transition-colors">
-              <SkipBack className="w-4 h-4" />
-            </button>
-            <button
-              onClick={isPlaying ? pause : resume}
-              className={cn(
-                "w-10 h-10 rounded-full",
-                "flex items-center justify-center",
-                "bg-white/10",
-                "hover:bg-white/20",
-                "ring-1 ring-white/20",
-                "transition-all duration-300",
-                "hover:scale-105",
-                "shadow-lg"
-              )}
-            >
-              {isPlaying ? (
-                <Pause className="w-5 h-5" />
-              ) : (
-                <Play className="w-5 h-5 ml-0.5" />
-              )}
-            </button>
-            <button className="text-muted-foreground hover:text-foreground transition-colors">
-              <SkipForward className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* 볼륨 컨트롤 */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground min-w-[40px] text-right">
-                {formatDuration(Math.floor(progress))}
-              </span>
-              <span className="text-xs text-muted-foreground">/</span>
-              <span className="text-xs text-muted-foreground min-w-[40px]">
-                {formatDuration(duration)}
-              </span>
-            </div>
-            <div className="w-px h-4 bg-white/10 mx-4" />
-            <button
-              onClick={() => setVolume(volume === 0 ? 1 : 0)}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {volume === 0 ? (
-                <VolumeX className="w-5 h-5" />
-              ) : (
-                <Volume2 className="w-5 h-5" />
-              )}
-            </button>
-            <Slider
-              value={[volume * 100]}
-              max={100}
-              step={1}
-              onValueChange={([value]) => setVolume(value / 100)}
-              className={cn(
-                "w-20",
-                "h-1",
-                "[&_[role=slider]]:h-3 [&_[role=slider]]:w-3",
-                "[&_[role=slider]]:hover:h-4 [&_[role=slider]]:hover:w-4",
-                "[&_[role=slider]]:transition-all",
-                "[&_[role=slider]]:border-2",
-                "[&_[role=slider]]:border-white",
-                "[&_[role=slider]]:bg-white",
-                "[&_[role=slider]]:shadow-md",
-                "[&_[data-disabled]]:opacity-50",
-                "[&_[data-orientation=horizontal]]:h-full",
-                "[&_.range-track]:bg-white/20",
-                "[&_.range-track-progress]:bg-white/40"
-              )}
+            <Image
+              src={currentTrack.artUrl}
+              alt={currentTrack.title}
+              fill
+              className="object-cover rounded-xl"
             />
           </div>
+          <div className="flex-1 min-w-0">
+            <Link
+              href={`/albums/${currentTrack.album.uuid}`}
+              className="text-sm font-medium hover:underline truncate block"
+            >
+              {currentTrack.title}
+            </Link>
+            <Link
+              href={`/profile/${currentTrack.artist.uuid}`}
+              className="text-sm text-muted-foreground hover:underline truncate block"
+            >
+              {currentTrack.artist.name}
+            </Link>
+          </div>
+        </div>
 
-          {/* 재생 목록 아이콘 추가 */}
+        {/* 재생 컨트롤 */}
+        <div className="flex items-center gap-4">
+          <button className="text-muted-foreground hover:text-foreground transition-colors">
+            <SkipBack className="w-4 h-4" />
+          </button>
+          <button
+            onClick={isPlaying ? pause : resume}
+            className={cn(
+              "w-10 h-10 rounded-full",
+              "flex items-center justify-center",
+              "bg-white/10",
+              "hover:bg-white/20",
+              "ring-1 ring-white/20",
+              "transition-all duration-300",
+              "hover:scale-105",
+              "shadow-lg"
+            )}
+          >
+            {isPlaying ? (
+              <Pause className="w-5 h-5" />
+            ) : (
+              <Play className="w-5 h-5 ml-0.5" />
+            )}
+          </button>
+          <button className="text-muted-foreground hover:text-foreground transition-colors">
+            <SkipForward className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* 볼륨 컨트롤 */}
+        <div className="flex items-center gap-2 flex-1 justify-end">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground min-w-[40px] text-right">
+              {formatDuration(Math.floor(progress))}
+            </span>
+            <span className="text-xs text-muted-foreground">/</span>
+            <span className="text-xs text-muted-foreground min-w-[40px]">
+              {formatDuration(duration)}
+            </span>
+          </div>
+          <div className="w-px h-4 bg-white/10 mx-4" />
+          <button
+            onClick={() => setVolume(volume === 0 ? 1 : 0)}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {volume === 0 ? (
+              <VolumeX className="w-5 h-5" />
+            ) : (
+              <Volume2 className="w-5 h-5" />
+            )}
+          </button>
+          <Slider
+            value={[volume * 100]}
+            max={100}
+            step={1}
+            onValueChange={([value]) => setVolume(value / 100)}
+            className={cn(
+              "w-20",
+              "h-1",
+              "[&_[role=slider]]:h-3 [&_[role=slider]]:w-3",
+              "[&_[role=slider]]:hover:h-4 [&_[role=slider]]:hover:w-4",
+              "[&_[role=slider]]:transition-all",
+              "[&_[role=slider]]:border-2",
+              "[&_[role=slider]]:border-white",
+              "[&_[role=slider]]:bg-white",
+              "[&_[role=slider]]:shadow-md",
+              "[&_[data-disabled]]:opacity-50",
+              "[&_[data-orientation=horizontal]]:h-full",
+              "[&_.range-track]:bg-white/20",
+              "[&_.range-track-progress]:bg-white/40"
+            )}
+          />
           <button
             onClick={handleNavigateToWatch}
-            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <List className="w-5 h-5" />
           </button>
         </div>
+      </div>
+
+      {/* 프로그레스 바를 하단으로 이동 */}
+      <div className="absolute bottom-0 left-0 right-0 px-2">
+        <Slider
+          value={[progress]}
+          max={duration}
+          step={1}
+          onValueChange={([value]) => seek(value)}
+          className={cn(
+            "h-[5px]",
+            "cursor-pointer",
+            "[&_[role=slider]]:h-3 [&_[role=slider]]:w-3",
+            "[&_[role=slider]]:transition-all",
+            "[&_[role=slider]]:border-2",
+            "[&_[role=slider]]:border-white",
+            "[&_[role=slider]]:bg-white",
+            "[&_[role=slider]]:shadow-md",
+            "[&_[data-disabled]]:opacity-50",
+            "[&_[data-orientation=horizontal]]:h-full",
+            "[&_.range-track]:bg-white/20",
+            "[&_.range-track-progress]:bg-white/40"
+          )}
+        />
       </div>
     </div>
   );
