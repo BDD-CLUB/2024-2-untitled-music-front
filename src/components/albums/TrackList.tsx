@@ -45,6 +45,8 @@ export function TrackList({
   tracks: initialTracks,
   albumId,
   artistId,
+  album,
+  artist
 }: TrackListProps) {
   const { isAuthenticated } = useAuth();
   const { user } = useUser();
@@ -98,18 +100,26 @@ export function TrackList({
   const hasNoTracks = !tracks || tracks.length === 0;
 
   const handlePlay = (trackId: string) => {
-    const queueTracks = tracks.map(track => ({
+    const queueTracks = tracks.map((track) => ({
       uuid: track.uuid,
       title: track.title,
       artUrl: track.artUrl,
       trackUrl: track.trackUrl,
       duration: track.duration,
-      artist: track.artist,
-      album: track.album,
+      artist: {
+        uuid: artistId,
+        name: artist.name,
+      },
+      album: {
+        uuid: albumId,
+        title: album.title,
+      },
     }));
 
-    const selectedIndex = queueTracks.findIndex(track => track.uuid === trackId);
-    
+    const selectedIndex = queueTracks.findIndex(
+      (track) => track.uuid === trackId
+    );
+
     updateQueue(queueTracks);
     playFromQueue(selectedIndex);
   };

@@ -84,22 +84,22 @@ export function TrackList({ artistId }: TrackListProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [artistId, page]);
+  }, [artistId, page, isLoading]);
 
-  // 초기 데이터 로드
+  // 초기 데이터 로드를 위한 useEffect 수정
   useEffect(() => {
     setTracks([]);
     setPage(0);
     setHasMore(true);
-    fetchTracks();
-  }, [fetchTracks]);
+    setIsLoading(false);  // isLoading 초기화 추가
+  }, [artistId]);  // artistId만 의존성으로 남김
 
-  // 스크롤 감지하여 추가 데이터 로드
+  // 초기 및 추가 데이터 로드를 위한 useEffect
   useEffect(() => {
-    if (inView && hasMore && !isLoading) {
+    if (!isLoading && (page === 0 || (inView && hasMore))) {
       fetchTracks();
     }
-  }, [inView, hasMore, isLoading, fetchTracks]);
+  }, [fetchTracks, inView, hasMore, isLoading, page]);
 
   const handlePlay = (trackId: string) => {
     const queueTracks = tracks.map(track => ({
