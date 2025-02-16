@@ -203,37 +203,55 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
   }, [state.isPlaying]);
 
-  // 오디오 엘리먼트 생성
+  // 트랙 종료 시 다음 트랙 재생 로직
   useEffect(() => {
     audioRef.current = new Audio();
 
-    // 트랙 종료 시 다음 트랙 재생
     const handleTrackEnd = () => {
+      console.log('=== 트랙 종료 이벤트 ===');
+      console.log('현재 상태:', {
+        repeat: state.repeat,
+        shuffle: state.shuffle,
+        currentIndex: queueIndex,
+        queueLength: queue.length,
+        shuffledIndices: state.shuffle ? shuffledIndices : '셔플 비활성화'
+      });
+
       if (state.repeat === 'one') {
-        // 한 곡 반복
+        console.log('한 곡 반복 모드: 현재 곡 다시 재생');
         if (audioRef.current) {
           audioRef.current.currentTime = 0;
           audioRef.current.play();
+          setState(prev => ({ ...prev, isPlaying: true }));
         }
       } else {
         const hasNextTrack = state.shuffle 
           ? shuffledIndices.indexOf(queueIndex) < shuffledIndices.length - 1
           : queueIndex < queue.length - 1;
 
+        console.log('다음 트랙 여부:', hasNextTrack);
+        console.log('현재 큐 인덱스:', queueIndex);
+        
         if (hasNextTrack) {
-          // 다음 트랙 재생
           const nextIndex = state.shuffle
             ? shuffledIndices[shuffledIndices.indexOf(queueIndex) + 1]
             : queueIndex + 1;
+          console.log('다음 트랙 재생:', {
+            nextIndex,
+            trackTitle: queue[nextIndex]?.title
+          });
           setQueueIndex(nextIndex);
           play(queue[nextIndex].uuid);
         } else if (state.repeat === 'all') {
-          // 전체 반복
           const newIndex = state.shuffle ? shuffledIndices[0] : 0;
+          console.log('전체 반복 모드: 처음으로 돌아가기', {
+            newIndex,
+            trackTitle: queue[newIndex]?.title
+          });
           setQueueIndex(newIndex);
           play(queue[newIndex].uuid);
         } else {
-          // 재생 중지
+          console.log('재생 종료: 더 이상 재생할 트랙 없음');
           setState(prev => ({ ...prev, isPlaying: false }));
         }
       }
@@ -296,13 +314,29 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // playNext 함수도 수정
   const playNext = useCallback(() => {
-    if (queue.length > queueIndex + 1) {
-      const nextTrack = queue[queueIndex + 1];
-      setQueueIndex((prev) => prev + 1);
-      play(nextTrack.uuid);
+    if (state.shuffle) {
+      const currentShuffleIndex = shuffledIndices.indexOf(queueIndex);
+      if (currentShuffleIndex < shuffledIndices.length - 1) {
+        const nextIndex = shuffledIndices[currentShuffleIndex + 1];
+        setQueueIndex(nextIndex);
+        play(queue[nextIndex].uuid);
+      } else if (state.repeat === 'all') {
+        setQueueIndex(shuffledIndices[0]);
+        play(queue[shuffledIndices[0]].uuid);
+      }
+    } else {
+      if (queueIndex < queue.length - 1) {
+        const nextTrack = queue[queueIndex + 1];
+        setQueueIndex(prev => prev + 1);
+        play(nextTrack.uuid);
+      } else if (state.repeat === 'all') {
+        setQueueIndex(0);
+        play(queue[0].uuid);
+      }
     }
-  }, [queue, queueIndex, play]);
+  }, [queue, queueIndex, play, state.shuffle, state.repeat, shuffledIndices]);
 
   const playPrevious = useCallback(() => {
     if (audioRef.current) {
@@ -349,25 +383,39 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   // 반복 모드 토글
   const toggleRepeat = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      repeat: prev.repeat === 'none' ? 'all' : prev.repeat === 'all' ? 'one' : 'none'
-    }));
+    console.log('=== 반복 모드 토글 ===');
+    setState(prev => {
+      const newRepeat = prev.repeat === 'none' ? 'all' : prev.repeat === 'all' ? 'one' : 'none';
+      console.log('반복 모드 변경:', {
+        이전: prev.repeat,
+        이후: newRepeat
+      });
+      return { ...prev, repeat: newRepeat };
+    });
   }, []);
 
-  // 셔플 모드 토글
+  // toggleShuffle 함수 수정
   const toggleShuffle = useCallback(() => {
+    console.log('=== 셔플 토글 ===');
     setState(prev => {
       const newShuffle = !prev.shuffle;
+      console.log('셔플 상태 변경:', {
+        이전: prev.shuffle,
+        이후: newShuffle
+      });
+
       if (newShuffle) {
-        // 셔플 활성화 시 현재 곡을 제외한 나머지 곡들을 셔플
         const indices = Array.from({ length: queue.length }, (_, i) => i);
         const currentIndex = indices.splice(queueIndex, 1)[0];
         for (let i = indices.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [indices[i], indices[j]] = [indices[j], indices[i]];
         }
-        indices.unshift(currentIndex); // 현재 곡을 맨 앞에 추가
+        indices.unshift(currentIndex);
+        console.log('새로운 셔플 순서:', {
+          현재곡: currentIndex,
+          셔플된순서: indices
+        });
         setShuffledIndices(indices);
       }
       return { ...prev, shuffle: newShuffle };

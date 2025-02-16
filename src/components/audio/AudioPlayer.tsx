@@ -205,7 +205,7 @@ export function AudioPlayer() {
         </div>
 
         {/* 데스크톱 전용 볼륨 컨트롤 */}
-        <div className="hidden md:flex items-center gap-2 flex-1 justify-end">
+        <div className="hidden md:flex items-center gap-2 flex-1 justify-end pr-4">
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground min-w-[40px] text-right">
               {formatDuration(Math.floor(progress))}
@@ -249,7 +249,7 @@ export function AudioPlayer() {
           />
         </div>
 
-        {/* 모바일 전용 컨트롤 */}
+        {/* 재생/일시정지 (모바일) + 재생목록 버튼 (공통) */}
         <div className="flex items-center gap-4">
           <button
             onClick={isPlaying ? pause : resume}
@@ -260,7 +260,7 @@ export function AudioPlayer() {
               "hover:bg-white/20",
               "ring-1 ring-white/20",
               "transition-all duration-300",
-              "shadow-lg md:hidden"
+              "shadow-lg md:hidden" // 재생/일시정지 버튼만 모바일에서만 표시
             )}
           >
             {isPlaying ? (
@@ -272,6 +272,7 @@ export function AudioPlayer() {
           <button
             onClick={handleNavigateToWatch}
             className="text-muted-foreground hover:text-foreground transition-colors"
+            title="재생 목록"
           >
             <List className="w-5 h-5" />
           </button>

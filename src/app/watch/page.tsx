@@ -27,29 +27,29 @@ export default function WatchPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* 모바일 토글 버튼 */}
-      <div className="flex justify-center mb-2 md:hidden">
-        <div className="inline-flex rounded-lg bg-white/5 p-1 border border-white/10 backdrop-blur-sm">
+      <div className="flex justify-center mb-4 md:hidden">
+        <div className="inline-flex rounded-lg bg-black/5 dark:bg-white/5 p-1 border border-black/10 dark:border-white/10 backdrop-blur-sm shadow-sm">
           <button
             onClick={() => setShowQueue(false)}
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-all",
               !showQueue 
-                ? "bg-white/10 text-white shadow-md" 
-                : "text-white/80 hover:text-white hover:bg-white/5"
+                ? "bg-black/10 dark:bg-white/10 text-black dark:text-white shadow-md" 
+                : "text-black/60 dark:text-white/80 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"
             )}
           >
-            <ImageIcon className="w-5 h-5" />
+            <ImageIcon className="w-4 h-4" />
           </button>
           <button
             onClick={() => setShowQueue(true)}
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-all",
               showQueue 
-                ? "bg-white/10 text-white shadow-md" 
-                : "text-white/80 hover:text-white hover:bg-white/5"
+                ? "bg-black/10 dark:bg-white/10 text-black dark:text-white shadow-md" 
+                : "text-black/60 dark:text-white/80 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"
             )}
           >
-            <List className="w-5 h-5" />
+            <List className="w-4 h-4" />
           </button>
         </div>
       </div>
