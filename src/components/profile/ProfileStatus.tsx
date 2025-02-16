@@ -81,11 +81,11 @@ export function ProfileStatus({ userId }: ProfileStatusProps) {
         
         // 트랙 수 가져오기
         const tracksResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${userId}/tracks`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${userId}/tracks?page=0&size=1`,
           { credentials: 'include' }
         );
         const tracksData = await tracksResponse.json();
-        const totalTracks = Array.isArray(tracksData) ? tracksData.length : 0;
+        const totalTracks = tracksData.totalElements || 0;
 
         // 플레이리스트 수 가져오기
         const playlistsResponse = await fetch(
