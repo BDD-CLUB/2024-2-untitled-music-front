@@ -2,7 +2,7 @@
 
 import { useAudio } from "@/contexts/audio/AudioContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import Link from "next/link";
 export default function WatchPage() {
   const { currentTrack } = useAudio();
   const router = useRouter();
+  const [showLyrics, setShowLyrics] = useState(false);
 
   // 현재 재생 중인 트랙이 없으면 홈으로 리다이렉트
   useEffect(() => {
@@ -34,43 +35,50 @@ export default function WatchPage() {
             "overflow-hidden"
           )}>
             <div className="p-8">
-              {/* 앨범 아트워크 */}
-              <div className="relative aspect-square w-full max-w-2xl mx-auto mb-8 rounded-2xl overflow-hidden">
-                <Image
-                  src={currentTrack.artUrl}
-                  alt={currentTrack.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" />
+              {/* 앨범 아트워크/가사 토글 */}
+              <div 
+                onClick={() => setShowLyrics(!showLyrics)}
+                className="relative w-full max-w-md mx-auto aspect-square mb-8 rounded-2xl overflow-hidden cursor-pointer group"
+              >
+                {showLyrics ? (
+                  <div className="absolute inset-0 p-6 overflow-y-auto bg-white/5 backdrop-blur-xl border border-white/10">
+                    <p className="text-muted-foreground whitespace-pre-line">
+                      {currentTrack.lyric || "가사 정보가 없습니다."}
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <Image
+                      src={currentTrack.artUrl}
+                      alt={currentTrack.title}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      priority
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" />
+                  </>
+                )}
               </div>
 
-              {/* 트랙 정보 */}
-              <div className="space-y-4">
-                <h1 className="text-4xl font-bold">{currentTrack.title}</h1>
-                <div className="flex items-center gap-4">
+              {/* 트랙 정보 - 중앙 정렬 */}
+              <div className="text-center space-y-3">
+                <h1 className="text-2xl font-bold">
+                  {currentTrack.title}
+                </h1>
+                <div className="flex items-center justify-center gap-2 text-lg">
                   <Link
                     href={`/profile/${currentTrack.artist.uuid}`}
-                    className="text-xl text-muted-foreground hover:underline"
+                    className="text-muted-foreground hover:underline"
                   >
                     {currentTrack.artist.name}
                   </Link>
                   <span className="text-muted-foreground">•</span>
                   <Link
                     href={`/albums/${currentTrack.album.uuid}`}
-                    className="text-xl text-muted-foreground hover:underline"
+                    className="text-muted-foreground hover:underline"
                   >
                     {currentTrack.album.title}
                   </Link>
-                </div>
-
-                {/* 가사 섹션 (추후 구현) */}
-                <div className="mt-8 p-6 rounded-2xl bg-white/5 border border-white/10">
-                  <h2 className="text-xl font-semibold mb-4">가사</h2>
-                  <p className="text-muted-foreground whitespace-pre-line">
-                    {currentTrack.lyric || "가사 정보가 없습니다."}
-                  </p>
                 </div>
               </div>
             </div>
