@@ -184,6 +184,11 @@ export function PlaylistTracks({
                       uuid: track.uuid,
                       title: track.title,
                       lyric: track.lyric,
+                      artUrl: track.artUrl,
+                      trackUrl: track.trackUrl,
+                      duration: track.duration,
+                      artist: artist,
+                      album: album,
                     }}
                     isOwner={isOwner}
                     playlistId={playlistId}
