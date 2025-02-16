@@ -10,25 +10,17 @@ import { useAuth } from "@/contexts/auth/AuthContext";
 import { useUser } from "@/contexts/auth/UserContext";
 import { useAudio } from "@/contexts/audio/AudioContext";
 
-interface Track {
+interface initialTrack {
   uuid: string;
   title: string;
   duration: number;
   lyric: string;
   trackUrl: string;
   artUrl: string;
-  artist: {
-    uuid: string;
-    name: string;
-  };
-  album: {
-    uuid: string;
-    title: string;
-  };
 }
 
 interface TrackListProps {
-  tracks: Track[];
+  tracks: initialTrack[];
   albumId: string;
   artistId: string;
   album: {
@@ -41,6 +33,17 @@ interface TrackListProps {
   };
 }
 
+interface Track extends initialTrack {
+  artist: {
+    uuid: string;
+    name: string;
+  };
+  album: {
+    uuid: string;
+    title: string;
+  };
+}
+
 export function TrackList({
   tracks: initialTracks,
   albumId,
@@ -50,7 +53,7 @@ export function TrackList({
 }: TrackListProps) {
   const { isAuthenticated } = useAuth();
   const { user } = useUser();
-  const [tracks, setTracks] = useState<Track[]>(initialTracks);
+  const [tracks, setTracks] = useState<initialTrack[]>(initialTracks);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
