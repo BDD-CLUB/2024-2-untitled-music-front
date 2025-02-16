@@ -16,6 +16,15 @@ interface Track {
   duration: number;
   lyric: string;
   trackUrl: string;
+  artUrl: string;
+  artist: {
+    uuid: string;
+    name: string;
+  };
+  album: {
+    uuid: string;
+    title: string;
+  };
 }
 
 interface TrackListProps {
@@ -116,7 +125,10 @@ export function TrackList({
               </div>
 
               <div className="relative flex items-center gap-4 w-full">
-                <button className="w-8 flex items-center justify-center" onClick={() => play(track.uuid)}>
+                <button
+                  className="w-8 flex items-center justify-center"
+                  onClick={() => play(track.uuid)}
+                >
                   <div className="text-sm text-muted-foreground group-hover:opacity-0 transition-opacity">
                     {String(index + 1).padStart(2, "0")}
                   </div>
@@ -130,7 +142,7 @@ export function TrackList({
 
                 <TrackActions
                   place="album"
-                  track={track}
+                  track={track as Track}
                   isOwner={isOwner}
                   onUpdate={(updatedTrack) => {
                     setTracks((prev) =>

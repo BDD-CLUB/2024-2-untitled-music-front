@@ -34,7 +34,7 @@ export function TrackSection() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { play } = useAudio();
+  const { play, updateQueue } = useAudio();
 
   const fetchTracks = async () => {
     try {
@@ -70,6 +70,23 @@ export function TrackSection() {
     fetchTracks();
   }, []);
 
+  const handlePlay = (trackId: string) => {
+    const queueTracks = tracks.map(track => ({
+      uuid: track.trackResponseDto.uuid,
+      title: track.trackResponseDto.title,
+      artUrl: track.trackResponseDto.artUrl,
+      trackUrl: track.trackResponseDto.trackUrl,
+      duration: track.trackResponseDto.duration,
+      artist: track.artistResponseDto,
+      album: track.albumResponseDto,
+    }));
+
+    const selectedIndex = queueTracks.findIndex(track => track.uuid === trackId);
+    
+    updateQueue(queueTracks);
+    play(trackId);
+  };
+
   if (error) {
     return (
       <section className="p-6 border-t border-white/10">
@@ -100,7 +117,7 @@ export function TrackSection() {
           {tracks.map((track) => (
             <button
               key={track.trackResponseDto.uuid}
-              onClick={() => play(track.trackResponseDto.uuid)}
+              onClick={() => handlePlay(track.trackResponseDto.uuid)}
               className={cn(
                 "w-full px-4 py-3",
                 "flex items-center gap-4",
@@ -156,6 +173,11 @@ export function TrackSection() {
                       uuid: track.trackResponseDto.uuid,
                       title: track.trackResponseDto.title,
                       lyric: track.trackResponseDto.lyric,
+                      artUrl: track.trackResponseDto.artUrl,
+                      trackUrl: track.trackResponseDto.trackUrl,
+                      duration: track.trackResponseDto.duration,
+                      artist: track.artistResponseDto,
+                      album: track.albumResponseDto,
                     }}
                   />
                 </div>

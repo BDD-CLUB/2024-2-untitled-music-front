@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreVertical, Edit2, Trash2, Plus, Trash } from "lucide-react";
+import { MoreVertical, Edit2, Trash2, Plus, Trash, PlayCircle, ListPlus, Forward } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { checkAuth } from "@/lib/auth";
@@ -23,11 +23,23 @@ import {
 import { EditTrackModal } from "./EditTrackModal";
 import { AddToPlaylistModal } from "../tracks/AddToPlaylistModal";
 import { useRouter } from "next/navigation";
+import { useAudio } from "@/contexts/audio/AudioContext";
 
 interface Track {
   uuid: string;
   title: string;
   lyric: string;
+  artUrl: string;
+  trackUrl: string;
+  duration: number;
+  artist: {
+    uuid: string;
+    name: string;
+  };
+  album: {
+    uuid: string;
+    title: string;
+  };
 }
 
 interface TrackActionsProps {
@@ -60,6 +72,8 @@ export function TrackActions({
   const [showDeleteFromPlaylistDialog, setShowDeleteFromPlaylistDialog] =
     useState(false);
   const [isDeletingFromPlaylist, setIsDeletingFromPlaylist] = useState(false);
+
+  const { addToQueue, queue, queueIndex, updateQueue } = useAudio();
 
   const handleDelete = async () => {
     try {
@@ -144,6 +158,54 @@ export function TrackActions({
     }
   };
 
+  const handlePlay = () => {
+    const queueTrack = {
+      uuid: track.uuid,
+      title: track.title,
+      artUrl: track.artUrl,
+      trackUrl: track.trackUrl,
+      duration: track.duration,
+      artist: track.artist,
+      album: track.album,
+    };
+    addToQueue(queueTrack);
+  };
+
+  const handlePlayNext = () => {
+    const queueTrack = {
+      uuid: track.uuid,
+      title: track.title,
+      artUrl: track.artUrl,
+      trackUrl: track.trackUrl,
+      duration: track.duration,
+      artist: track.artist,
+      album: track.album,
+    };
+
+    const newQueue = [...queue];
+    if (queue.length === 0) {
+      addToQueue(queueTrack);
+    } else {
+      newQueue.splice(queueIndex + 1, 0, queueTrack);
+      updateQueue(newQueue);
+    }
+  };
+
+  const handleAddToLast = () => {
+    const queueTrack = {
+      uuid: track.uuid,
+      title: track.title,
+      artUrl: track.artUrl,
+      trackUrl: track.trackUrl,
+      duration: track.duration,
+      artist: track.artist,
+      album: track.album,
+    };
+    
+    const newQueue = [...queue, queueTrack];
+    updateQueue(newQueue);
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -154,6 +216,19 @@ export function TrackActions({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuItem onClick={handlePlay}>
+            <PlayCircle className="w-4 h-4 mr-2" />
+            재생
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handlePlayNext}>
+            <Forward className="w-4 h-4 mr-2" />
+            다음에 재생
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleAddToLast}>
+            <ListPlus className="w-4 h-4 mr-2" />
+            마지막에 추가
+          </DropdownMenuItem>
+
           <DropdownMenuItem onClick={() => setShowAddToPlaylistModal(true)}>
             <Plus className="w-4 h-4 mr-2" />
             플레이리스트에 추가
@@ -239,7 +314,7 @@ export function TrackActions({
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         onUpdate={(track) => {
-          onUpdate?.(track);
+          onUpdate?.(track as Track);
         }}
       />
 

@@ -174,6 +174,11 @@ export function TrackList({ artistId }: TrackListProps) {
                   uuid: track.trackResponseDto.uuid,
                   title: track.trackResponseDto.title,
                   lyric: track.trackResponseDto.lyric,
+                  artUrl: track.trackResponseDto.artUrl,
+                  trackUrl: track.trackResponseDto.trackUrl,
+                  duration: track.trackResponseDto.duration,
+                  artist: track.artistResponseDto,
+                  album: track.albumResponseDto,
                 }}
               />
             </div>
