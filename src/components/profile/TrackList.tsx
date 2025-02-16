@@ -10,7 +10,6 @@ import { TrackActions } from "@/components/albums/TrackActions";
 import { useAudio } from "@/contexts/audio/AudioContext";
 import { useUser } from "@/contexts/auth/UserContext";
 import { useInView } from "react-intersection-observer";
-import { useToast } from "@/hooks/use-toast";
 
 interface Track {
   trackResponseDto: {
