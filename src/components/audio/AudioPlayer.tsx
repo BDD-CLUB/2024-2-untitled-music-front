@@ -90,31 +90,27 @@ export function AudioPlayer() {
   };
 
   return (
-    <div
-      className={cn(
-        "w-full h-16",
-        "bg-background/30 dark:bg-black/20",
-        "backdrop-blur-2xl",
-        "border border-white/20",
-        "rounded-xl",
-        "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
-        "overflow-hidden",
-        "relative"
-      )}
-    >
+    <div className={cn(
+      "w-full h-16",
+      "bg-background/30 dark:bg-black/20",
+      "backdrop-blur-2xl",
+      "border border-white/20",
+      "rounded-xl",
+      "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+      "overflow-hidden",
+      "relative"
+    )}>
       {/* 컨텐츠 영역 */}
       <div className="flex items-center justify-between h-full px-4">
-        {/* 트랙 정보 */}
+        {/* 트랙 정보 - 모바일에서도 유지 */}
         <div className="flex items-center gap-4 flex-1 min-w-0">
-          <div
-            className={cn(
-              "relative w-10 h-10",
-              "rounded-xl overflow-hidden",
-              "bg-white/5",
-              "ring-1 ring-white/10",
-              "shadow-lg"
-            )}
-          >
+          <div className={cn(
+            "relative w-10 h-10",
+            "rounded-xl overflow-hidden",
+            "bg-white/5",
+            "ring-1 ring-white/10",
+            "shadow-lg"
+          )}>
             <Image
               src={currentTrack.artUrl}
               alt={currentTrack.title}
@@ -138,8 +134,8 @@ export function AudioPlayer() {
           </div>
         </div>
 
-        {/* 재생 컨트롤 */}
-        <div className="flex items-center gap-4">
+        {/* 데스크톱 전용 컨트롤 */}
+        <div className="hidden lg:flex items-center gap-4">
           <button 
             onClick={playPrevious}
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -173,8 +169,8 @@ export function AudioPlayer() {
           </button>
         </div>
 
-        {/* 볼륨 컨트롤 */}
-        <div className="flex items-center gap-2 flex-1 justify-end">
+        {/* 데스크톱 전용 볼륨 컨트롤 */}
+        <div className="hidden lg:flex items-center gap-2 flex-1 justify-end">
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground min-w-[40px] text-right">
               {formatDuration(Math.floor(progress))}
@@ -216,6 +212,28 @@ export function AudioPlayer() {
               "[&_.range-track-progress]:bg-white/40"
             )}
           />
+        </div>
+
+        {/* 모바일 전용 컨트롤 */}
+        <div className="flex lg:hidden items-center gap-2">
+          <button
+            onClick={isPlaying ? pause : resume}
+            className={cn(
+              "w-8 h-8 rounded-full",
+              "flex items-center justify-center",
+              "bg-white/10",
+              "hover:bg-white/20",
+              "ring-1 ring-white/20",
+              "transition-all duration-300",
+              "shadow-lg"
+            )}
+          >
+            {isPlaying ? (
+              <Pause className="w-4 h-4" />
+            ) : (
+              <Play className="w-4 h-4 ml-0.5" />
+            )}
+          </button>
           <button
             onClick={handleNavigateToWatch}
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -225,8 +243,8 @@ export function AudioPlayer() {
         </div>
       </div>
 
-      {/* 프로그레스 바를 하단으로 이동 */}
-      <div className="absolute bottom-0 left-0 right-0 px-2">
+      {/* 프로그레스 바 - 데스크톱에서만 표시 */}
+      <div className="absolute bottom-0 left-0 right-0 px-2 hidden lg:block">
         <Slider
           value={[progress]}
           max={duration}

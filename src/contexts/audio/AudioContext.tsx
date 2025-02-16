@@ -65,6 +65,7 @@ interface AudioContextType extends AudioState {
   playNext: () => void;
   playPrevious: () => void;
   updateQueueAndPlay: (newQueue: QueueTrack[], index: number) => Promise<void>;
+  updateQueueAndIndex: (newQueue: QueueTrack[], newIndex: number) => void;
 }
 
 const AudioContext = createContext<AudioContextType | null>(null);
@@ -276,6 +277,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     [play]
   );
 
+  const updateQueueAndIndex = useCallback((newQueue: QueueTrack[], newIndex: number) => {
+    setQueue(newQueue);
+    setQueueIndex(newIndex);
+  }, []);
+
   const value = {
     ...state,
     play,
@@ -292,6 +298,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     playNext,
     playPrevious,
     updateQueueAndPlay,
+    updateQueueAndIndex,
   };
 
   return (

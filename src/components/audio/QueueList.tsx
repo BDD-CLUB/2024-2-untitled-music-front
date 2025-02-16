@@ -145,7 +145,7 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
 };
 
 export function QueueList() {
-  const { queue, queueIndex, setQueue } = useAudio();
+  const { queue, queueIndex, setQueue, updateQueueAndIndex } = useAudio();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -161,7 +161,12 @@ export function QueueList() {
     const newIndex = Number(over.id);
 
     const newQueue = arrayMove(queue, oldIndex, newIndex);
-    setQueue(newQueue);
+    
+    if (oldIndex === queueIndex) {
+      updateQueueAndIndex(newQueue, newIndex);
+    } else {
+      setQueue(newQueue);
+    }
   };
 
   if (queue.length === 0) {

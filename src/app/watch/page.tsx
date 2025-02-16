@@ -32,16 +32,22 @@ export default function WatchPage() {
           "flex-[2] min-w-0",
           showQueue ? "hidden lg:block" : "block"
         )}>
-          <div
-            className={cn(
-              "rounded-3xl",
-              "bg-white/10 dark:bg-black/10",
-              "backdrop-blur-2xl",
-              "border border-white/20 dark:border-white/10",
-              "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
-              "overflow-hidden"
-            )}
-          >
+          <div className={cn(
+            "rounded-3xl",
+            "bg-white/10 dark:bg-black/10",
+            "backdrop-blur-2xl",
+            "border border-white/20 dark:border-white/10",
+            "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+            "overflow-hidden",
+            "relative"
+          )}>
+            <button 
+              onClick={() => setShowQueue(true)}
+              className="lg:hidden absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 z-10"
+            >
+              <List className="w-6 h-6" />
+            </button>
+
             <div className="p-8">
               {/* 앨범 아트워크/가사 토글 */}
               <div
@@ -88,14 +94,6 @@ export default function WatchPage() {
                 </div>
               </div>
             </div>
-
-            {/* 모바일 재생목록 토글 버튼 추가 */}
-            <button 
-              onClick={() => setShowQueue(true)}
-              className="lg:hidden absolute bottom-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20"
-            >
-              <List className="w-6 h-6" />
-            </button>
           </div>
         </div>
 
@@ -113,13 +111,15 @@ export default function WatchPage() {
             "overflow-hidden",
             "h-full"
           )}>
-            {/* 모바일 아트워크 보기 토글 버튼 추가 */}
-            <button 
-              onClick={() => setShowQueue(false)}
-              className="lg:hidden p-4 w-full flex items-center gap-2 text-muted-foreground hover:bg-white/5"
-            >
-              <ImageIcon className="w-5 h-5" />
-            </button>
+            <div className="relative border-b border-white/10">
+              <h2 className="p-4 text-xl font-semibold">재생 목록</h2>
+              <button 
+                onClick={() => setShowQueue(false)}
+                className="lg:hidden absolute top-1/2 right-4 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white/20"
+              >
+                <ImageIcon className="w-6 h-6" />
+              </button>
+            </div>
             <div className="p-6">
               <QueueList />
             </div>
