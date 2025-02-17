@@ -75,15 +75,51 @@ interface AudioContextType extends AudioState {
 const AudioContext = createContext<AudioContextType | null>(null);
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<AudioState>({
-    currentTrack: null,
-    isPlaying: false,
-    volume: 1,
-    progress: 0,
-    duration: 0,
-    repeat: 'none',
-    shuffle: false,
-  });
+  // localStorage에서 이전 상태 복원
+  const getInitialState = (): AudioState => {
+    if (typeof window === 'undefined') return {
+      currentTrack: null,
+      isPlaying: false,
+      volume: 1,
+      progress: 0,
+      duration: 0,
+      repeat: 'none',
+      shuffle: false,
+    };
+
+    const savedState = localStorage.getItem('audioState');
+    if (savedState) {
+      const parsed = JSON.parse(savedState);
+      return {
+        ...parsed,
+        isPlaying: false, // 새로고침 시에는 일시정지 상태로 시작
+      };
+    }
+
+    return {
+      currentTrack: null,
+      isPlaying: false,
+      volume: 1,
+      progress: 0,
+      duration: 0,
+      repeat: 'none',
+      shuffle: false,
+    };
+  };
+
+  const [state, setState] = useState<AudioState>(getInitialState());
+
+  // 상태 변경 시 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('audioState', JSON.stringify(state));
+  }, [state]);
+
+  // 새로고침 시 현재 트랙 자동 재생
+  useEffect(() => {
+    if (state.currentTrack) {
+      play(state.currentTrack.uuid);
+    }
+  }, []); // 컴포넌트 마운트 시 1회만 실행
 
   const [queue, setQueue] = useState<QueueTrack[]>([]);
   const [queueIndex, setQueueIndex] = useState(0);
@@ -148,7 +184,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         console.error("Failed to play track:", error);
       }
     },
-    [fetchTrack, state.volume]
+    [fetchTrack]
   );
 
   // 일시 정지
@@ -357,28 +393,40 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const updateQueueAndIndex = useCallback((newQueue: QueueTrack[], newIndex: number) => {
     setQueue(newQueue);
     setQueueIndex(newIndex);
-    if (state.isPlaying && audioRef.current) {
-      audioRef.current.play();
-    }
-  }, [state.isPlaying]);
+  }, []);
 
-  // 반복 모드 토글
+  // 반복 모드 토글 수정
   const toggleRepeat = useCallback(() => {
     setState(prev => {
-      if (state.isPlaying && audioRef.current) {
+      // 현재 재생 상태 유지
+      const newRepeat = prev.repeat === 'none' 
+        ? 'all' as const 
+        : prev.repeat === 'all' 
+          ? 'one' as const 
+          : 'none' as const;
+
+      const newState: AudioState = {
+        ...prev,
+        repeat: newRepeat
+      };
+
+      // 현재 재생 중이었다면 재생 상태 유지
+      if (prev.isPlaying && audioRef.current) {
+        audioRef.current.currentTime = audioRef.current.currentTime;
         audioRef.current.play();
       }
-      return {
-        ...prev,
-        repeat: prev.repeat === 'none' ? 'all' : prev.repeat === 'all' ? 'one' : 'none'
-      };
-    });
-  }, [state.isPlaying]);
 
-  // 셔플 모드 토글
+      return newState;
+    });
+  }, []);
+
+  // 셔플 모드 토글 수정
   const toggleShuffle = useCallback(() => {
     setState(prev => {
       const newShuffle = !prev.shuffle;
+      const currentTime = audioRef.current?.currentTime || 0;
+      const wasPlaying = prev.isPlaying;
+
       if (newShuffle) {
         const indices = Array.from({ length: queue.length }, (_, i) => i);
         const currentIndex = indices.splice(queueIndex, 1)[0];
@@ -389,12 +437,36 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         indices.unshift(currentIndex);
         setShuffledIndices(indices);
       }
-      if (state.isPlaying && audioRef.current) {
+
+      // 현재 재생 중이었다면 재생 상태 유지
+      if (wasPlaying && audioRef.current) {
+        audioRef.current.currentTime = currentTime;
         audioRef.current.play();
       }
+
       return { ...prev, shuffle: newShuffle };
     });
-  }, [queue.length, queueIndex, state.isPlaying]);
+  }, [queue.length, queueIndex]);
+
+  // 큐 상태도 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('audioQueue', JSON.stringify({
+      queue,
+      queueIndex,
+      shuffledIndices
+    }));
+  }, [queue, queueIndex, shuffledIndices]);
+
+  // 초기 큐 상태 복원
+  useEffect(() => {
+    const savedQueue = localStorage.getItem('audioQueue');
+    if (savedQueue) {
+      const { queue: savedQueueData, queueIndex: savedIndex, shuffledIndices: savedIndices } = JSON.parse(savedQueue);
+      setQueue(savedQueueData);
+      setQueueIndex(savedIndex);
+      setShuffledIndices(savedIndices);
+    }
+  }, []);
 
   const value = {
     ...state,
