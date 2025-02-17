@@ -10,6 +10,7 @@ import {
   KeyboardSensor,
   PointerSensor,
   useSensor,
+  useSensors,
   DragEndEvent,
 } from "@dnd-kit/core";
 import {
@@ -22,7 +23,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Play, X, XCircle } from "lucide-react";
 import { TrackActions } from "@/components/albums/TrackActions";
-import { useMemo } from "react";
+import { useCallback } from "react";
 
 interface QueueTrack {
   uuid: string;
@@ -48,6 +49,7 @@ interface QueueItemProps {
 }
 
 const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
+  const { removeFromQueue, updateQueueAndPlay, queue } = useAudio();
   const {
     attributes,
     listeners,
@@ -56,7 +58,6 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
     transition,
     isDragging,
   } = useSortable({ id });
-  const { removeFromQueue, updateQueueAndPlay, queue } = useAudio();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -146,29 +147,14 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
 
 export function QueueList() {
   const { queue, queueIndex, clearQueue, updateQueueAndIndex } = useAudio();
-  
-  // Hook을 컴포넌트 레벨에서 직접 호출
-  const pointerSensor = useSensor(PointerSensor);
-  const keyboardSensor = useSensor(KeyboardSensor, {
-    coordinateGetter: sortableKeyboardCoordinates,
-  });
-
-  // sensors 배열을 useMemo로 생성
-  const sensors = useMemo(
-    () => [pointerSensor, keyboardSensor],
-    [pointerSensor, keyboardSensor]
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
 
-  // 큐가 비어있거나 초기화 중일 때의 처리
-  if (!queue || queue.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-        <p>재생 목록이 비어있습니다</p>
-      </div>
-    );
-  }
-
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -177,7 +163,17 @@ export function QueueList() {
 
     const newQueue = arrayMove(queue, oldIndex, newIndex);
     updateQueueAndIndex(newQueue, oldIndex === queueIndex ? newIndex : queueIndex);
-  };
+  }, [queue, queueIndex, updateQueueAndIndex]);
+
+  if (!queue) return null;
+
+  if (queue.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+        <p>재생 목록이 비어있습니다</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -192,31 +188,28 @@ export function QueueList() {
         </button>
       </div>
 
-      {/* DnD 컨텍스트를 조건부 렌더링 */}
-      {queue.length > 0 && (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={queue.map((_, index) => index.toString())}
+          strategy={verticalListSortingStrategy}
         >
-          <SortableContext
-            items={queue.map((_, index) => index.toString())}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="space-y-1">
-              {queue.map((track, index) => (
-                <QueueItem
-                  key={`${track.uuid}-${index}`}
-                  id={index.toString()}
-                  track={track}
-                  isActive={index === queueIndex}
-                  index={index}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-      )}
+          <div className="space-y-1">
+            {queue.map((track, index) => (
+              <QueueItem
+                key={`${track.uuid}-${index}`}
+                id={index.toString()}
+                track={track}
+                isActive={index === queueIndex}
+                index={index}
+              />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
     </div>
   );
 } 
