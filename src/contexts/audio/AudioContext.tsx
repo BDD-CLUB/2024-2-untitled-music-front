@@ -66,6 +66,8 @@ interface AudioContextType extends AudioState {
   playPrevious: () => void;
   updateQueueAndPlay: (newQueue: QueueTrack[], index: number) => Promise<void>;
   updateQueueAndIndex: (newQueue: QueueTrack[], newIndex: number) => void;
+  audioRef: React.RefObject<HTMLAudioElement>;
+  setAudioRef: (element: HTMLAudioElement) => void;
 }
 
 const AudioContext = createContext<AudioContextType | null>(null);
@@ -246,39 +248,6 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
   }, [state.isPlaying]);
 
-  // 오디오 엘리먼트 생성
-  useEffect(() => {
-    audioRef.current = new Audio();
-
-    // 트랙 종료 시 다음 트랙 재생
-    const handleTrackEnd = () => {
-      if (queue.length > queueIndex + 1) {
-        // 다음 트랙이 있으면 재생
-        const nextTrack = queue[queueIndex + 1];
-        setQueueIndex((prev) => prev + 1);
-        play(nextTrack.uuid);
-      } else {
-        // 마지막 트랙이면 재생 중지
-        setState((prev) => ({
-          ...prev,
-          isPlaying: false,
-        }));
-      }
-    };
-
-    if (audioRef.current) {
-      audioRef.current.addEventListener("ended", handleTrackEnd);
-    }
-
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.removeEventListener("ended", handleTrackEnd);
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, [queue, queueIndex, play]);
-
   // 큐 관리 함수들
   const addToQueue = useCallback(
     (track: QueueTrack) => {
@@ -404,78 +373,26 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.currentTrack, updateQueueAndIndex]);
 
-  // 오디오 상태 변화를 추적하는 이벤트 리스너 추가
-  useEffect(() => {
-    if (!audioRef.current) return;
-
-    const audio = audioRef.current;
-
-    const handlePlay = () => {
-      console.log('=== Audio Play Event ===', {
-        currentTime: audio.currentTime,
-        volume: audio.volume,
-        src: audio.src,
-        readyState: audio.readyState,
-      });
-    };
-
-    const handlePause = () => {
-      console.log('=== Audio Pause Event ===', {
-        currentTime: audio.currentTime,
-        volume: audio.volume,
-        src: audio.src,
-        readyState: audio.readyState,
-      });
-    };
-
-    const handleVolumeChange = () => {
-      console.log('=== Volume Change Event ===', {
-        oldVolume: state.volume,
-        newVolume: audio.volume,
-        isPlaying: !audio.paused,
-        readyState: audio.readyState,
-      });
-    };
-
-    const handleError = (e: ErrorEvent) => {
-      console.error('=== Audio Error ===', {
-        error: audio.error,
-        errorEvent: e,
-        readyState: audio.readyState,
-        networkState: audio.networkState,
-      });
-    };
-
-    // 이벤트 리스너 등록
-    audio.addEventListener('play', handlePlay);
-    audio.addEventListener('pause', handlePause);
-    audio.addEventListener('volumechange', handleVolumeChange);
-    audio.addEventListener('error', handleError);
-    audio.addEventListener('waiting', () => console.log('Audio waiting...'));
-    audio.addEventListener('stalled', () => console.log('Audio stalled...'));
-    audio.addEventListener('suspend', () => console.log('Audio suspended...'));
-
-    return () => {
-      audio.removeEventListener('play', handlePlay);
-      audio.removeEventListener('pause', handlePause);
-      audio.removeEventListener('volumechange', handleVolumeChange);
-      audio.removeEventListener('error', handleError);
-      audio.removeEventListener('waiting', () => console.log('Audio waiting...'));
-      audio.removeEventListener('stalled', () => console.log('Audio stalled...'));
-      audio.removeEventListener('suspend', () => console.log('Audio suspended...'));
-    };
-  }, [state.volume]);
-
   // 상태 변경 추적을 위한 useEffect
   useEffect(() => {
-    console.log('State Changed:', {
+    console.log('=== State Update ===', {
       isPlaying: state.isPlaying,
       currentTrack: state.currentTrack?.title,
       volume: state.volume,
       queueIndex,
-      queueLength: queue.length
+      queueLength: queue.length,
+      audioElement: {
+        exists: !!audioRef.current,
+        src: audioRef.current?.src,
+        paused: audioRef.current?.paused,
+      }
     });
   }, [state, queueIndex, queue.length]);
+
+  // audioRef 설정 함수 추가
+  const setAudioRef = useCallback((element: HTMLAudioElement) => {
+    audioRef.current = element;
+  }, []);
 
   const value = {
     ...state,
@@ -494,10 +411,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     playPrevious,
     updateQueueAndPlay,
     updateQueueAndIndex,
+    audioRef,
+    setAudioRef,
   };
 
   return (
-    <AudioContext.Provider value={value}>{children}</AudioContext.Provider>
+    <AudioContext.Provider value={value}>
+      {children}
+    </AudioContext.Provider>
   );
 }
 

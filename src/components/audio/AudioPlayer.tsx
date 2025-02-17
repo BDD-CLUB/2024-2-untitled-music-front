@@ -30,6 +30,8 @@ export function AudioPlayer() {
     seek,
     playNext,
     playPrevious,
+    setAudioRef,
+    audioRef
   } = useAudio();
 
   const router = useRouter();
@@ -85,6 +87,12 @@ export function AudioPlayer() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleKeyPress]);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      setAudioRef(audioRef.current);
+    }
+  }, [setAudioRef]);
+
   if (!currentTrack) return null;
 
   const handleNavigateToWatch = () => {
@@ -96,121 +104,181 @@ export function AudioPlayer() {
   };
 
   return (
-    <div
-      className={cn(
-        "w-full h-16",
-        "bg-background/30 dark:bg-black/20",
-        "backdrop-blur-2xl",
-        "border border-white/20",
-        "rounded-xl",
-        "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
-        "overflow-hidden",
-        "relative"
-      )}
-    >
-      {/* 컨텐츠 영역 */}
-      <div className="flex items-center justify-between h-full px-4">
-        {/* 트랙 정보 - 모바일에서도 유지 */}
-        <div className="flex items-center gap-4 flex-1 min-w-0">
-          <div
-            className={cn(
-              "relative w-10 h-10",
-              "rounded-xl overflow-hidden",
-              "bg-white/5",
-              "ring-1 ring-white/10",
-              "shadow-lg"
-            )}
-          >
-            <Image
-              src={currentTrack.artUrl}
-              alt={currentTrack.title}
-              fill
-              className="object-cover rounded-xl"
+    <>
+      <audio 
+        ref={audioRef} 
+        preload="auto" 
+        crossOrigin="anonymous"
+      />
+      <div
+        className={cn(
+          "w-full h-16",
+          "bg-background/30 dark:bg-black/20",
+          "backdrop-blur-2xl",
+          "border border-white/20",
+          "rounded-xl",
+          "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+          "overflow-hidden",
+          "relative"
+        )}
+      >
+        {/* 컨텐츠 영역 */}
+        <div className="flex items-center justify-between h-full px-4">
+          {/* 트랙 정보 - 모바일에서도 유지 */}
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <div
+              className={cn(
+                "relative w-10 h-10",
+                "rounded-xl overflow-hidden",
+                "bg-white/5",
+                "ring-1 ring-white/10",
+                "shadow-lg"
+              )}
+            >
+              <Image
+                src={currentTrack.artUrl}
+                alt={currentTrack.title}
+                fill
+                className="object-cover rounded-xl"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <Link
+                href={`/albums/${currentTrack.album.uuid}`}
+                className="text-sm font-medium hover:underline truncate block"
+              >
+                {currentTrack.title}
+              </Link>
+              <Link
+                href={`/profile/${currentTrack.artist.uuid}`}
+                className="text-sm text-muted-foreground hover:underline truncate block"
+              >
+                {currentTrack.artist.name}
+              </Link>
+            </div>
+          </div>
+
+          {/* 데스크톱 전용 컨트롤 */}
+          <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={playPrevious}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <SkipBack className="w-4 h-4" />
+            </button>
+            <button
+              onClick={isPlaying ? pause : resume}
+              className={cn(
+                "w-10 h-10 rounded-full",
+                "flex items-center justify-center",
+                "bg-white/10",
+                "hover:bg-white/20",
+                "ring-1 ring-white/20",
+                "transition-all duration-300",
+                "hover:scale-105",
+                "shadow-lg"
+              )}
+            >
+              {isPlaying ? (
+                <Pause className="w-5 h-5" />
+              ) : (
+                <Play className="w-5 h-5 ml-0.5" />
+              )}
+            </button>
+            <button
+              onClick={playNext}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <SkipForward className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* 데스크톱 전용 볼륨 컨트롤 */}
+          <div className="hidden md:flex items-center gap-2 flex-1 justify-end pr-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground min-w-[40px] text-right">
+                {formatDuration(Math.floor(progress))}
+              </span>
+              <span className="text-xs text-muted-foreground">/</span>
+              <span className="text-xs text-muted-foreground min-w-[40px]">
+                {formatDuration(duration)}
+              </span>
+            </div>
+            <div className="w-px h-4 bg-white/10 mx-4" />
+            <button
+              onClick={() => setVolume(volume === 0 ? 1 : 0)}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {volume === 0 ? (
+                <VolumeX className="w-5 h-5" />
+              ) : (
+                <Volume2 className="w-5 h-5" />
+              )}
+            </button>
+            <Slider
+              value={[volume * 100]}
+              max={100}
+              step={1}
+              onValueChange={([value]) => setVolume(value / 100)}
+              className={cn(
+                "w-20",
+                "h-1",
+                "[&_[role=slider]]:h-3 [&_[role=slider]]:w-3",
+                "[&_[role=slider]]:hover:h-4 [&_[role=slider]]:hover:w-4",
+                "[&_[role=slider]]:transition-all",
+                "[&_[role=slider]]:border-2",
+                "[&_[role=slider]]:border-white",
+                "[&_[role=slider]]:bg-white",
+                "[&_[role=slider]]:shadow-md",
+                "[&_[data-disabled]]:opacity-50",
+                "[&_[data-orientation=horizontal]]:h-full",
+                "[&_.range-track]:bg-white/20",
+                "[&_.range-track-progress]:bg-white/40"
+              )}
             />
           </div>
-          <div className="flex-1 min-w-0">
-            <Link
-              href={`/albums/${currentTrack.album.uuid}`}
-              className="text-sm font-medium hover:underline truncate block"
+
+          {/* 재생/일시정지 (모바일) + 재생목록 버튼 (공통) */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={isPlaying ? pause : resume}
+              className={cn(
+                "w-8 h-8 rounded-full",
+                "flex items-center justify-center",
+                "bg-white/10",
+                "hover:bg-white/20",
+                "ring-1 ring-white/20",
+                "transition-all duration-300",
+                "shadow-lg md:hidden" // 재생/일시정지 버튼만 모바일에서만 표시
+              )}
             >
-              {currentTrack.title}
-            </Link>
-            <Link
-              href={`/profile/${currentTrack.artist.uuid}`}
-              className="text-sm text-muted-foreground hover:underline truncate block"
+              {isPlaying ? (
+                <Pause className="w-4 h-4" />
+              ) : (
+                <Play className="w-4 h-4 ml-0.5" />
+              )}
+            </button>
+            <button
+              onClick={handleNavigateToWatch}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              title="재생 목록"
             >
-              {currentTrack.artist.name}
-            </Link>
+              <List className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
-        {/* 데스크톱 전용 컨트롤 */}
-        <div className="hidden md:flex items-center gap-4">
-          <button
-            onClick={playPrevious}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <SkipBack className="w-4 h-4" />
-          </button>
-          <button
-            onClick={isPlaying ? pause : resume}
-            className={cn(
-              "w-10 h-10 rounded-full",
-              "flex items-center justify-center",
-              "bg-white/10",
-              "hover:bg-white/20",
-              "ring-1 ring-white/20",
-              "transition-all duration-300",
-              "hover:scale-105",
-              "shadow-lg"
-            )}
-          >
-            {isPlaying ? (
-              <Pause className="w-5 h-5" />
-            ) : (
-              <Play className="w-5 h-5 ml-0.5" />
-            )}
-          </button>
-          <button
-            onClick={playNext}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <SkipForward className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* 데스크톱 전용 볼륨 컨트롤 */}
-        <div className="hidden md:flex items-center gap-2 flex-1 justify-end pr-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground min-w-[40px] text-right">
-              {formatDuration(Math.floor(progress))}
-            </span>
-            <span className="text-xs text-muted-foreground">/</span>
-            <span className="text-xs text-muted-foreground min-w-[40px]">
-              {formatDuration(duration)}
-            </span>
-          </div>
-          <div className="w-px h-4 bg-white/10 mx-4" />
-          <button
-            onClick={() => setVolume(volume === 0 ? 1 : 0)}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {volume === 0 ? (
-              <VolumeX className="w-5 h-5" />
-            ) : (
-              <Volume2 className="w-5 h-5" />
-            )}
-          </button>
+        {/* 프로그레스 바 - 데스크톱에서만 표시 */}
+        <div className="absolute bottom-0 left-0 right-0 px-2 hidden md:block">
           <Slider
-            value={[volume * 100]}
-            max={100}
+            value={[progress]}
+            max={duration}
             step={1}
-            onValueChange={([value]) => setVolume(value / 100)}
+            onValueChange={([value]) => seek(value)}
             className={cn(
-              "w-20",
-              "h-1",
+              "h-[5px]",
+              "cursor-pointer",
               "[&_[role=slider]]:h-3 [&_[role=slider]]:w-3",
-              "[&_[role=slider]]:hover:h-4 [&_[role=slider]]:hover:w-4",
               "[&_[role=slider]]:transition-all",
               "[&_[role=slider]]:border-2",
               "[&_[role=slider]]:border-white",
@@ -223,60 +291,7 @@ export function AudioPlayer() {
             )}
           />
         </div>
-
-        {/* 재생/일시정지 (모바일) + 재생목록 버튼 (공통) */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={isPlaying ? pause : resume}
-            className={cn(
-              "w-8 h-8 rounded-full",
-              "flex items-center justify-center",
-              "bg-white/10",
-              "hover:bg-white/20",
-              "ring-1 ring-white/20",
-              "transition-all duration-300",
-              "shadow-lg md:hidden" // 재생/일시정지 버튼만 모바일에서만 표시
-            )}
-          >
-            {isPlaying ? (
-              <Pause className="w-4 h-4" />
-            ) : (
-              <Play className="w-4 h-4 ml-0.5" />
-            )}
-          </button>
-          <button
-            onClick={handleNavigateToWatch}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-            title="재생 목록"
-          >
-            <List className="w-5 h-5" />
-          </button>
-        </div>
       </div>
-
-      {/* 프로그레스 바 - 데스크톱에서만 표시 */}
-      <div className="absolute bottom-0 left-0 right-0 px-2 hidden md:block">
-        <Slider
-          value={[progress]}
-          max={duration}
-          step={1}
-          onValueChange={([value]) => seek(value)}
-          className={cn(
-            "h-[5px]",
-            "cursor-pointer",
-            "[&_[role=slider]]:h-3 [&_[role=slider]]:w-3",
-            "[&_[role=slider]]:transition-all",
-            "[&_[role=slider]]:border-2",
-            "[&_[role=slider]]:border-white",
-            "[&_[role=slider]]:bg-white",
-            "[&_[role=slider]]:shadow-md",
-            "[&_[data-disabled]]:opacity-50",
-            "[&_[data-orientation=horizontal]]:h-full",
-            "[&_.range-track]:bg-white/20",
-            "[&_.range-track-progress]:bg-white/40"
-          )}
-        />
-      </div>
-    </div>
+    </>
   );
 }
