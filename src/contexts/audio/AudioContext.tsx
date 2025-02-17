@@ -121,22 +121,37 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const play = useCallback(
     async (trackId: string) => {
       try {
+        // 1. 먼저 상태를 로딩 상태로 변경
+        setState(prev => ({ ...prev, isPlaying: false }));
+        
         const track = await fetchTrack(trackId);
 
         if (audioRef.current) {
+          // 2. 오디오 소스 설정
           audioRef.current.src = track.trackUrl;
           audioRef.current.volume = state.volume;
-          await audioRef.current.play();
-
-          setState((prev) => ({
+          
+          // 3. 트랙 정보 상태 업데이트
+          setState(prev => ({
             ...prev,
             currentTrack: track,
-            isPlaying: true,
             duration: track.duration,
           }));
+
+          // 4. 재생 시작
+          await audioRef.current.play();
+          
+          // 5. 재생 상태 업데이트
+          setState(prev => ({ ...prev, isPlaying: true }));
         }
       } catch (error) {
         console.error("Failed to play track:", error);
+        // 에러 발생 시 상태 초기화
+        setState(prev => ({ 
+          ...prev, 
+          isPlaying: false,
+          currentTrack: null 
+        }));
       }
     },
     [fetchTrack, state.volume]
@@ -231,7 +246,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const addToQueue = useCallback(
     (track: QueueTrack) => {
       setQueue(prev => [...prev, track]);
-
+      
       if (queue.length === 0) {
         play(track.uuid);
       }
@@ -241,16 +256,13 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const removeFromQueue = useCallback(
     (index: number) => {
-      const currentTrack = state.currentTrack;
-      const wasPlaying = state.isPlaying;
-
       setQueue(prev => {
         const newQueue = [...prev];
         newQueue.splice(index, 1);
         return newQueue;
       });
 
-      if (index === queueIndex && currentTrack && wasPlaying) {
+      if (index === queueIndex) {
         const nextTrack = queue[index + 1] || queue[0];
         if (nextTrack) {
           play(nextTrack.uuid);
@@ -259,7 +271,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         setQueueIndex(prev => prev - 1);
       }
     },
-    [queue, queueIndex, state.currentTrack, state.isPlaying, play]
+    [queue, queueIndex, play]
   );
 
   const clearQueue = useCallback(() => {
@@ -274,6 +286,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       audioRef.current.pause();
       audioRef.current.src = "";
     }
+    setState((prev) => ({
+      ...prev,
+      currentTrack: null,
+      isPlaying: false,
+    }));
   }, []);
 
   const playNext = useCallback(() => {
@@ -324,20 +341,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const updateQueueAndIndex = useCallback(
     (newQueue: QueueTrack[], newIndex: number) => {
-      const currentTrack = state.currentTrack;
-      const wasPlaying = state.isPlaying;
-
       setQueue(newQueue);
       setQueueIndex(newIndex);
-
-      if (currentTrack && wasPlaying) {
-        const newTrack = newQueue[newIndex];
-        if (newTrack.uuid !== currentTrack.uuid) {
-          play(newTrack.uuid);
-        }
-      }
     },
-    [state.currentTrack, state.isPlaying, play]
+    []
   );
 
   // setQueue 함수도 수정
