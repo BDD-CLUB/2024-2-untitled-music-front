@@ -71,7 +71,7 @@ interface AudioContextType extends AudioState {
 const AudioContext = createContext<AudioContextType | null>(null);
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
-  // 초기 상태를 localStorage에서 가져오는 함수
+  // 초기 상태를 localStorage에서 가져오는 함수 수정
   const getInitialState = () => {
     try {
       const savedState = localStorage.getItem('audioPlayerState');
@@ -95,11 +95,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
           queueIndex: queueIndex ?? 0,
         };
       }
-    } catch {
-      console.error('Failed to restore audio state');
+    } catch (error) {
+      console.error('Failed to parse saved audio state:', error);
     }
 
-    // 기본값 반환
+    // 기본값 반환 (에러 로그 없이)
     return {
       state: {
         currentTrack: null,
@@ -437,10 +437,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.currentTrack, updateQueueAndIndex]);
 
-  // 상태 저장
+  // 상태 저장 useEffect 수정
   useEffect(() => {
-    if (!state.currentTrack) return; // 현재 트랙이 없으면 저장하지 않음
-
+    // 현재 트랙이 없어도 저장하도록 변경
     const stateToSave = {
       currentTrack: state.currentTrack,
       volume: state.volume,
