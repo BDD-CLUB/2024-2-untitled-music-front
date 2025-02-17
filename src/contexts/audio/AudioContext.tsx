@@ -85,6 +85,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout>();
 
+  // volume을 ref로 관리하여 상태 업데이트 없이 볼륨 제어
+  const volumeRef = useRef(1);
+
   // 트랙 정보 가져오기
   const fetchTrack = useCallback(async (trackId: string) => {
     try {
@@ -184,37 +187,20 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   // 볼륨 조절
   const setVolume = useCallback((volume: number) => {
     console.log('=== Volume Change Debug ===');
-    console.log('setVolume called:', volume);
-    console.log('Current audio state:', {
-      isPlaying: audioRef.current?.paused ? 'paused' : 'playing',
-      currentTime: audioRef.current?.currentTime,
-      src: audioRef.current?.src,
-    });
-
+    
     if (audioRef.current) {
-      const wasPlaying = !audioRef.current.paused;
-      console.log('Audio was playing:', wasPlaying);
-      
       try {
+        // ref를 통해 볼륨 값 저장
+        volumeRef.current = volume;
         audioRef.current.volume = volume;
-        console.log('Volume set successfully');
         
-        // 재생 상태 확인 및 복구
-        if (wasPlaying && audioRef.current.paused) {
-          console.log('Attempting to resume playback...');
-          audioRef.current.play()
-            .then(() => console.log('Playback resumed successfully'))
-            .catch(err => console.error('Failed to resume playback:', err));
-        }
+        // UI 업데이트를 위한 상태 변경
+        setState(prev => ({ ...prev, volume }));
       } catch (error) {
         console.error('Error setting volume:', error);
       }
-
-      setState(prev => {
-        console.log('Updating volume state from', prev.volume, 'to', volume);
-        return { ...prev, volume };
-      });
     }
+    
     console.log('=== End Volume Change Debug ===');
   }, []);
 
@@ -313,6 +299,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       audioRef.current.addEventListener("ended", handleTrackEnd);
     }
 
+    // 저장된 볼륨 값 적용
+    audio.volume = volumeRef.current;
+
     return () => {
       console.log('Cleaning up Audio element');
       observer.disconnect();
@@ -320,7 +309,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       audio.src = '';
       audioRef.current = null;
     };
-  }, [queue, queueIndex, play]);
+  }, [queue, queueIndex, play]);  // volume 관련 의존성 제거
 
   // 큐 관리 함수들
   const addToQueue = useCallback(
