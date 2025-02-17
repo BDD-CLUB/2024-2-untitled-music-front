@@ -77,23 +77,38 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       const savedStateStr = localStorage.getItem('audioPlayerState');
       if (!savedStateStr) return null;
 
-      // 먼저 JSON 파싱
       const savedState = JSON.parse(savedStateStr);
-      
-      // 필요한 데이터가 모두 있는지 검증
       if (!savedState || typeof savedState !== 'object') return null;
 
-      return {
-        state: {
-          currentTrack: savedState.currentTrack || null,
-          volume: Number(savedState.volume) || 1,
-          progress: Number(savedState.progress) || 0,
-          isPlaying: false,
-          duration: savedState.currentTrack?.duration || 0,
-        },
-        queue: Array.isArray(savedState.queue) ? savedState.queue : [],
-        queueIndex: Number(savedState.queueIndex) || 0,
-      };
+      // 현재 트랙이 있는 경우 큐에도 포함되어 있는지 확인
+      if (savedState.currentTrack) {
+        const queue = Array.isArray(savedState.queue) ? savedState.queue : [];
+        const currentTrackIndex = queue.findIndex(
+          (track: QueueTrack) => track.uuid === savedState.currentTrack.uuid
+        );
+
+        // 현재 트랙이 큐에 없으면 추가
+        if (currentTrackIndex === -1) {
+          queue.splice(savedState.queueIndex, 0, savedState.currentTrack);
+        } else {
+          // 큐에 있지만 인덱스가 다르면 인덱스 수정
+          savedState.queueIndex = currentTrackIndex;
+        }
+
+        return {
+          state: {
+            currentTrack: savedState.currentTrack,
+            volume: Number(savedState.volume) || 1,
+            progress: Number(savedState.progress) || 0,
+            isPlaying: false,
+            duration: savedState.currentTrack.duration || 0,
+          },
+          queue,
+          queueIndex: savedState.queueIndex,
+        };
+      }
+
+      return null;
     } catch {
       return null;
     }
@@ -332,21 +347,24 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   );
 
   const clearQueue = useCallback(() => {
-    // 1. 먼저 localStorage에서 상태 제거
-    localStorage.removeItem('audioPlayerState');
+    // 1. 모든 상태 초기화
+    const initialState = {
+      currentTrack: null,
+      isPlaying: false,
+      volume: 1,
+      progress: 0,
+      duration: 0
+    };
 
-    // 2. 오디오 엘리먼트 완전 정리
+    // 2. 오디오 엘리먼트 정리
     if (audioRef.current) {
-      // 재생 중지
       audioRef.current.pause();
-      // 상태 초기화
       audioRef.current.currentTime = 0;
       audioRef.current.src = "";
-      // 참조 제거
       audioRef.current = null;
     }
 
-    // 3. 진행 상태 업데이트 인터벌 정리
+    // 3. 인터벌 정리
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = undefined;
@@ -358,17 +376,16 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     volumeRef.current = 1;
 
     // 5. UI 상태 초기화
-    setState({
-      currentTrack: null,
-      isPlaying: false,
-      volume: 1,
-      progress: 0,
-      duration: 0
-    });
-    
-    // 6. 큐 상태 초기화
+    setState(initialState);
     setQueue([]);
     setQueueIndex(0);
+
+    // 6. localStorage 완전 정리
+    try {
+      localStorage.removeItem('audioPlayerState');
+    } catch (error) {
+      console.error('Failed to clear storage:', error);
+    }
 
     // 7. 새로운 오디오 엘리먼트 생성
     audioRef.current = new Audio();
@@ -468,13 +485,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Failed to save audio state:', error);
     }
-  }, [state.currentTrack, state.volume, state.progress]);  // 필요한 의존성만 포함
+  }, [state]);
 
-  // 상태 저장 - 디바운스 적용
+  // 상태 저장
   useEffect(() => {
-    const timeoutId = setTimeout(saveState, 1000);  // 1초 디바운스
-    return () => clearTimeout(timeoutId);
-  }, [state.currentTrack, state.volume, state.progress, queue, queueIndex]);  // 실제로 저장이 필요한 상태만 감시
+    saveState();
+  }, [state, queue, queueIndex, saveState]);
 
   // 페이지 언로드 시 상태 저장
   useEffect(() => {
