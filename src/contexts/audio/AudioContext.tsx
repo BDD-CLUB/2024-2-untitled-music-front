@@ -319,14 +319,53 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const updateQueueAndIndex = useCallback(
     (newQueue: QueueTrack[], newIndex: number) => {
+      // 현재 재생 중인 트랙 정보 저장
+      const currentTrackUuid = state.currentTrack?.uuid;
+      const wasPlaying = state.isPlaying;
+      const currentTime = audioRef.current?.currentTime || 0;
+
       setQueue(newQueue);
       setQueueIndex(newIndex);
-      if (state.isPlaying && audioRef.current) {
-        audioRef.current.play();
+
+      // 현재 트랙이 있고 재생 중이었다면, 같은 상태를 유지
+      if (currentTrackUuid && wasPlaying) {
+        const newTrack = newQueue[newIndex];
+        
+        // 같은 트랙이면 재생 상태와 시간을 유지
+        if (newTrack.uuid === currentTrackUuid && audioRef.current) {
+          audioRef.current.currentTime = currentTime;
+          if (wasPlaying) {
+            audioRef.current.play();
+          }
+        } 
+        // 다른 트랙이면 새로운 트랙 재생
+        else {
+          play(newTrack.uuid);
+        }
       }
     },
-    [state.isPlaying]
+    [state.currentTrack?.uuid, state.isPlaying, play]
   );
+
+  // setQueue 함수도 수정
+  const setQueueWrapper = useCallback((newQueue: QueueTrack[]) => {
+    // 현재 재생 중인 트랙이 있다면
+    if (state.currentTrack) {
+      const currentTrackUuid = state.currentTrack.uuid;
+      const newIndex = newQueue.findIndex(track => track.uuid === currentTrackUuid);
+      
+      // 새 큐에서 현재 트랙을 찾을 수 있다면
+      if (newIndex !== -1) {
+        updateQueueAndIndex(newQueue, newIndex);
+      } else {
+        // 현재 트랙이 새 큐에 없다면 그냥 큐만 업데이트
+        setQueue(newQueue);
+      }
+    } else {
+      // 재생 중인 트랙이 없다면 그냥 큐만 업데이트
+      setQueue(newQueue);
+    }
+  }, [state.currentTrack, updateQueueAndIndex]);
 
   const value = {
     ...state,
@@ -337,7 +376,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     seek,
     queue,
     queueIndex,
-    setQueue,
+    setQueue: setQueueWrapper,
     addToQueue,
     removeFromQueue,
     clearQueue,
