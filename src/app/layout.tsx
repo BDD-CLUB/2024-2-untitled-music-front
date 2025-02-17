@@ -10,7 +10,12 @@ import { UserProvider } from "@/contexts/auth/UserContext";
 import { Toaster } from "@/components/ui/toaster";
 import { PageAnimation } from "@/components/layout/PageAnimation";
 import { MobileNav } from "@/components/layout/MobileNav";
-import { AudioProvider } from "@/contexts/audio/AudioContext";
+import dynamic from 'next/dynamic';
+
+const AudioProvider = dynamic(
+  () => import('@/contexts/audio/AudioContext').then(mod => mod.AudioProvider),
+  { ssr: false }
+);
 
 // getUser 함수 수정
 const getUser = async () => {
