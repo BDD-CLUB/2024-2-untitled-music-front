@@ -120,33 +120,41 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   // 재생 시작
   const play = useCallback(
     async (trackId: string) => {
+      console.log('Play called for track:', trackId);
       try {
-        // 1. 먼저 상태를 로딩 상태로 변경
+        console.log('Setting isPlaying to false');
         setState(prev => ({ ...prev, isPlaying: false }));
         
+        console.log('Fetching track data...');
         const track = await fetchTrack(trackId);
+        console.log('Track data received:', track.title);
 
         if (audioRef.current) {
-          // 2. 오디오 소스 설정
+          console.log('Setting audio source:', track.trackUrl);
           audioRef.current.src = track.trackUrl;
           audioRef.current.volume = state.volume;
           
-          // 3. 트랙 정보 상태 업데이트
+          console.log('Updating track state');
           setState(prev => ({
             ...prev,
             currentTrack: track,
             duration: track.duration,
           }));
 
-          // 4. 재생 시작
-          await audioRef.current.play();
+          console.log('Starting playback...');
+          try {
+            await audioRef.current.play();
+            console.log('Playback started successfully');
+          } catch (playError) {
+            console.error('Playback failed:', playError);
+            throw playError;
+          }
           
-          // 5. 재생 상태 업데이트
+          console.log('Setting isPlaying to true');
           setState(prev => ({ ...prev, isPlaying: true }));
         }
       } catch (error) {
-        console.error("Failed to play track:", error);
-        // 에러 발생 시 상태 초기화
+        console.error('Play function failed:', error);
         setState(prev => ({ 
           ...prev, 
           isPlaying: false,
@@ -174,12 +182,18 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // 볼륨 조절
-  const setVolume = (volume: number) => {
+  const setVolume = useCallback((volume: number) => {
+    console.log('setVolume called:', volume);
     if (audioRef.current) {
+      console.log('Previous volume:', audioRef.current.volume);
       audioRef.current.volume = volume;
-      setState((prev) => ({ ...prev, volume }));
+      console.log('New volume set:', audioRef.current.volume);
+      setState((prev) => {
+        console.log('Updating volume state:', volume);
+        return { ...prev, volume };
+      });
     }
-  };
+  }, []);
 
   // 재생 위치 이동
   const seek = (time: number) => {
@@ -366,6 +380,52 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       setQueue(newQueue);
     }
   }, [state.currentTrack, updateQueueAndIndex]);
+
+  // 오디오 상태 변화를 추적하는 이벤트 리스너 추가
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    const audio = audioRef.current;
+
+    const handlePlay = () => console.log('Audio Event: play');
+    const handlePause = () => console.log('Audio Event: pause');
+    const handleEnded = () => console.log('Audio Event: ended');
+    const handleError = (e: ErrorEvent) => console.error('Audio Error:', e);
+    const handleVolumeChange = () => console.log('Audio Event: volume changed to', audio.volume);
+    const handleTimeUpdate = () => {
+      if (audio.currentTime % 5 < 0.1) {  // 5초마다만 로그 출력
+        console.log('Audio Time:', audio.currentTime);
+      }
+    };
+
+    // 상태 변경 추적을 위한 이벤트 리스너들
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError);
+    audio.addEventListener('volumechange', handleVolumeChange);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+
+    return () => {
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', handleError);
+      audio.removeEventListener('volumechange', handleVolumeChange);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+  }, []);
+
+  // 상태 변경 추적을 위한 useEffect
+  useEffect(() => {
+    console.log('State Changed:', {
+      isPlaying: state.isPlaying,
+      currentTrack: state.currentTrack?.title,
+      volume: state.volume,
+      queueIndex,
+      queueLength: queue.length
+    });
+  }, [state, queueIndex, queue.length]);
 
   const value = {
     ...state,
