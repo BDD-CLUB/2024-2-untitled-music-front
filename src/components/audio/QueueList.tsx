@@ -23,6 +23,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Play, X, XCircle } from "lucide-react";
 import { TrackActions } from "@/components/albums/TrackActions";
+import { useMemo } from "react";
 
 interface QueueTrack {
   uuid: string;
@@ -146,12 +147,26 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
 
 export function QueueList() {
   const { queue, queueIndex, clearQueue, updateQueueAndIndex } = useAudio();
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
+  
+  // DnD 센서 초기화를 useMemo로 변경
+  const sensors = useMemo(
+    () => [
+      useSensor(PointerSensor),
+      useSensor(KeyboardSensor, {
+        coordinateGetter: sortableKeyboardCoordinates,
+      })
+    ],
+    []
   );
+
+  // 큐가 비어있거나 초기화 중일 때의 처리
+  if (!queue || queue.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+        <p>재생 목록이 비어있습니다</p>
+      </div>
+    );
+  }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -163,14 +178,6 @@ export function QueueList() {
     const newQueue = arrayMove(queue, oldIndex, newIndex);
     updateQueueAndIndex(newQueue, oldIndex === queueIndex ? newIndex : queueIndex);
   };
-
-  if (queue.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-        <p>재생 목록이 비어있습니다</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -185,28 +192,31 @@ export function QueueList() {
         </button>
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={queue.map((_, index) => index.toString())}
-          strategy={verticalListSortingStrategy}
+      {/* DnD 컨텍스트를 조건부 렌더링 */}
+      {queue.length > 0 && (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
         >
-          <div className="space-y-1">
-            {queue.map((track, index) => (
-              <QueueItem
-                key={`${track.uuid}-${index}`}
-                id={index.toString()}
-                track={track}
-                isActive={index === queueIndex}
-                index={index}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+          <SortableContext
+            items={queue.map((_, index) => index.toString())}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-1">
+              {queue.map((track, index) => (
+                <QueueItem
+                  key={`${track.uuid}-${index}`}
+                  id={index.toString()}
+                  track={track}
+                  isActive={index === queueIndex}
+                  index={index}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
     </div>
   );
 } 
