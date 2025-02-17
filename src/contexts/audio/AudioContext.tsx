@@ -230,14 +230,13 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   // 큐 관리 함수들
   const addToQueue = useCallback(
     (track: QueueTrack) => {
-      setQueue((prev) => {
-        if (prev.length === 0) {
-          play(track.uuid);
-        }
-        return [...prev, track];
-      });
+      setQueue(prev => [...prev, track]);
+
+      if (queue.length === 0) {
+        play(track.uuid);
+      }
     },
-    [play]
+    [queue.length, play]
   );
 
   const removeFromQueue = useCallback(
@@ -245,7 +244,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       const currentTrack = state.currentTrack;
       const wasPlaying = state.isPlaying;
 
-      setQueue((prev) => {
+      setQueue(prev => {
         const newQueue = [...prev];
         newQueue.splice(index, 1);
         return newQueue;
