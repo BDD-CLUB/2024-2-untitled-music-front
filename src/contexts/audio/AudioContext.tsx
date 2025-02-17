@@ -106,13 +106,6 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('audioState', JSON.stringify(state));
   }, [state]);
 
-  // 새로고침 시 현재 트랙 자동 재생
-  useEffect(() => {
-    if (state.currentTrack) {
-      play(state.currentTrack.uuid);
-    }
-  }, []); // 컴포넌트 마운트 시 1회만 실행
-
   const [queue, setQueue] = useState<QueueTrack[]>([]);
   const [queueIndex, setQueueIndex] = useState(0);
 
@@ -228,19 +221,20 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
   }, [state.isPlaying]);
 
-  // 트랙 종료 시 단순히 다음 트랙 재생
+  // 트랙 종료 시 다음 트랙 재생
+  const handleTrackEnd = useCallback(() => {
+    if (queueIndex < queue.length - 1) {
+      const nextIndex = queueIndex + 1;
+      setQueueIndex(nextIndex);
+      play(queue[nextIndex].uuid);
+    } else {
+      setState(prev => ({ ...prev, isPlaying: false }));
+    }
+  }, [queue.length, queueIndex, play]);
+
+  // 트랙 종료 이벤트 리스너 설정
   useEffect(() => {
     audioRef.current = new Audio();
-
-    const handleTrackEnd = useCallback(() => {
-      if (queueIndex < queue.length - 1) {
-        const nextIndex = queueIndex + 1;
-        setQueueIndex(nextIndex);
-        play(queue[nextIndex].uuid);
-      } else {
-        setState(prev => ({ ...prev, isPlaying: false }));
-      }
-    }, [queue, queueIndex, play, setState]);
 
     if (audioRef.current) {
       audioRef.current.addEventListener('ended', handleTrackEnd);
@@ -253,7 +247,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         audioRef.current = null;
       }
     };
-  }, [queue, queueIndex, play, setState]);
+  }, [handleTrackEnd]);
 
   // 재생 상태 변경 시 처리하는 useEffect 수정
   useEffect(() => {

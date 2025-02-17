@@ -9,11 +9,7 @@ import {
   VolumeX,
   SkipBack,
   SkipForward,
-  List,
-  Repeat,
-  Repeat1,
-  RepeatIcon,
-  Shuffle,
+  List
 } from "lucide-react";
 import { Play, Pause } from "lucide-react";
 import Image from "next/image";
