@@ -71,7 +71,7 @@ interface AudioContextType extends AudioState {
 const AudioContext = createContext<AudioContextType | null>(null);
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
-  // 초기 상태를 가져오는 함수를 단순화
+  // 초기 상태를 가져오는 함수를 컴포넌트 외부로 이동
   const getInitialState = () => {
     try {
       const savedStateStr = localStorage.getItem('audioPlayerState');
@@ -80,42 +80,24 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       const savedState = JSON.parse(savedStateStr);
       if (!savedState || typeof savedState !== 'object') return null;
 
-      // 현재 트랙이 있는 경우 큐에도 포함되어 있는지 확인
-      if (savedState.currentTrack) {
-        const queue = Array.isArray(savedState.queue) ? savedState.queue : [];
-        const currentTrackIndex = queue.findIndex(
-          (track: QueueTrack) => track.uuid === savedState.currentTrack.uuid
-        );
-
-        // 현재 트랙이 큐에 없으면 추가
-        if (currentTrackIndex === -1) {
-          queue.splice(savedState.queueIndex, 0, savedState.currentTrack);
-        } else {
-          // 큐에 있지만 인덱스가 다르면 인덱스 수정
-          savedState.queueIndex = currentTrackIndex;
-        }
-
-        return {
-          state: {
-            currentTrack: savedState.currentTrack,
-            volume: Number(savedState.volume) || 1,
-            progress: Number(savedState.progress) || 0,
-            isPlaying: false,
-            duration: savedState.currentTrack.duration || 0,
-          },
-          queue,
-          queueIndex: savedState.queueIndex,
-        };
-      }
-
-      return null;
+      return {
+        state: {
+          currentTrack: savedState.currentTrack || null,
+          volume: Number(savedState.volume) || 1,
+          progress: Number(savedState.progress) || 0,
+          isPlaying: false,
+          duration: savedState.currentTrack?.duration || 0,
+        },
+        queue: Array.isArray(savedState.queue) ? savedState.queue : [],
+        queueIndex: Number(savedState.queueIndex) || 0,
+      };
     } catch {
       return null;
     }
   };
 
-  // 기본 상태
-  const defaultState = {
+  // 초기 상태를 한 번에 설정
+  const initialState = getInitialState() || {
     state: {
       currentTrack: null,
       isPlaying: false,
@@ -127,19 +109,30 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     queueIndex: 0,
   };
 
-  // 초기 상태 설정
-  const initialState = getInitialState() || defaultState;
-  const [state, setState] = useState<AudioState>(initialState.state);
-  const [queue, setQueue] = useState<QueueTrack[]>(initialState.queue);
+  // useState 호출을 한 번에 처리
+  const [state, setState] = useState(initialState.state);
+  const [queue, setQueue] = useState(initialState.queue);
   const [queueIndex, setQueueIndex] = useState(initialState.queueIndex);
 
+  // ref 초기화도 한 번에 처리
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout>();
-
-  // ref 초기화
   const volumeRef = useRef(initialState.state.volume);
-  const queueRef = useRef<QueueTrack[]>(initialState.queue);
-  const queueIndexRef = useRef<number>(initialState.queueIndex);
+  const queueRef = useRef(initialState.queue);
+  const queueIndexRef = useRef(initialState.queueIndex);
+
+  // 오디오 엘리먼트 초기화를 useEffect로 이동
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      if (state.currentTrack) {
+        audioRef.current.src = state.currentTrack.trackUrl;
+        audioRef.current.volume = volumeRef.current;
+        audioRef.current.currentTime = state.progress;
+      }
+    }
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
+
+  const intervalRef = useRef<NodeJS.Timeout>();
 
   // 트랙 정보 가져오기
   const fetchTrack = useCallback(async (trackId: string) => {
