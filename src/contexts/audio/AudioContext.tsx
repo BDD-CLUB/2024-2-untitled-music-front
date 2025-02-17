@@ -71,40 +71,13 @@ interface AudioContextType extends AudioState {
 const AudioContext = createContext<AudioContextType | null>(null);
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
-  // 초기 상태에서 repeat와 shuffle 제거
-  const getInitialState = (): AudioState => {
-    if (typeof window === 'undefined') return {
-      currentTrack: null,
-      isPlaying: false,
-      volume: 1,
-      progress: 0,
-      duration: 0,
-    };
-
-    const savedState = localStorage.getItem('audioState');
-    if (savedState) {
-      const parsed = JSON.parse(savedState);
-      return {
-        ...parsed,
-        isPlaying: false,
-      };
-    }
-
-    return {
-      currentTrack: null,
-      isPlaying: false,
-      volume: 1,
-      progress: 0,
-      duration: 0,
-    };
-  };
-
-  const [state, setState] = useState<AudioState>(getInitialState());
-
-  // 상태 변경 시 localStorage에 저장
-  useEffect(() => {
-    localStorage.setItem('audioState', JSON.stringify(state));
-  }, [state]);
+  const [state, setState] = useState<AudioState>({
+    currentTrack: null,
+    isPlaying: false,
+    volume: 1,
+    progress: 0,
+    duration: 0,
+  });
 
   const [queue, setQueue] = useState<QueueTrack[]>([]);
   const [queueIndex, setQueueIndex] = useState(0);
@@ -221,20 +194,25 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
   }, [state.isPlaying]);
 
-  // 트랙 종료 시 다음 트랙 재생
-  const handleTrackEnd = useCallback(() => {
-    if (queueIndex < queue.length - 1) {
-      const nextIndex = queueIndex + 1;
-      setQueueIndex(nextIndex);
-      play(queue[nextIndex].uuid);
-    } else {
-      setState(prev => ({ ...prev, isPlaying: false }));
-    }
-  }, [queue.length, queueIndex, play]);
-
-  // 트랙 종료 이벤트 리스너 설정
+  // 오디오 엘리먼트 생성
   useEffect(() => {
     audioRef.current = new Audio();
+
+    // 트랙 종료 시 다음 트랙 재생
+    const handleTrackEnd = () => {
+      if (queue.length > queueIndex + 1) {
+        // 다음 트랙이 있으면 재생
+        const nextTrack = queue[queueIndex + 1];
+        setQueueIndex(prev => prev + 1);
+        play(nextTrack.uuid);
+      } else {
+        // 마지막 트랙이면 재생 중지
+        setState(prev => ({
+          ...prev,
+          isPlaying: false,
+        }));
+      }
+    };
 
     if (audioRef.current) {
       audioRef.current.addEventListener('ended', handleTrackEnd);
@@ -247,40 +225,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         audioRef.current = null;
       }
     };
-  }, [handleTrackEnd]);
-
-  // 재생 상태 변경 시 처리하는 useEffect 수정
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !state.currentTrack) return;
-
-    if (state.isPlaying) {
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            // 재생 성공
-          })
-          .catch((error) => {
-            if (error.name === 'AbortError') {
-              // 재생이 중단된 경우, 다시 시도
-              setTimeout(() => {
-                if (state.isPlaying) {
-                  audio.play().catch(() => {
-                    setState(prev => ({ ...prev, isPlaying: false }));
-                  });
-                }
-              }, 100);
-            } else {
-              console.error("Playback failed:", error);
-              setState(prev => ({ ...prev, isPlaying: false }));
-            }
-          });
-      }
-    } else {
-      audio.pause();
-    }
-  }, [state.isPlaying, state.currentTrack]);
+  }, [queue, queueIndex, play]);
 
   // 큐 관리 함수들
   const addToQueue = useCallback(
@@ -326,11 +271,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // playNext 함수 단순화
   const playNext = useCallback(() => {
-    if (queueIndex < queue.length - 1) {
+    if (queue.length > queueIndex + 1) {
       const nextTrack = queue[queueIndex + 1];
-      setQueueIndex(prev => prev + 1);
+      setQueueIndex((prev) => prev + 1);
       play(nextTrack.uuid);
     }
   }, [queue, queueIndex, play]);
