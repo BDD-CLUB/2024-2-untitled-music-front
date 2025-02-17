@@ -4,7 +4,17 @@ import { cn } from "@/lib/utils";
 import { useAudio } from "@/contexts/audio/AudioContext";
 import { formatDuration } from "@/lib/format";
 import { Slider } from "@/components/ui/slider";
-import { Volume2, VolumeX, SkipBack, SkipForward, List, Repeat, Repeat1, RepeatIcon, Shuffle } from "lucide-react";
+import {
+  Volume2,
+  VolumeX,
+  SkipBack,
+  SkipForward,
+  List,
+  Repeat,
+  Repeat1,
+  RepeatIcon,
+  Shuffle,
+} from "lucide-react";
 import { Play, Pause } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,10 +34,6 @@ export function AudioPlayer() {
     seek,
     playNext,
     playPrevious,
-    repeat,
-    shuffle,
-    toggleRepeat,
-    toggleShuffle,
   } = useAudio();
 
   const router = useRouter();
@@ -86,47 +92,39 @@ export function AudioPlayer() {
   if (!currentTrack) return null;
 
   const handleNavigateToWatch = () => {
-    if(pathname === '/watch') {
+    if (pathname === "/watch") {
       router.back();
     } else {
-      router.push('/watch');
-    }
-  };
-
-  // 반복 모드에 따른 아이콘 렌더링
-  const renderRepeatIcon = () => {
-    switch (repeat) {
-      case 'one':
-        return <Repeat1 className="w-4 h-4" />;
-      case 'all':
-        return <RepeatIcon className="w-4 h-4" />;
-      default:
-        return <Repeat className="w-4 h-4" />;
+      router.push("/watch");
     }
   };
 
   return (
-    <div className={cn(
-      "w-full h-16",
-      "bg-background/30 dark:bg-black/20",
-      "backdrop-blur-2xl",
-      "border border-white/20",
-      "rounded-xl",
-      "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
-      "overflow-hidden",
-      "relative"
-    )}>
+    <div
+      className={cn(
+        "w-full h-16",
+        "bg-background/30 dark:bg-black/20",
+        "backdrop-blur-2xl",
+        "border border-white/20",
+        "rounded-xl",
+        "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+        "overflow-hidden",
+        "relative"
+      )}
+    >
       {/* 컨텐츠 영역 */}
       <div className="flex items-center justify-between h-full px-4">
         {/* 트랙 정보 - 모바일에서도 유지 */}
         <div className="flex items-center gap-4 flex-1 min-w-0">
-          <div className={cn(
-            "relative w-10 h-10",
-            "rounded-xl overflow-hidden",
-            "bg-white/5",
-            "ring-1 ring-white/10",
-            "shadow-lg"
-          )}>
+          <div
+            className={cn(
+              "relative w-10 h-10",
+              "rounded-xl overflow-hidden",
+              "bg-white/5",
+              "ring-1 ring-white/10",
+              "shadow-lg"
+            )}
+          >
             <Image
               src={currentTrack.artUrl}
               alt={currentTrack.title}
@@ -152,15 +150,6 @@ export function AudioPlayer() {
 
         {/* 데스크톱 전용 컨트롤 */}
         <div className="hidden md:flex items-center gap-4">
-          <button
-            onClick={toggleShuffle}
-            className={cn(
-              "text-muted-foreground hover:text-foreground transition-colors",
-              shuffle && "text-primary"
-            )}
-          >
-            <Shuffle className="w-4 h-4" />
-          </button>
           <button
             onClick={playPrevious}
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -191,16 +180,6 @@ export function AudioPlayer() {
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <SkipForward className="w-4 h-4" />
-          </button>
-          <button
-            onClick={toggleRepeat}
-            className={cn(
-              "text-muted-foreground hover:text-foreground transition-colors",
-              repeat !== 'none' && "text-primary",
-              "relative"
-            )}
-          >
-            {renderRepeatIcon()}
           </button>
         </div>
 
