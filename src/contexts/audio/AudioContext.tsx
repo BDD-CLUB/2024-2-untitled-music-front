@@ -242,19 +242,25 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const removeFromQueue = useCallback(
     (index: number) => {
+      const currentTrack = state.currentTrack;
+      const wasPlaying = state.isPlaying;
+
       setQueue((prev) => {
         const newQueue = [...prev];
         newQueue.splice(index, 1);
-
-        if (index === queueIndex && newQueue.length > 0) {
-          const nextTrack = newQueue[index] || newQueue[0];
-          play(nextTrack.uuid);
-        }
-
         return newQueue;
       });
+
+      if (index === queueIndex && currentTrack && wasPlaying) {
+        const nextTrack = queue[index + 1] || queue[0];
+        if (nextTrack) {
+          play(nextTrack.uuid);
+        }
+      } else if (index < queueIndex) {
+        setQueueIndex(prev => prev - 1);
+      }
     },
-    [queueIndex, play]
+    [queue, queueIndex, state.currentTrack, state.isPlaying, play]
   );
 
   const clearQueue = useCallback(() => {
@@ -319,32 +325,20 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const updateQueueAndIndex = useCallback(
     (newQueue: QueueTrack[], newIndex: number) => {
-      // 현재 재생 중인 트랙 정보 저장
-      const currentTrackUuid = state.currentTrack?.uuid;
+      const currentTrack = state.currentTrack;
       const wasPlaying = state.isPlaying;
-      const currentTime = audioRef.current?.currentTime || 0;
 
       setQueue(newQueue);
       setQueueIndex(newIndex);
 
-      // 현재 트랙이 있고 재생 중이었다면, 같은 상태를 유지
-      if (currentTrackUuid && wasPlaying) {
+      if (currentTrack && wasPlaying) {
         const newTrack = newQueue[newIndex];
-        
-        // 같은 트랙이면 재생 상태와 시간을 유지
-        if (newTrack.uuid === currentTrackUuid && audioRef.current) {
-          audioRef.current.currentTime = currentTime;
-          if (wasPlaying) {
-            audioRef.current.play();
-          }
-        } 
-        // 다른 트랙이면 새로운 트랙 재생
-        else {
+        if (newTrack.uuid !== currentTrack.uuid) {
           play(newTrack.uuid);
         }
       }
     },
-    [state.currentTrack?.uuid, state.isPlaying, play]
+    [state.currentTrack, state.isPlaying, play]
   );
 
   // setQueue 함수도 수정
