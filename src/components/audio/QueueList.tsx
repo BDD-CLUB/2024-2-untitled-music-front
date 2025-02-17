@@ -145,7 +145,7 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
 };
 
 export function QueueList() {
-  const { queue, queueIndex, setQueue, updateQueueAndIndex } = useAudio();
+  const { queue, queueIndex, clearQueue, updateQueueAndIndex } = useAudio();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -177,7 +177,7 @@ export function QueueList() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">재생 목록</h2>
         <button
-          onClick={() => setQueue([])}
+          onClick={clearQueue}
           className="text-muted-foreground hover:text-destructive transition-colors"
           title="재생 목록 비우기"
         >
