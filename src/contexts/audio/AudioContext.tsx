@@ -66,8 +66,6 @@ interface AudioContextType extends AudioState {
   playPrevious: () => void;
   updateQueueAndPlay: (newQueue: QueueTrack[], index: number) => Promise<void>;
   updateQueueAndIndex: (newQueue: QueueTrack[], newIndex: number) => void;
-  audioRef: React.RefObject<HTMLAudioElement>;
-  setAudioRef: (element: HTMLAudioElement) => void;
 }
 
 const AudioContext = createContext<AudioContextType | null>(null);
@@ -248,6 +246,82 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
   }, [state.isPlaying]);
 
+  // 오디오 엘리먼트 생성
+  useEffect(() => {
+    console.log('=== Audio Element Lifecycle ===');
+    console.log('Creating new Audio element');
+    
+    audioRef.current = new Audio();
+    const audio = audioRef.current;
+
+    // 오디오 엘리먼트의 모든 속성 변경 추적
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        console.log('Audio element mutation:', {
+          type: mutation.type,
+          attributeName: mutation.attributeName,
+          oldValue: mutation.oldValue,
+          newValue: audio[mutation.attributeName as keyof HTMLAudioElement],
+        });
+      });
+    });
+
+    observer.observe(audio, {
+      attributes: true,
+      attributeOldValue: true,
+    });
+
+    // 오디오 객체의 모든 상태 변화 추적
+    const logAudioState = () => {
+      console.log('Current Audio State:', {
+        src: audio.src,
+        paused: audio.paused,
+        currentTime: audio.currentTime,
+        volume: audio.volume,
+        readyState: audio.readyState,
+        networkState: audio.networkState,
+        error: audio.error,
+      });
+    };
+
+    // 주요 이벤트에서 상태 로깅
+    const events = ['play', 'pause', 'volumechange', 'timeupdate', 'error', 'waiting', 'stalled'];
+    events.forEach(event => {
+      audio.addEventListener(event, () => {
+        console.log(`Audio Event: ${event}`);
+        logAudioState();
+      });
+    });
+
+    // 트랙 종료 시 다음 트랙 재생
+    const handleTrackEnd = () => {
+      if (queue.length > queueIndex + 1) {
+        // 다음 트랙이 있으면 재생
+        const nextTrack = queue[queueIndex + 1];
+        setQueueIndex((prev) => prev + 1);
+        play(nextTrack.uuid);
+      } else {
+        // 마지막 트랙이면 재생 중지
+        setState((prev) => ({
+          ...prev,
+          isPlaying: false,
+        }));
+      }
+    };
+
+    if (audioRef.current) {
+      audioRef.current.addEventListener("ended", handleTrackEnd);
+    }
+
+    return () => {
+      console.log('Cleaning up Audio element');
+      observer.disconnect();
+      audio.pause();
+      audio.src = '';
+      audioRef.current = null;
+    };
+  }, [queue, queueIndex, play]);
+
   // 큐 관리 함수들
   const addToQueue = useCallback(
     (track: QueueTrack) => {
@@ -389,11 +463,6 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     });
   }, [state, queueIndex, queue.length]);
 
-  // audioRef 설정 함수 추가
-  const setAudioRef = useCallback((element: HTMLAudioElement) => {
-    audioRef.current = element;
-  }, []);
-
   const value = {
     ...state,
     play,
@@ -411,14 +480,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     playPrevious,
     updateQueueAndPlay,
     updateQueueAndIndex,
-    audioRef,
-    setAudioRef,
   };
 
   return (
-    <AudioContext.Provider value={value}>
-      {children}
-    </AudioContext.Provider>
+    <AudioContext.Provider value={value}>{children}</AudioContext.Provider>
   );
 }
 
