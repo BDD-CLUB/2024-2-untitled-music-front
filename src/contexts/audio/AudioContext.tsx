@@ -349,22 +349,28 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   );
 
   const clearQueue = useCallback(() => {
-    setQueue([]);
-    setQueueIndex(0);
-    setState((prev) => ({
-      ...prev,
-      currentTrack: null,
-      isPlaying: false,
-    }));
+    // ref 초기화
+    queueRef.current = [];
+    queueIndexRef.current = 0;
+    
+    // 오디오 정지 및 초기화
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = "";
     }
-    setState((prev) => ({
+
+    // UI 상태 초기화 (한 번에 처리)
+    setState(prev => ({
       ...prev,
       currentTrack: null,
       isPlaying: false,
+      progress: 0,
+      duration: 0
     }));
+    
+    // 큐 상태 초기화
+    setQueue([]);
+    setQueueIndex(0);
   }, []);
 
   const playNext = useCallback(() => {
@@ -460,6 +466,76 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       }
     });
   }, [state, queueIndex, queue.length]);
+
+  // 상태 저장
+  useEffect(() => {
+    const stateToSave = {
+      currentTrack: state.currentTrack,
+      volume: state.volume,
+      progress: state.progress,
+      queue: queueRef.current,
+      queueIndex: queueIndexRef.current
+    };
+    localStorage.setItem('audioPlayerState', JSON.stringify(stateToSave));
+  }, [state.currentTrack, state.volume, state.progress]);
+
+  // 초기 상태 복원
+  useEffect(() => {
+    try {
+      const savedState = localStorage.getItem('audioPlayerState');
+      if (savedState) {
+        const {
+          currentTrack,
+          volume,
+          progress,
+          queue: savedQueue,
+          queueIndex: savedQueueIndex
+        } = JSON.parse(savedState);
+
+        // ref 상태 복원
+        volumeRef.current = volume;
+        queueRef.current = savedQueue;
+        queueIndexRef.current = savedQueueIndex;
+
+        // UI 상태 복원
+        setState(prev => ({
+          ...prev,
+          currentTrack,
+          volume,
+          progress,
+          isPlaying: false, // 자동 재생 방지
+          duration: currentTrack?.duration || 0
+        }));
+        setQueue(savedQueue);
+        setQueueIndex(savedQueueIndex);
+
+        // 오디오 상태 복원
+        if (audioRef.current && currentTrack) {
+          audioRef.current.src = currentTrack.trackUrl;
+          audioRef.current.volume = volume;
+          audioRef.current.currentTime = progress;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to restore audio state:', error);
+    }
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
+
+  // 페이지 언로드 시 현재 재생 시간 저장
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (audioRef.current) {
+        const stateToSave = {
+          ...JSON.parse(localStorage.getItem('audioPlayerState') || '{}'),
+          progress: audioRef.current.currentTime
+        };
+        localStorage.setItem('audioPlayerState', JSON.stringify(stateToSave));
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   const value = {
     ...state,
