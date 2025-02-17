@@ -10,7 +10,6 @@ import {
   KeyboardSensor,
   PointerSensor,
   useSensor,
-  useSensors,
   DragEndEvent,
 } from "@dnd-kit/core";
 import {
@@ -148,15 +147,16 @@ const QueueItem = ({ track, isActive, id }: QueueItemProps) => {
 export function QueueList() {
   const { queue, queueIndex, clearQueue, updateQueueAndIndex } = useAudio();
   
-  // DnD 센서 초기화를 useMemo로 변경
+  // Hook을 컴포넌트 레벨에서 직접 호출
+  const pointerSensor = useSensor(PointerSensor);
+  const keyboardSensor = useSensor(KeyboardSensor, {
+    coordinateGetter: sortableKeyboardCoordinates,
+  });
+
+  // sensors 배열을 useMemo로 생성
   const sensors = useMemo(
-    () => [
-      useSensor(PointerSensor),
-      useSensor(KeyboardSensor, {
-        coordinateGetter: sortableKeyboardCoordinates,
-      })
-    ],
-    []
+    () => [pointerSensor, keyboardSensor],
+    [pointerSensor, keyboardSensor]
   );
 
   // 큐가 비어있거나 초기화 중일 때의 처리
