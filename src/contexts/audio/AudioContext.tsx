@@ -88,6 +88,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   // volume을 ref로 관리하여 상태 업데이트 없이 볼륨 제어
   const volumeRef = useRef(1);
 
+  // 큐 상태를 ref로 관리
+  const queueRef = useRef<QueueTrack[]>([]);
+  const queueIndexRef = useRef<number>(0);
+
   // 트랙 정보 가져오기
   const fetchTrack = useCallback(async (trackId: string) => {
     try {
@@ -135,7 +139,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         if (audioRef.current) {
           console.log('Setting audio source:', track.trackUrl);
           audioRef.current.src = track.trackUrl;
-          audioRef.current.volume = state.volume;
+          audioRef.current.volume = volumeRef.current;
           
           console.log('Updating track state');
           setState(prev => ({
@@ -165,7 +169,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         }));
       }
     },
-    [fetchTrack, state.volume]
+    [fetchTrack]
   );
 
   // 일시 정지
@@ -190,11 +194,8 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     
     if (audioRef.current) {
       try {
-        // ref를 통해 볼륨 값 저장
         volumeRef.current = volume;
         audioRef.current.volume = volume;
-        
-        // UI 업데이트를 위한 상태 변경
         setState(prev => ({ ...prev, volume }));
       } catch (error) {
         console.error('Error setting volume:', error);
@@ -281,23 +282,23 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
     // 트랙 종료 시 다음 트랙 재생
     const handleTrackEnd = () => {
-      if (queue.length > queueIndex + 1) {
-        // 다음 트랙이 있으면 재생
-        const nextTrack = queue[queueIndex + 1];
-        setQueueIndex((prev) => prev + 1);
+      const currentQueue = queueRef.current;
+      const currentIndex = queueIndexRef.current;
+
+      if (currentQueue.length > currentIndex + 1) {
+        const nextTrack = currentQueue[currentIndex + 1];
+        queueIndexRef.current = currentIndex + 1;
+        setQueueIndex(currentIndex + 1); // UI 업데이트용
         play(nextTrack.uuid);
       } else {
-        // 마지막 트랙이면 재생 중지
-        setState((prev) => ({
+        setState(prev => ({
           ...prev,
           isPlaying: false,
         }));
       }
     };
 
-    if (audioRef.current) {
-      audioRef.current.addEventListener("ended", handleTrackEnd);
-    }
+    audio.addEventListener("ended", handleTrackEnd);
 
     // 저장된 볼륨 값 적용
     audio.volume = volumeRef.current;
@@ -309,38 +310,42 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       audio.src = '';
       audioRef.current = null;
     };
-  }, [queue, queueIndex, play]);  // volume 관련 의존성 제거
+  }, [play]); // 의존성 최소화
 
   // 큐 관리 함수들
   const addToQueue = useCallback(
     (track: QueueTrack) => {
-      setQueue(prev => [...prev, track]);
-      
-      if (queue.length === 0) {
+      const newQueue = [...queueRef.current, track];
+      queueRef.current = newQueue;
+      setQueue(newQueue); // UI 업데이트용
+
+      if (queueRef.current.length === 1) {
         play(track.uuid);
       }
     },
-    [queue.length, play]
+    [play]
   );
 
   const removeFromQueue = useCallback(
     (index: number) => {
-      setQueue(prev => {
-        const newQueue = [...prev];
-        newQueue.splice(index, 1);
-        return newQueue;
-      });
+      const newQueue = [...queueRef.current];
+      newQueue.splice(index, 1);
+      queueRef.current = newQueue;
+      setQueue(newQueue); // UI 업데이트용
 
-      if (index === queueIndex) {
-        const nextTrack = queue[index + 1] || queue[0];
+      if (index === queueIndexRef.current) {
+        const nextTrack = newQueue[index] || newQueue[0];
         if (nextTrack) {
+          queueIndexRef.current = index >= newQueue.length ? newQueue.length - 1 : index;
+          setQueueIndex(queueIndexRef.current); // UI 업데이트용
           play(nextTrack.uuid);
         }
-      } else if (index < queueIndex) {
-        setQueueIndex(prev => prev - 1);
+      } else if (index < queueIndexRef.current) {
+        queueIndexRef.current--;
+        setQueueIndex(queueIndexRef.current); // UI 업데이트용
       }
     },
-    [queue, queueIndex, play]
+    [play]
   );
 
   const clearQueue = useCallback(() => {
@@ -410,6 +415,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const updateQueueAndIndex = useCallback(
     (newQueue: QueueTrack[], newIndex: number) => {
+      queueRef.current = newQueue;
+      queueIndexRef.current = newIndex;
+      
+      // UI 업데이트용
       setQueue(newQueue);
       setQueueIndex(newIndex);
     },
