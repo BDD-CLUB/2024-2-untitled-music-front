@@ -102,7 +102,7 @@ export function PlaylistTracks({
 
   const handlePlay = async (trackId: string) => {
     const queueTracks = tracks.map((track) => ({
-      uuid: track.uuid,
+      uuid: track.trackGetResponseDto.trackResponseDto.uuid,
       title: track.trackGetResponseDto.trackResponseDto.title,
       artUrl: track.trackGetResponseDto.trackResponseDto.artUrl,
       trackUrl: track.trackGetResponseDto.trackResponseDto.trackUrl,
