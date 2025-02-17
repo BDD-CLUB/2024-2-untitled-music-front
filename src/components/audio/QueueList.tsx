@@ -161,12 +161,7 @@ export function QueueList() {
     const newIndex = Number(over.id);
 
     const newQueue = arrayMove(queue, oldIndex, newIndex);
-    
-    if (oldIndex === queueIndex) {
-      updateQueueAndIndex(newQueue, newIndex);
-    } else {
-      setQueue(newQueue);
-    }
+    updateQueueAndIndex(newQueue, oldIndex === queueIndex ? newIndex : queueIndex);
   };
 
   if (queue.length === 0) {
