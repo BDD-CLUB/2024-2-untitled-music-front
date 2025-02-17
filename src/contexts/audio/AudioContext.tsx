@@ -332,19 +332,32 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   );
 
   const clearQueue = useCallback(() => {
-    // 오디오 정지 및 초기화
+    // 1. 먼저 localStorage에서 상태 제거
+    localStorage.removeItem('audioPlayerState');
+
+    // 2. 오디오 엘리먼트 완전 정리
     if (audioRef.current) {
+      // 재생 중지
       audioRef.current.pause();
+      // 상태 초기화
       audioRef.current.currentTime = 0;
       audioRef.current.src = "";
+      // 참조 제거
+      audioRef.current = null;
     }
 
-    // ref 상태 초기화
+    // 3. 진행 상태 업데이트 인터벌 정리
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = undefined;
+    }
+
+    // 4. ref 상태 초기화
     queueRef.current = [];
     queueIndexRef.current = 0;
-    volumeRef.current = 1;  // 볼륨도 기본값으로 초기화
+    volumeRef.current = 1;
 
-    // UI 상태 초기화
+    // 5. UI 상태 초기화
     setState({
       currentTrack: null,
       isPlaying: false,
@@ -353,16 +366,13 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       duration: 0
     });
     
-    // 큐 상태 초기화
+    // 6. 큐 상태 초기화
     setQueue([]);
     setQueueIndex(0);
 
-    // localStorage에서도 상태 제거
-    try {
-      localStorage.removeItem('audioPlayerState');
-    } catch (error) {
-      console.error('Failed to clear audio state:', error);
-    }
+    // 7. 새로운 오디오 엘리먼트 생성
+    audioRef.current = new Audio();
+    audioRef.current.volume = volumeRef.current;
   }, []);
 
   const playNext = useCallback(() => {
@@ -458,12 +468,13 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Failed to save audio state:', error);
     }
-  }, [state]);
+  }, [state.currentTrack, state.volume, state.progress]);  // 필요한 의존성만 포함
 
-  // 상태 저장
+  // 상태 저장 - 디바운스 적용
   useEffect(() => {
-    saveState();
-  }, [state, queue, queueIndex, saveState]);
+    const timeoutId = setTimeout(saveState, 1000);  // 1초 디바운스
+    return () => clearTimeout(timeoutId);
+  }, [state.currentTrack, state.volume, state.progress, queue, queueIndex]);  // 실제로 저장이 필요한 상태만 감시
 
   // 페이지 언로드 시 상태 저장
   useEffect(() => {
