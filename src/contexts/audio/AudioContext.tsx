@@ -183,16 +183,39 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   // 볼륨 조절
   const setVolume = useCallback((volume: number) => {
+    console.log('=== Volume Change Debug ===');
     console.log('setVolume called:', volume);
+    console.log('Current audio state:', {
+      isPlaying: audioRef.current?.paused ? 'paused' : 'playing',
+      currentTime: audioRef.current?.currentTime,
+      src: audioRef.current?.src,
+    });
+
     if (audioRef.current) {
-      console.log('Previous volume:', audioRef.current.volume);
-      audioRef.current.volume = volume;
-      console.log('New volume set:', audioRef.current.volume);
-      setState((prev) => {
-        console.log('Updating volume state:', volume);
+      const wasPlaying = !audioRef.current.paused;
+      console.log('Audio was playing:', wasPlaying);
+      
+      try {
+        audioRef.current.volume = volume;
+        console.log('Volume set successfully');
+        
+        // 재생 상태 확인 및 복구
+        if (wasPlaying && audioRef.current.paused) {
+          console.log('Attempting to resume playback...');
+          audioRef.current.play()
+            .then(() => console.log('Playback resumed successfully'))
+            .catch(err => console.error('Failed to resume playback:', err));
+        }
+      } catch (error) {
+        console.error('Error setting volume:', error);
+      }
+
+      setState(prev => {
+        console.log('Updating volume state from', prev.volume, 'to', volume);
         return { ...prev, volume };
       });
     }
+    console.log('=== End Volume Change Debug ===');
   }, []);
 
   // 재생 위치 이동
@@ -387,34 +410,61 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
     const audio = audioRef.current;
 
-    const handlePlay = () => console.log('Audio Event: play');
-    const handlePause = () => console.log('Audio Event: pause');
-    const handleEnded = () => console.log('Audio Event: ended');
-    const handleError = (e: ErrorEvent) => console.error('Audio Error:', e);
-    const handleVolumeChange = () => console.log('Audio Event: volume changed to', audio.volume);
-    const handleTimeUpdate = () => {
-      if (audio.currentTime % 5 < 0.1) {  // 5초마다만 로그 출력
-        console.log('Audio Time:', audio.currentTime);
-      }
+    const handlePlay = () => {
+      console.log('=== Audio Play Event ===', {
+        currentTime: audio.currentTime,
+        volume: audio.volume,
+        src: audio.src,
+        readyState: audio.readyState,
+      });
     };
 
-    // 상태 변경 추적을 위한 이벤트 리스너들
+    const handlePause = () => {
+      console.log('=== Audio Pause Event ===', {
+        currentTime: audio.currentTime,
+        volume: audio.volume,
+        src: audio.src,
+        readyState: audio.readyState,
+      });
+    };
+
+    const handleVolumeChange = () => {
+      console.log('=== Volume Change Event ===', {
+        oldVolume: state.volume,
+        newVolume: audio.volume,
+        isPlaying: !audio.paused,
+        readyState: audio.readyState,
+      });
+    };
+
+    const handleError = (e: ErrorEvent) => {
+      console.error('=== Audio Error ===', {
+        error: audio.error,
+        errorEvent: e,
+        readyState: audio.readyState,
+        networkState: audio.networkState,
+      });
+    };
+
+    // 이벤트 리스너 등록
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
-    audio.addEventListener('ended', handleEnded);
-    audio.addEventListener('error', handleError);
     audio.addEventListener('volumechange', handleVolumeChange);
-    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('error', handleError);
+    audio.addEventListener('waiting', () => console.log('Audio waiting...'));
+    audio.addEventListener('stalled', () => console.log('Audio stalled...'));
+    audio.addEventListener('suspend', () => console.log('Audio suspended...'));
 
     return () => {
       audio.removeEventListener('play', handlePlay);
       audio.removeEventListener('pause', handlePause);
-      audio.removeEventListener('ended', handleEnded);
-      audio.removeEventListener('error', handleError);
       audio.removeEventListener('volumechange', handleVolumeChange);
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('error', handleError);
+      audio.removeEventListener('waiting', () => console.log('Audio waiting...'));
+      audio.removeEventListener('stalled', () => console.log('Audio stalled...'));
+      audio.removeEventListener('suspend', () => console.log('Audio suspended...'));
     };
-  }, []);
+  }, [state.volume]);
 
   // 상태 변경 추적을 위한 useEffect
   useEffect(() => {
