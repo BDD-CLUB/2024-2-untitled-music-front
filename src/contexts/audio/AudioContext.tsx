@@ -424,50 +424,39 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   );
 
   const updateQueueAndIndex = useCallback((newQueue: QueueTrack[], newIndex: number) => {
-    // 현재 재생 상태 저장
-    const wasPlaying = state.isPlaying;
-    
     setQueue(newQueue);
     setQueueIndex(newIndex);
-
-    // 현재 트랙이 있고 재생 중이었다면 해당 트랙 재생
-    if (wasPlaying && newQueue[newIndex]) {
-      play(newQueue[newIndex].uuid);
-    }
-  }, [state.isPlaying, play]);
-
-  // 반복 모드 토글 수정
-  const toggleRepeat = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      repeat: prev.repeat === 'none' ? 'all' : prev.repeat === 'all' ? 'one' : 'none'
-    }));
   }, []);
 
-  // 셔플 모드 토글 수정
+  // 반복 모드 토글 수정 - 단순히 상태만 변경
+  const toggleRepeat = useCallback(() => {
+    setState(prev => {
+      const newRepeat = prev.repeat === 'none' 
+        ? 'all' 
+        : prev.repeat === 'all' 
+          ? 'one' 
+          : 'none';
+      return { ...prev, repeat: newRepeat };
+    });
+  }, []);
+
+  // 셔플 모드 토글 - 현재 재생 중인 트랙은 그대로 두고 나머지 트랙만 셔플
   const toggleShuffle = useCallback(() => {
     setState(prev => {
       const newShuffle = !prev.shuffle;
-      const currentTrack = queue[queueIndex];
-      
-      if (newShuffle && currentTrack) {
+      if (newShuffle) {
         const indices = Array.from({ length: queue.length }, (_, i) => i);
         const currentIndex = indices.splice(queueIndex, 1)[0];
         for (let i = indices.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [indices[i], indices[j]] = [indices[j], indices[i]];
         }
-        indices.unshift(currentIndex);
+        indices.unshift(currentIndex); // 현재 트랙은 항상 첫 번째로
         setShuffledIndices(indices);
-
-        // 현재 트랙 재생 상태 유지
-        if (prev.isPlaying) {
-          play(currentTrack.uuid);
-        }
       }
       return { ...prev, shuffle: newShuffle };
     });
-  }, [queue, queueIndex, play]);
+  }, [queue.length, queueIndex]);
 
   // 큐 상태도 localStorage에 저장
   useEffect(() => {
