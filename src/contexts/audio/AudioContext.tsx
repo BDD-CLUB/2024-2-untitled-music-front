@@ -284,22 +284,38 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
   }, [state.repeat, state.shuffle, queue, queueIndex, shuffledIndices, play]);
 
-  // 재생 상태 변경 시 처리하는 useEffect 추가
+  // 재생 상태 변경 시 처리하는 useEffect 수정
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || !state.currentTrack) return;
 
     if (state.isPlaying) {
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.error("Playback failed:", error);
-        });
+        playPromise
+          .then(() => {
+            // 재생 성공
+          })
+          .catch((error) => {
+            if (error.name === 'AbortError') {
+              // 재생이 중단된 경우, 다시 시도
+              setTimeout(() => {
+                if (state.isPlaying) {
+                  audio.play().catch(() => {
+                    setState(prev => ({ ...prev, isPlaying: false }));
+                  });
+                }
+              }, 100);
+            } else {
+              console.error("Playback failed:", error);
+              setState(prev => ({ ...prev, isPlaying: false }));
+            }
+          });
       }
     } else {
       audio.pause();
     }
-  }, [state.isPlaying]);
+  }, [state.isPlaying, state.currentTrack]);
 
   // 큐 관리 함수들
   const addToQueue = useCallback(
@@ -408,9 +424,17 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   );
 
   const updateQueueAndIndex = useCallback((newQueue: QueueTrack[], newIndex: number) => {
+    // 현재 재생 상태 저장
+    const wasPlaying = state.isPlaying;
+    
     setQueue(newQueue);
     setQueueIndex(newIndex);
-  }, []);
+
+    // 현재 트랙이 있고 재생 중이었다면 해당 트랙 재생
+    if (wasPlaying && newQueue[newIndex]) {
+      play(newQueue[newIndex].uuid);
+    }
+  }, [state.isPlaying, play]);
 
   // 반복 모드 토글 수정
   const toggleRepeat = useCallback(() => {
@@ -424,7 +448,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const toggleShuffle = useCallback(() => {
     setState(prev => {
       const newShuffle = !prev.shuffle;
-      if (newShuffle) {
+      const currentTrack = queue[queueIndex];
+      
+      if (newShuffle && currentTrack) {
         const indices = Array.from({ length: queue.length }, (_, i) => i);
         const currentIndex = indices.splice(queueIndex, 1)[0];
         for (let i = indices.length - 1; i > 0; i--) {
@@ -433,10 +459,15 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         }
         indices.unshift(currentIndex);
         setShuffledIndices(indices);
+
+        // 현재 트랙 재생 상태 유지
+        if (prev.isPlaying) {
+          play(currentTrack.uuid);
+        }
       }
       return { ...prev, shuffle: newShuffle };
     });
-  }, [queue.length, queueIndex]);
+  }, [queue, queueIndex, play]);
 
   // 큐 상태도 localStorage에 저장
   useEffect(() => {
