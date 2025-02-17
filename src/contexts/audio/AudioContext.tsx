@@ -347,49 +347,36 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   );
 
   const clearQueue = useCallback(() => {
-    // 1. 모든 상태 초기화
-    const initialState = {
+    // 1. 먼저 오디오 재생 중지
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current.src = '';
+    }
+
+    // 2. localStorage에서 상태 제거
+    localStorage.removeItem('audioPlayerState');
+
+    // 3. 모든 상태 초기화
+    setState({
       currentTrack: null,
       isPlaying: false,
       volume: 1,
       progress: 0,
       duration: 0
-    };
+    });
 
-    // 2. 오디오 엘리먼트 정리
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      audioRef.current.src = "";
-      audioRef.current = null;
-    }
-
-    // 3. 인터벌 정리
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = undefined;
-    }
-
-    // 4. ref 상태 초기화
-    queueRef.current = [];
-    queueIndexRef.current = 0;
-    volumeRef.current = 1;
-
-    // 5. UI 상태 초기화
-    setState(initialState);
+    // 4. 큐 상태 초기화
     setQueue([]);
     setQueueIndex(0);
+    queueRef.current = [];
+    queueIndexRef.current = 0;
 
-    // 6. localStorage 완전 정리
-    try {
-      localStorage.removeItem('audioPlayerState');
-    } catch (error) {
-      console.error('Failed to clear storage:', error);
+    // 5. 볼륨 초기화
+    volumeRef.current = 1;
+    if (audioRef.current) {
+      audioRef.current.volume = 1;
     }
-
-    // 7. 새로운 오디오 엘리먼트 생성
-    audioRef.current = new Audio();
-    audioRef.current.volume = volumeRef.current;
   }, []);
 
   const playNext = useCallback(() => {
@@ -470,14 +457,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.currentTrack, updateQueueAndIndex]);
 
-  // 상태 저장 함수
+  // 상태 저장 함수 수정
   const saveState = useCallback(() => {
     const stateToSave = {
       currentTrack: state.currentTrack,
       volume: state.volume,
       progress: audioRef.current?.currentTime || state.progress,
-      queue: queueRef.current,
-      queueIndex: queueIndexRef.current,
+      queue: queue,  // 현재 큐 상태 저장
+      queueIndex: queueIndex  // 현재 큐 인덱스 저장
     };
 
     try {
@@ -485,12 +472,13 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Failed to save audio state:', error);
     }
-  }, [state]);
+  }, [state.currentTrack, state.volume, state.progress, queue, queueIndex]);
 
-  // 상태 저장
+  // 상태 저장 useEffect
   useEffect(() => {
-    saveState();
-  }, [state, queue, queueIndex, saveState]);
+    const timeoutId = setTimeout(saveState, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [state.currentTrack, state.volume, state.progress, queue, queueIndex, saveState]);
 
   // 페이지 언로드 시 상태 저장
   useEffect(() => {

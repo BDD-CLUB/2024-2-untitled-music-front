@@ -107,8 +107,14 @@ export function PlaylistTracks({
       artUrl: track.trackGetResponseDto.trackResponseDto.artUrl,
       trackUrl: track.trackGetResponseDto.trackResponseDto.trackUrl,
       duration: track.trackGetResponseDto.trackResponseDto.duration,
-      artist: track.trackGetResponseDto.artistResponseDto,
-      album: track.trackGetResponseDto.albumResponseDto,
+      artist: {
+        uuid: track.trackGetResponseDto.artistResponseDto.uuid,
+        name: track.trackGetResponseDto.artistResponseDto.name,
+      },
+      album: {
+        uuid: track.trackGetResponseDto.albumResponseDto.uuid,
+        title: track.trackGetResponseDto.albumResponseDto.title,
+      },
     }));
 
     const selectedIndex = queueTracks.findIndex(
