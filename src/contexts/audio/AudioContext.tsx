@@ -71,50 +71,49 @@ interface AudioContextType extends AudioState {
 const AudioContext = createContext<AudioContextType | null>(null);
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
-  // 초기 상태를 localStorage에서 가져오는 함수 수정
+  // 초기 상태를 가져오는 함수를 단순화
   const getInitialState = () => {
     try {
-      const savedState = localStorage.getItem('audioPlayerState');
-      if (savedState) {
-        const { currentTrack, volume, progress, queue, queueIndex } = JSON.parse(savedState);
-        
-        // ref 상태 초기화
-        volumeRef.current = volume ?? 1;
-        queueRef.current = queue ?? [];
-        queueIndexRef.current = queueIndex ?? 0;
-        
-        return {
-          state: {
-            currentTrack,
-            volume: volume ?? 1,
-            progress: progress ?? 0,
-            isPlaying: false,
-            duration: currentTrack?.duration ?? 0,
-          },
-          queue: queue ?? [],
-          queueIndex: queueIndex ?? 0,
-        };
-      }
-    } catch (error) {
-      console.error('Failed to parse saved audio state:', error);
-    }
+      const savedStateStr = localStorage.getItem('audioPlayerState');
+      if (!savedStateStr) return null;
 
-    // 기본값 반환 (에러 로그 없이)
-    return {
-      state: {
-        currentTrack: null,
-        isPlaying: false,
-        volume: 1,
-        progress: 0,
-        duration: 0,
-      },
-      queue: [],
-      queueIndex: 0,
-    };
+      // 먼저 JSON 파싱
+      const savedState = JSON.parse(savedStateStr);
+      
+      // 필요한 데이터가 모두 있는지 검증
+      if (!savedState || typeof savedState !== 'object') return null;
+
+      return {
+        state: {
+          currentTrack: savedState.currentTrack || null,
+          volume: Number(savedState.volume) || 1,
+          progress: Number(savedState.progress) || 0,
+          isPlaying: false,
+          duration: savedState.currentTrack?.duration || 0,
+        },
+        queue: Array.isArray(savedState.queue) ? savedState.queue : [],
+        queueIndex: Number(savedState.queueIndex) || 0,
+      };
+    } catch {
+      return null;
+    }
+  };
+
+  // 기본 상태
+  const defaultState = {
+    state: {
+      currentTrack: null,
+      isPlaying: false,
+      volume: 1,
+      progress: 0,
+      duration: 0,
+    },
+    queue: [],
+    queueIndex: 0,
   };
 
   // 초기 상태 설정
-  const initialState = getInitialState();
+  const initialState = getInitialState() || defaultState;
   const [state, setState] = useState<AudioState>(initialState.state);
   const [queue, setQueue] = useState<QueueTrack[]>(initialState.queue);
   const [queueIndex, setQueueIndex] = useState(initialState.queueIndex);
@@ -122,12 +121,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout>();
 
-  // volume을 ref로 관리하여 상태 업데이트 없이 볼륨 제어
-  const volumeRef = useRef(1);
-
-  // 큐 상태를 ref로 관리
-  const queueRef = useRef<QueueTrack[]>([]);
-  const queueIndexRef = useRef<number>(0);
+  // ref 초기화
+  const volumeRef = useRef(initialState.state.volume);
+  const queueRef = useRef<QueueTrack[]>(initialState.queue);
+  const queueIndexRef = useRef<number>(initialState.queueIndex);
 
   // 트랙 정보 가져오기
   const fetchTrack = useCallback(async (trackId: string) => {
@@ -335,28 +332,37 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   );
 
   const clearQueue = useCallback(() => {
-    // ref 초기화
-    queueRef.current = [];
-    queueIndexRef.current = 0;
-    
     // 오디오 정지 및 초기화
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.currentTime = 0;
       audioRef.current.src = "";
     }
 
-    // UI 상태 초기화 (한 번에 처리)
-    setState(prev => ({
-      ...prev,
+    // ref 상태 초기화
+    queueRef.current = [];
+    queueIndexRef.current = 0;
+    volumeRef.current = 1;  // 볼륨도 기본값으로 초기화
+
+    // UI 상태 초기화
+    setState({
       currentTrack: null,
       isPlaying: false,
+      volume: 1,
       progress: 0,
       duration: 0
-    }));
+    });
     
     // 큐 상태 초기화
     setQueue([]);
     setQueueIndex(0);
+
+    // localStorage에서도 상태 제거
+    try {
+      localStorage.removeItem('audioPlayerState');
+    } catch (error) {
+      console.error('Failed to clear audio state:', error);
+    }
   }, []);
 
   const playNext = useCallback(() => {
@@ -437,35 +443,33 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.currentTrack, updateQueueAndIndex]);
 
-  // 상태 저장 useEffect 수정
-  useEffect(() => {
-    // 현재 트랙이 없어도 저장하도록 변경
+  // 상태 저장 함수
+  const saveState = useCallback(() => {
     const stateToSave = {
       currentTrack: state.currentTrack,
       volume: state.volume,
-      progress: state.progress,
+      progress: audioRef.current?.currentTime || state.progress,
       queue: queueRef.current,
       queueIndex: queueIndexRef.current,
     };
 
-    localStorage.setItem('audioPlayerState', JSON.stringify(stateToSave));
-  }, [state.currentTrack, state.volume, state.progress, queue, queueIndex]);
+    try {
+      localStorage.setItem('audioPlayerState', JSON.stringify(stateToSave));
+    } catch (error) {
+      console.error('Failed to save audio state:', error);
+    }
+  }, [state]);
 
-  // 페이지 언로드 시 현재 재생 시간 저장
+  // 상태 저장
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (audioRef.current) {
-        const stateToSave = {
-          ...JSON.parse(localStorage.getItem('audioPlayerState') || '{}'),
-          progress: audioRef.current.currentTime
-        };
-        localStorage.setItem('audioPlayerState', JSON.stringify(stateToSave));
-      }
-    };
+    saveState();
+  }, [state, queue, queueIndex, saveState]);
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, []);
+  // 페이지 언로드 시 상태 저장
+  useEffect(() => {
+    window.addEventListener('beforeunload', saveState);
+    return () => window.removeEventListener('beforeunload', saveState);
+  }, [saveState]);
 
   const value = {
     ...state,
