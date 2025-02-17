@@ -95,8 +95,8 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
           queueIndex: queueIndex ?? 0,
         };
       }
-    } catch (error) {
-      console.error('Failed to restore audio state:', error);
+    } catch {
+      console.error('Failed to restore audio state');
     }
 
     // 기본값 반환
@@ -186,7 +186,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
           
           setState(prev => ({ ...prev, isPlaying: true }));
         }
-      } catch (error) {
+      } catch {
         setState(prev => ({ 
           ...prev, 
           isPlaying: false,
@@ -254,17 +254,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
   }, [state.isPlaying]);
 
-  // 오디오 엘리먼트 생성
+  // 오디오 엘리먼트 생성과 초기화를 분리
   useEffect(() => {
     audioRef.current = new Audio();
     const audio = audioRef.current;
-
-    // 초기 오디오 상태 설정
-    if (state.currentTrack) {
-      audio.src = state.currentTrack.trackUrl;
-      audio.volume = state.volume;
-      audio.currentTime = state.progress;
-    }
 
     const handleTrackEnd = () => {
       const currentQueue = queueRef.current;
@@ -292,7 +285,18 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       audio.src = '';
       audioRef.current = null;
     };
-  }, [play]);
+  }, [play]); // 오디오 엘리먼트 생성은 play 함수에만 의존
+
+  // 오디오 상태 동기화를 위한 별도의 useEffect
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !state.currentTrack) return;
+
+    // 현재 재생 중인 트랙이 변경된 경우에만 src 업데이트
+    if (audio.src !== state.currentTrack.trackUrl) {
+      audio.src = state.currentTrack.trackUrl;
+    }
+  }, [state.currentTrack?.trackUrl]); // 트랙 URL이 변경될 때만 실행
 
   // 큐 관리 함수들
   const addToQueue = useCallback(
