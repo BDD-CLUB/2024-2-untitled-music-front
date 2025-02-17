@@ -284,6 +284,23 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
   }, [state.repeat, state.shuffle, queue, queueIndex, shuffledIndices, play]);
 
+  // 재생 상태 변경 시 처리하는 useEffect 추가
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (state.isPlaying) {
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.error("Playback failed:", error);
+        });
+      }
+    } else {
+      audio.pause();
+    }
+  }, [state.isPlaying]);
+
   // 큐 관리 함수들
   const addToQueue = useCallback(
     (track: QueueTrack) => {
@@ -397,36 +414,16 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   // 반복 모드 토글 수정
   const toggleRepeat = useCallback(() => {
-    setState(prev => {
-      // 현재 재생 상태 유지
-      const newRepeat = prev.repeat === 'none' 
-        ? 'all' as const 
-        : prev.repeat === 'all' 
-          ? 'one' as const 
-          : 'none' as const;
-
-      const newState: AudioState = {
-        ...prev,
-        repeat: newRepeat
-      };
-
-      // 현재 재생 중이었다면 재생 상태 유지
-      if (prev.isPlaying && audioRef.current) {
-        audioRef.current.currentTime = audioRef.current.currentTime;
-        audioRef.current.play();
-      }
-
-      return newState;
-    });
+    setState(prev => ({
+      ...prev,
+      repeat: prev.repeat === 'none' ? 'all' : prev.repeat === 'all' ? 'one' : 'none'
+    }));
   }, []);
 
   // 셔플 모드 토글 수정
   const toggleShuffle = useCallback(() => {
     setState(prev => {
       const newShuffle = !prev.shuffle;
-      const currentTime = audioRef.current?.currentTime || 0;
-      const wasPlaying = prev.isPlaying;
-
       if (newShuffle) {
         const indices = Array.from({ length: queue.length }, (_, i) => i);
         const currentIndex = indices.splice(queueIndex, 1)[0];
@@ -437,13 +434,6 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         indices.unshift(currentIndex);
         setShuffledIndices(indices);
       }
-
-      // 현재 재생 중이었다면 재생 상태 유지
-      if (wasPlaying && audioRef.current) {
-        audioRef.current.currentTime = currentTime;
-        audioRef.current.play();
-      }
-
       return { ...prev, shuffle: newShuffle };
     });
   }, [queue.length, queueIndex]);
