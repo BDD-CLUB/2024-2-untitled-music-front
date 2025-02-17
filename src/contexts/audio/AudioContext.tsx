@@ -203,11 +203,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       if (queue.length > queueIndex + 1) {
         // 다음 트랙이 있으면 재생
         const nextTrack = queue[queueIndex + 1];
-        setQueueIndex(prev => prev + 1);
+        setQueueIndex((prev) => prev + 1);
         play(nextTrack.uuid);
       } else {
         // 마지막 트랙이면 재생 중지
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isPlaying: false,
         }));
@@ -215,12 +215,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
 
     if (audioRef.current) {
-      audioRef.current.addEventListener('ended', handleTrackEnd);
+      audioRef.current.addEventListener("ended", handleTrackEnd);
     }
 
     return () => {
       if (audioRef.current) {
-        audioRef.current.removeEventListener('ended', handleTrackEnd);
+        audioRef.current.removeEventListener("ended", handleTrackEnd);
         audioRef.current.pause();
         audioRef.current = null;
       }
@@ -284,11 +284,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       // 현재 재생 시간이 3초 이상이면 처음으로 되돌림
       if (audioRef.current.currentTime >= 3) {
         audioRef.current.currentTime = 0;
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          progress: 0
+          progress: 0,
         }));
-      } 
+      }
       // 3초 미만이고 이전 트랙이 있으면 이전 트랙 재생
       else if (queueIndex > 0) {
         const prevTrack = queue[queueIndex - 1];
@@ -298,9 +298,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       // 3초 미만이지만 이전 트랙이 없으면 현재 트랙을 처음으로
       else {
         audioRef.current.currentTime = 0;
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          progress: 0
+          progress: 0,
         }));
       }
     }
@@ -317,10 +317,16 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     [play]
   );
 
-  const updateQueueAndIndex = useCallback((newQueue: QueueTrack[], newIndex: number) => {
-    setQueue(newQueue);
-    setQueueIndex(newIndex);
-  }, []);
+  const updateQueueAndIndex = useCallback(
+    (newQueue: QueueTrack[], newIndex: number) => {
+      setQueue(newQueue);
+      setQueueIndex(newIndex);
+      if (state.isPlaying && audioRef.current) {
+        audioRef.current.play();
+      }
+    },
+    [state.isPlaying]
+  );
 
   const value = {
     ...state,
