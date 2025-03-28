@@ -39,9 +39,6 @@ export function AlbumInfo({ album, artist }: AlbumInfoProps) {
           src={album.artImage}
           alt={album.title}
           fill
-          sizes="100vw"
-          priority
-          quality={30}
           className="object-cover opacity-75 blur-md scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white/75 dark:via-black/50 dark:to-black/75" />
@@ -59,9 +56,6 @@ export function AlbumInfo({ album, artist }: AlbumInfoProps) {
                   src={album.artImage}
                   alt={album.title}
                   fill
-                  sizes="256px"
-                  priority
-                  quality={90}
                   className="object-cover"
                 />
               </div>

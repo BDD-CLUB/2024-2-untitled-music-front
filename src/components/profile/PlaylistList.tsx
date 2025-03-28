@@ -86,7 +86,6 @@ export function PlaylistList({ artistId }: PlaylistListProps) {
                 alt={playlist.playlistBasicResponseDto.title}
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 50vw, 33vw"
               />
             ) : (
               <div className="absolute inset-0 bg-white/5 flex items-center justify-center">

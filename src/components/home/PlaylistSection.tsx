@@ -32,20 +32,24 @@ export function PlaylistSection() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists?page=0&pageSize=6`,
         {
-          credentials: 'include',
+          credentials: "include",
         }
       );
-      
-      if (!response.ok) throw new Error('플레이리스트 목록을 불러오는데 실패했습니다.');
-      
+
+      if (!response.ok)
+        throw new Error("플레이리스트 목록을 불러오는데 실패했습니다.");
+
       const data = await response.json();
       setPlaylists(data);
     } catch (error) {
-      console.error('Failed to fetch playlists:', error);
+      console.error("Failed to fetch playlists:", error);
       toast({
         variant: "destructive",
         title: "플레이리스트 목록을 불러오는데 실패했습니다.",
-        description: error instanceof Error ? error.message : "플레이리스트 목록을 불러오는데 실패했습니다.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "플레이리스트 목록을 불러오는데 실패했습니다.",
       });
     }
   }, [toast]);
@@ -77,7 +81,6 @@ export function PlaylistSection() {
                   alt={playlist.playlistBasicResponseDto.title}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 50vw, 33vw"
                 />
               ) : (
                 <div className="absolute inset-0 bg-white/5 flex items-center justify-center">
@@ -110,4 +113,4 @@ export function PlaylistSection() {
       </div>
     </section>
   );
-} 
+}

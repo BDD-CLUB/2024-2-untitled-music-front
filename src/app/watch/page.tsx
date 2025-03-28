@@ -92,7 +92,6 @@ export default function WatchPage() {
                       alt={currentTrack.title}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      priority
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" />
                   </>

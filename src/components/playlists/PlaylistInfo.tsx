@@ -25,7 +25,7 @@ interface PlaylistInfoProps {
 export function PlaylistInfo({ playlist, artist }: PlaylistInfoProps) {
   const { isAuthenticated } = useAuth();
   const { user } = useUser();
-  
+
   const isOwner = isAuthenticated && user?.uuid === artist.uuid;
 
   return (
@@ -42,12 +42,11 @@ export function PlaylistInfo({ playlist, artist }: PlaylistInfoProps) {
               <div className="absolute -inset-4 rounded-[2rem] bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm" />
               <div className="relative w-64 h-64 rounded-2xl overflow-hidden shadow-2xl transition-transform group-hover:scale-[1.02] duration-500 bg-white/5 flex items-center justify-center">
                 {playlist.coverImageUrl ? (
-                  <Image 
-                    src={playlist.coverImageUrl} 
+                  <Image
+                    src={playlist.coverImageUrl}
                     alt={playlist.title}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 768px) 50vw, 33vw"
                   />
                 ) : (
                   <ListMusic className="w-32 h-32 text-white/20" />
@@ -63,11 +62,14 @@ export function PlaylistInfo({ playlist, artist }: PlaylistInfoProps) {
                 {playlist.title}
               </h1>
               {isOwner && (
-                <PlaylistActions playlistId={playlist.uuid} playlistImage={playlist.coverImageUrl} />
+                <PlaylistActions
+                  playlistId={playlist.uuid}
+                  playlistImage={playlist.coverImageUrl}
+                />
               )}
             </div>
-            
-            <Link 
+
+            <Link
               href={`/profile/${artist.uuid}`}
               className="flex items-center gap-2 hover:bg-white/5 px-3 py-2 rounded-full transition-colors mb-6"
             >
@@ -88,4 +90,4 @@ export function PlaylistInfo({ playlist, artist }: PlaylistInfoProps) {
       </div>
     </div>
   );
-} 
+}
