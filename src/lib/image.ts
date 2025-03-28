@@ -32,7 +32,7 @@ export async function convertToWebP(file: File): Promise<File> {
           resolve(webpFile);
         },
         'image/webp',
-        0.8  // 품질 설정 (0.8 = 80%)
+        0.9  // 품질 설정 (0.8 = 80%)
       );
     };
     
