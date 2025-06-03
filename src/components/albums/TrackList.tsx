@@ -1,14 +1,16 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Play, Music, Loader2 } from "lucide-react";
+// import { Play, Music, Loader2 } from "lucide-react";
 import { formatDuration } from "@/lib/format";
-import { useEffect, useState, useCallback } from "react";
-import { useInView } from "react-intersection-observer";
+// import { useEffect, useState, useCallback } from "react";
+// import { useInView } from "react-intersection-observer";
 import { TrackActions } from "@/components/albums/TrackActions";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useUser } from "@/contexts/auth/UserContext";
 import { useAudio } from "@/contexts/audio/AudioContext";
+import { useState } from "react";
+import { Play, Music } from "lucide-react";
 
 interface initialTrack {
   uuid: string;
