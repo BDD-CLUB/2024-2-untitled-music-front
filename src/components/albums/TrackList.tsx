@@ -42,51 +42,51 @@ export function TrackList({
   const { isAuthenticated } = useAuth();
   const { user } = useUser();
   const [tracks, setTracks] = useState<initialTrack[]>(initialTracks);
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const { ref, inView } = useInView();
+  // const [page, setPage] = useState(0);
+  // const [hasMore, setHasMore] = useState(true);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const { ref, inView } = useInView();
   const { updateQueueAndPlay } = useAudio();
 
   const isOwner = isAuthenticated && user?.uuid === artistId;
 
-  const fetchMoreTracks = useCallback(async () => {
-    if (isLoading || !hasMore) return;
+  // const fetchMoreTracks = useCallback(async () => {
+  //   if (isLoading || !hasMore) return;
 
-    try {
-      setIsLoading(true);
-      const nextPage = page + 1;
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/${albumId}?trackPage=${nextPage}&trackPageSize=10`,
-        {
-          credentials: "include",
-        }
-      );
+  //   try {
+  //     setIsLoading(true);
+  //     const nextPage = page + 1;
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/${albumId}?trackPage=${nextPage}&trackPageSize=10`,
+  //       {
+  //         credentials: "include",
+  //       }
+  //     );
 
-      if (!response.ok) throw new Error("트랙 목록을 불러오는데 실패했습니다.");
+  //     if (!response.ok) throw new Error("트랙 목록을 불러오는데 실패했습니다.");
 
-      const data = await response.json();
-      const newTracks = data.trackResponseDtos;
+  //     const data = await response.json();
+  //     const newTracks = data.trackResponseDtos;
 
-      if (newTracks.length === 0) {
-        setHasMore(false);
-        return;
-      }
+  //     if (newTracks.length === 0) {
+  //       setHasMore(false);
+  //       return;
+  //     }
 
-      setTracks((prev) => [...prev, ...newTracks]);
-      setPage(nextPage);
-    } catch (error) {
-      console.error("Failed to fetch more tracks:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [albumId, hasMore, isLoading, page]);
+  //     setTracks((prev) => [...prev, ...newTracks]);
+  //     setPage(nextPage);
+  //   } catch (error) {
+  //     console.error("Failed to fetch more tracks:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [albumId, hasMore, isLoading, page]);
 
-  useEffect(() => {
-    if (inView) {
-      fetchMoreTracks();
-    }
-  }, [inView, fetchMoreTracks]);
+  // useEffect(() => {
+  //   if (inView) {
+  //     fetchMoreTracks();
+  //   }
+  // }, [inView, fetchMoreTracks]);
 
   const hasNoTracks = !tracks || tracks.length === 0;
 
@@ -200,7 +200,7 @@ export function TrackList({
             </div>
           ))}
 
-          {hasMore && (
+{/*           {hasMore && (
             <div ref={ref} className="py-4 flex justify-center">
               {isLoading && (
                 <div className="text-sm text-muted-foreground">
@@ -208,7 +208,8 @@ export function TrackList({
                 </div>
               )}
             </div>
-          )}
+          )} */}
+          
         </div>
       )}
     </div>
