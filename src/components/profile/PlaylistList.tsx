@@ -32,7 +32,7 @@ export function PlaylistList({ artistId }: PlaylistListProps) {
   const fetchPlaylists = useCallback(async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/artists/${artistId}/playlists`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/${artistId}/playlists`,
         {
           credentials: 'include',
         }
