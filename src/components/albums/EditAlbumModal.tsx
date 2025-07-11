@@ -77,7 +77,9 @@ export function EditAlbumModal({
         {
           method: 'POST',
           body: formData,
-          credentials: 'include',
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+          }
         }
       );
 
@@ -117,7 +119,9 @@ export function EditAlbumModal({
             "Authorization": `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
-          credentials: "include",
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+          },
           body: JSON.stringify({
             title: form.title.trim(),
             description: form.description.trim(),
