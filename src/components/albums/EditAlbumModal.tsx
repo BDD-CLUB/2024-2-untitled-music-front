@@ -82,8 +82,8 @@ export function EditAlbumModal({
       );
 
       if (!response.ok) throw new Error('이미지 업로드에 실패했습니다.');
-      
-      const imageUrl = await response.text();
+
+      const { url: imageUrl } = await response.json();
       setForm(prev => ({ ...prev, albumArt: imageUrl }));
 
       toast({
