@@ -72,6 +72,7 @@ export function EditAlbumModal({
       const formData = new FormData();
       formData.append('file', optimizedFile);
 
+      const { accessToken } = await checkAuth();
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/images`,
         {
@@ -118,9 +119,6 @@ export function EditAlbumModal({
           headers: {
             "Authorization": `Bearer ${accessToken}`,
             "Content-Type": "application/json",
-          },
-          headers: {
-            "Authorization": `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
             title: form.title.trim(),
