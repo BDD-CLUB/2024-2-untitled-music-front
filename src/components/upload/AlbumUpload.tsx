@@ -74,10 +74,13 @@ export function AlbumUpload() {
       const formData = new FormData();
       formData.append("file", optimizedFile);
 
+      const { accessToken } = await checkAuth();
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/images`, {
         method: "POST",
         body: formData,
-        credentials: "include",
+        headers: { 
+          "Authorization": `Bearer ${accessToken}`
+        }
       });
 
       if (!response.ok) throw new Error("이미지 업로드에 실패했습니다.");
