@@ -82,10 +82,13 @@ export function TrackUpload() {
       const formData = new FormData();
       formData.append("file", file);
 
+      const { accessToken } = await checkAuth();
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/musics`, {
         method: "POST",
         body: formData,
-        credentials: "include",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`
+        }
       });
 
       if (!response.ok) throw new Error(`트랙 파일 업로드에 실패했습니다. ${response.statusText}`);
