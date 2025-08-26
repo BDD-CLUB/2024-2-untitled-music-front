@@ -3,7 +3,8 @@ name: Deploy to Amazon ECS
 on:
   push:
     branches: [ "main" ]
-
+  workflow_dispatch:
+  
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}                     # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: ${{secrets.ECR_REPO}}                     # set this to your Amazon ECR repository name
